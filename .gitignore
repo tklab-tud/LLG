@@ -58,3 +58,8 @@ docs/_build/
 # PyBuilder
 target/
 
+#
+datasets/
+.idea/
+tools/
+!datasets/datasets.zip
