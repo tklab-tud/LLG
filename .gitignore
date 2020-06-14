@@ -10,6 +10,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+env_torch/
 build/
 develop-eggs/
 dist/
@@ -62,4 +63,4 @@ target/
 datasets/
 .idea/
 tools/
-!datasets/datasets.zip
+code_examples/
