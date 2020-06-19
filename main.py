@@ -15,6 +15,7 @@ import torch.optim as optim
 from torch.utils.data import Dataset
 from torchvision import datasets, transforms
 
+"""
 ap = argparse.ArgumentParser(description="Comparison framework for attacks on federated learning.")
 ap.add_argument("-d", "--dataset", required=False, default="MNIST", help="Dataset to use",
                 choices=["MNIST", "SVHN", "CIFAR", "ATT"])
@@ -22,12 +23,13 @@ ap.add_argument("-n", "--nodes", required=False, default=2, type=int, help="Amou
 ap.add_argument("-bs", "--batch_size", required=False, default=32, type=int, help="Samples per batch")
 ap.add_argument("-es", "--epoch_size", required=False, default=100, type=int,
                 help="Batches per epoch, 0 for the complete set")
-ap.add_argument("-t", "--test_batch_size", required=False, default=100, type=int, help="Samples for test-batch")
+ap.add_argument("-tbs", "--test_batch_size", required=False, default=100, type=int, help="Samples for test-batch")
 ap.add_argument("-e", "--epochs", required=False, default=3, type=int, help="Amount of epochs")
 ap.add_argument("-lr", "--learning_rate", required=False, default=0.5, type=float, help="Learning rate")
-ap.add_argument("-a", "--attack", required=False, default="DLG", help="Attacks to perform",
-                choices=["GAN", "MI", "UL", "DLG", "iDLG"])
+ap.add_argument("-a", "--attack", required=False, default="DLG", help="Attacks to perform",choices=["GAN", "MI", "UL", "DLG", "iDLG"])
 ap.add_argument("-s", "--seed", required=False, default=1, type=int, help="Integer seed for torch")
+ap.add_argument("-t", "--target_class", required=False, default=0, type=int, help="Class to attack")
+"""
 
 
 ##########################################################################
@@ -52,6 +54,7 @@ class Net(nn.Module):
         x = self.fc2(x)
         x = F.log_softmax(x, dim=1)
         return x
+
 
 ##########################################################################
 
@@ -81,8 +84,18 @@ class LeNet(nn.Module):
 ##########################################################################
 ##########################################################################
 
-def weights_init(m):
+def log(str):
+    print(str)
+    logging.info(str)
 
+
+##########################################################################
+
+
+
+##########################################################################
+
+def weights_init(m):
     try:
         if hasattr(m, "weight"):
             m.weight.data.uniform_(-0.5, 0.5)
@@ -93,6 +106,7 @@ def weights_init(m):
             m.bias.data.uniform_(-0.5, 0.5)
     except Exception:
         print('warning: failed in weights_init for %s.bias' % m._get_name())
+
 
 ##########################################################################
 
@@ -109,12 +123,17 @@ def train():
         optimizer.step()
         model.get()
 
-        if (batch_idx % log_interval== 0):
+        if (batch_idx % parameter["log_interval"] == 0):
             loss = loss.get()  # <-- NEW: get the loss back
-            log('Train Epoch: {}, Batch: {}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(epoch, batch_idx , args["epoch_size"], 100 * batch_idx / args["epoch_size"], loss.item()))
+            log('Train Epoch: {}, Batch: {}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(epoch, batch_idx,
+                                                                                parameter["epoch_size"],
+                                                                                100 * batch_idx / parameter[
+                                                                                    "epoch_size"],
+                                                                                loss.item()))
 
-        if batch_idx >= args["epoch_size"]:
+        if batch_idx >= parameter["epoch_size"]:
             break
+
 
 ##########################################################################
 
@@ -142,59 +161,36 @@ def test():
 
 
 def dlg():
-    train_dataset = 'MNIST'
-    root_path = '.'
-    data_path = './datasets'
-    save_path = './results/iDLG'
-
-    lr = 1.0
-    num_dummy = 1
-    Iteration = 300
-    num_exp = 1000
-
-    device = 'cuda'
-
-    tt = transforms.Compose([transforms.ToTensor()])
-    tp = transforms.Compose([transforms.ToPILImage()])
-
-    print(train_dataset, 'root_path:', root_path)
-    print(train_dataset, 'data_path:', data_path)
-    print(train_dataset, 'save_path:', save_path)
-
-    if not os.path.exists('results'):
-        os.mkdir('results')
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
-
-
-    num_classes = 10
-    channel = 1
-    hidden = 588
-    train_dataset = datasets.MNIST(data_path, download=False)
-
-
-    ''' train DLG and iDLG '''
-
+    #prepare the model
     model = LeNet(channel=channel, hideen=588, num_classes=num_classes)
     model.apply(weights_init)
     model = model.to(device)
 
-    idx = np.random.randint(len(train_dataset))  # id of image trying to recreate
-    print("Selected idx: " + str(idx))
+    #Set the the desired class as target
+    for i, sample in enumerate(train_dataset):
+        idx = i
+        if sample[1] == parameter["target_class"]:
+            break
 
+    print("Selected idx: " + str(idx))
 
     for method in ['DLG', 'iDLG']:
         print("Try to generate %s image" % method)
 
         criterion = nn.CrossEntropyLoss().to(device)
 
-        # imidx 0 for only one dummy to create
-        #for imidx in range(num_dummy):
+        #target sample
+        tmp_datum = train_dataset[idx][0]
+        tmp_datum = tp(tmp_datum)
+        tmp_datum = tt(tmp_datum)
+        tmp_datum = tmp_datum.float()
+        tmp_datum = tmp_datum.to(device)
+        data = tmp_datum.view(1, *tmp_datum.size())
 
-        # calculate one legit sample
-        tmp_datum = tt(train_dataset[idx][0]).float().to(device)
-        data =  tmp_datum.view(1, *tmp_datum.size())
+        #target label
         label = torch.Tensor([train_dataset[idx][1]]).long().to(device).view(1, )
+
+        #calculate original gradient
         out = model(data)
         y = criterion(out, label)
         dy_dx = torch.autograd.grad(y, model.parameters())
@@ -204,13 +200,15 @@ def dlg():
         dummy_data = torch.randn(data.size()).to(device).requires_grad_(True)
         dummy_label = torch.randn((data.shape[0], num_classes)).to(device).requires_grad_(True)
 
+        #Set up Optimizer
         if method == 'DLG':
-            optimizer = torch.optim.LBFGS([dummy_data, dummy_label], lr=lr)
+            optimizer = torch.optim.LBFGS([dummy_data, dummy_label], lr=parameter["dlg_lr"])
         elif method == 'iDLG':
-            optimizer = torch.optim.LBFGS([dummy_data, ], lr=lr)
-            # predict the ground-truth label
-            label_pred = torch.argmin(torch.sum(original_dy_dx[-2], dim=-1), dim=-1).detach().reshape(
-                (1,)).requires_grad_(False)
+            optimizer = torch.optim.LBFGS([dummy_data, ], lr=parameter["dlg_lr"])
+
+        # predict the ground-truth label
+        if method == 'iDLG':
+            label_pred = torch.argmin(torch.sum(original_dy_dx[-2], dim=-1), dim=-1).detach().reshape((1,)).requires_grad_(False)
 
         history = []
         history_iters = []
@@ -218,16 +216,14 @@ def dlg():
         mses = []
         train_iters = []
 
-        print('lr =', lr)
-        for iters in range(Iteration):
-
+        for iters in range(parameter["dlg_iterations"]):
 
             def closure():
                 optimizer.zero_grad()
-                #feed dummy data to model
+                # feed dummy data to model
                 pred = model(dummy_data)
 
-                #calculate loss
+                # calculate loss
                 if method == 'DLG':
                     dummy_loss = - torch.mean(
                         torch.sum(torch.softmax(dummy_label, -1) * torch.log(torch.softmax(pred, -1)), dim=-1))
@@ -235,34 +231,34 @@ def dlg():
                 elif method == 'iDLG':
                     dummy_loss = criterion(pred, label_pred)
 
-                #calculate dummy gradient
+                # calculate dummy gradient
                 dummy_dy_dx = torch.autograd.grad(dummy_loss, model.parameters(), create_graph=True)
 
-                #calculate square vector difference between original and dummy gradient
+                # calculate square vector difference between original and dummy gradient
                 grad_diff = 0
                 for gx, gy in zip(dummy_dy_dx, original_dy_dx):
                     grad_diff += ((gx - gy) ** 2).sum()
 
-                #calculate gradient of that tensor
+                # calculate gradient of that tensor
                 grad_diff.backward()
                 return grad_diff
 
-            #perform a learning step
+            # perform a learning step
             optimizer.step(closure)
             current_loss = closure().item()
 
-            #gather lists with iterations, losses, mses
+            # gather lists with iterations, losses, mses
             train_iters.append(iters)
             losses.append(current_loss)
             mses.append(torch.mean((dummy_data - data) ** 2).item())
 
-            #log after some iterations
-            if iters % int(Iteration / 30) == 0:
+            # log after some iterations
+            if iters % int(parameter["dlg_iterations"] / 30) == 0:
                 print(iters, 'loss = %.8f, mse = %.8f' % (current_loss, mses[-1]))
                 history.append([tp(dummy_data[0].cpu())])
                 history_iters.append(iters)
 
-                #plot the history of dummy visualisations
+                # plot the history of dummy visualisations
                 plt.figure(figsize=(12, 8))
                 plt.subplot(3, 10, 1)
                 plt.imshow(tp(data[0].cpu()))
@@ -272,54 +268,61 @@ def dlg():
                     plt.title('iter=%d' % (history_iters[i]))
                     plt.axis('off')
                 if method == 'DLG':
-                    plt.savefig('%s/%s DLG.png' % (save_path, idx))
+                    plt.savefig('%s/%s DLG.png' % (parameter["result_path"], idx))
                     plt.close()
                 elif method == 'iDLG':
-                    plt.savefig('%s/%s iDLG.png' % (save_path, idx))
+                    plt.savefig('%s/%s iDLG.png' % (parameter["result_path"], idx))
                     plt.close()
 
-                #eventually break
+                # eventually break
                 if current_loss < 0.000001:  # converge
                     break
-
-
-##########################################################################
-
-def log(str):
-    print(str)
-    logging.info(str)
 
 
 ##########################################################################
 ##########################################################################
 
 if __name__ == '__main__':
-
-    dlg()
+    """
     # get the arguments
     args = vars(ap.parse_args())
     argstr = "arg"
     for arg in args:
         argstr += ("_" + str(args[arg]))
+    """
 
+    # Parameters
 
-    #Hardcoded Parameters
-    log_interval = 10
+    parameter = {
+        "log_interval": 10,
+        "dlg_lr": 0.1,
+        "dlg_iterations": 300,
+        "dataset": "MNIST",
+        "nodes": 2,
+        "batch_size": 32,
+        "epoch_size": 100,
+        "test_batch_size": 100,
+        "epochs": 3,
+        "lr_main": 0.5,
+        "lr_dlg": 0.1,
+        "seed": 1,
+        "target_class": 7,
+        "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S")))
+    }
 
     # logging
-    time = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    resultpath = "results/{}/{}/".format(argstr, time)
-    Path(resultpath).mkdir(parents=True, exist_ok=True)
-    logging.basicConfig(level=logging.DEBUG, filename=resultpath + "log.txt", filemode="w+", format="%(message)s")
-    log("Model and Log will be saved to: " + resultpath)
+    Path(parameter["result_path"]).mkdir(parents=True, exist_ok=True)
+    logging.basicConfig(level=logging.DEBUG, filename=parameter["result_path"] + "log.txt", filemode="w+",
+                        format="%(message)s")
+    log("Model and Log will be saved to: " + parameter["result_path"])
 
     # Log Parameters
-    for arg in args:
-        log('{:15}: {:10}'.format(str(arg), str(args[arg])))
+    for entry in parameter:
+        log("{}: {}".format(entry, parameter[entry]))
 
     # Creating Federation Nodes
     hook = sy.TorchHook(torch)
-    nodes = tuple(sy.VirtualWorker(hook, id=str(id)) for id in range(0, args["nodes"]))
+    nodes = tuple(sy.VirtualWorker(hook, id=str(id)) for id in range(0, parameter["nodes"]))
 
     # Check CUDA
     if torch.cuda.is_available():
@@ -330,28 +333,35 @@ if __name__ == '__main__':
         exit()
 
     # Setting Torch Seed
-    torch.manual_seed(args["seed"])
+    torch.manual_seed(parameter["seed"])
 
-    # Defining data transformation
-    transformation = transforms.Compose([
-        transforms.ToTensor()
-    ])
+    # Defining data transformations
+    tt = transforms.Compose([transforms.ToTensor()])
+    tp = transforms.Compose([transforms.ToPILImage()])
 
     # Initialising datasets
-    train_dataset = datasets.MNIST('./datasets', train=True, download=True, transform=transformation)
-    test_dataset = datasets.MNIST('./datasets', train=False, download=True, transform=transformation)
-    num_classes = 10
-    channel = 1
 
-    # Setting epoch_size if 0 (complete set) is choosen
-    if args["epoch_size"] == 0:
-        args["epoch_size"] = len(train_dataset) / args["batch_size"]
-        log("Set epoch size to {}".format(args["epoch_size"]))
+    if parameter["dataset"] == "MNIST":
+        train_dataset = datasets.MNIST('./datasets', train=True, download=True, transform=tt)
+        test_dataset = datasets.MNIST('./datasets', train=False, download=True, transform=tt)
+        num_classes = 10
+        channel = 1
+    else:
+        train_dataset, test_dataset = [], []
+        log("Unsupported dataset '" + parameter["dataset"] + "'")
+        exit()
+
+    # Setting epoch_size; 0 will set size to set-length
+    parameter["epoch_size"] = len(train_dataset) / parameter["batch_size"]
+    log("Set epoch size to {}".format(parameter["epoch_size"]))
+
+    # dlg
+    dlg()
 
     # Initialise Federated Data loader for training
     federated_train_loader = sy.FederatedDataLoader(
         train_dataset.federate(nodes),
-        batch_size=args["batch_size"],
+        batch_size=parameter["batch_size"],
         shuffle=True,
         num_workers=0,
         pin_memory=True
@@ -360,7 +370,7 @@ if __name__ == '__main__':
     # Initialise Data Loader for testing
     test_loader = torch.utils.data.DataLoader(
         test_dataset,
-        batch_size=args["test_batch_size"],
+        batch_size=parameter["test_batch_size"],
         shuffle=True,
         num_workers=0,
         pin_memory=True
@@ -370,22 +380,16 @@ if __name__ == '__main__':
     model = Net(channel, num_classes).to(device)
 
     # Initialise Optimizer
-    optimizer = optim.SGD(model.parameters(), lr=args["learning_rate"])
+    optimizer = optim.SGD(model.parameters(), lr=parameter["learning_rate"])
 
     # Training Loop
-    for epoch in range(1, args["epochs"] + 1):
+    for epoch in range(1, parameter["epochs"] + 1):
         train()
 
     # Testing
     test()
 
     # Saving Model
-    torch.save(model.state_dict(), "{}model.pt".format(resultpath))
-
-
-
-
+    torch.save(model.state_dict(), "{}model.pt".format(parameter["result_path"]))
 
 #################################################
-
-
