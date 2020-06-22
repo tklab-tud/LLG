@@ -12,6 +12,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+import torchvision
 from torch.utils.data import Dataset
 from torchvision import datasets, transforms
 
@@ -59,7 +60,7 @@ class Net(nn.Module):
 ##########################################################################
 
 class LeNet(nn.Module):
-    def __init__(self, channel=3, hideen=768, num_classes=10):
+    def __init__(self, channel=3, hidden=768, num_classes=10):
         super(LeNet, self).__init__()
         act = nn.Sigmoid
         self.body = nn.Sequential(
@@ -71,7 +72,7 @@ class LeNet(nn.Module):
             act(),
         )
         self.fc = nn.Sequential(
-            nn.Linear(hideen, num_classes)
+            nn.Linear(hidden, num_classes)
         )
 
     def forward(self, x):
@@ -90,7 +91,6 @@ def log(str):
 
 
 ##########################################################################
-
 
 
 ##########################################################################
@@ -161,12 +161,12 @@ def test():
 
 
 def dlg():
-    #prepare the model
-    model = LeNet(channel=channel, hideen=588, num_classes=num_classes)
+    # prepare the model
+    model = LeNet(channel=channel, hidden=588, num_classes=num_classes)
     model.apply(weights_init)
     model = model.to(device)
 
-    #Set the the desired class as target
+    # Set the the desired class as target
     for i, sample in enumerate(train_dataset):
         idx = i
         if sample[1] == parameter["target_class"]:
@@ -179,7 +179,7 @@ def dlg():
 
         criterion = nn.CrossEntropyLoss().to(device)
 
-        #target sample
+        # target sample
         tmp_datum = train_dataset[idx][0]
         tmp_datum = tp(tmp_datum)
         tmp_datum = tt(tmp_datum)
@@ -187,10 +187,10 @@ def dlg():
         tmp_datum = tmp_datum.to(device)
         data = tmp_datum.view(1, *tmp_datum.size())
 
-        #target label
+        # target label
         label = torch.Tensor([train_dataset[idx][1]]).long().to(device).view(1, )
 
-        #calculate original gradient
+        # calculate original gradient
         out = model(data)
         y = criterion(out, label)
         dy_dx = torch.autograd.grad(y, model.parameters())
@@ -200,7 +200,7 @@ def dlg():
         dummy_data = torch.randn(data.size()).to(device).requires_grad_(True)
         dummy_label = torch.randn((data.shape[0], num_classes)).to(device).requires_grad_(True)
 
-        #Set up Optimizer
+        # Set up Optimizer
         if method == 'DLG':
             optimizer = torch.optim.LBFGS([dummy_data, dummy_label], lr=parameter["dlg_lr"])
         elif method == 'iDLG':
@@ -208,7 +208,8 @@ def dlg():
 
         # predict the ground-truth label
         if method == 'iDLG':
-            label_pred = torch.argmin(torch.sum(original_dy_dx[-2], dim=-1), dim=-1).detach().reshape((1,)).requires_grad_(False)
+            label_pred = torch.argmin(torch.sum(original_dy_dx[-2], dim=-1), dim=-1).detach().reshape(
+                (1,)).requires_grad_(False)
 
         history = []
         history_iters = []
@@ -299,11 +300,11 @@ if __name__ == '__main__':
         "dlg_iterations": 300,
         "dataset": "MNIST",
         "nodes": 2,
-        "batch_size": 32,
-        "epoch_size": 100,
-        "test_batch_size": 100,
-        "epochs": 3,
-        "lr_main": 0.5,
+        "batch_size": 1,
+        "epoch_size": 500,
+        "test_batch_size": 1000,
+        "epochs": 1,
+        "lr_main": 0.01,
         "lr_dlg": 0.1,
         "seed": 1,
         "target_class": 7,
@@ -339,24 +340,33 @@ if __name__ == '__main__':
     tt = transforms.Compose([transforms.ToTensor()])
     tp = transforms.Compose([transforms.ToPILImage()])
 
+
     # Initialising datasets
 
     if parameter["dataset"] == "MNIST":
+        shape_img = (28, 28)
         train_dataset = datasets.MNIST('./datasets', train=True, download=True, transform=tt)
         test_dataset = datasets.MNIST('./datasets', train=False, download=True, transform=tt)
         num_classes = 10
         channel = 1
+    elif parameter["dataset"] == 'CIFAR':
+        shape_img = (32, 32)
+        num_classes = 100
+        channel = 3
+        train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt)
+        test_dataset = datasets.CIFAR100('./datasets', train=False, download=True, transform=tt)
     else:
         train_dataset, test_dataset = [], []
         log("Unsupported dataset '" + parameter["dataset"] + "'")
         exit()
 
     # Setting epoch_size; 0 will set size to set-length
-    parameter["epoch_size"] = len(train_dataset) / parameter["batch_size"]
-    log("Set epoch size to {}".format(parameter["epoch_size"]))
+    if parameter["epoch_size"] == 0 :
+        parameter["epoch_size"] = len(train_dataset) / parameter["batch_size"]
+        log("Set epoch size to {}".format(parameter["epoch_size"]))
 
     # dlg
-    #dlg()
+    dlg()
 
     # Initialise Federated Data loader for training
     federated_train_loader = sy.FederatedDataLoader(
