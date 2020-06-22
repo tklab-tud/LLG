@@ -356,7 +356,7 @@ if __name__ == '__main__':
     log("Set epoch size to {}".format(parameter["epoch_size"]))
 
     # dlg
-    dlg()
+    #dlg()
 
     # Initialise Federated Data loader for training
     federated_train_loader = sy.FederatedDataLoader(
@@ -380,7 +380,7 @@ if __name__ == '__main__':
     model = Net(channel, num_classes).to(device)
 
     # Initialise Optimizer
-    optimizer = optim.SGD(model.parameters(), lr=parameter["learning_rate"])
+    optimizer = optim.SGD(model.parameters(), lr=parameter["lr_main"])
 
     # Training Loop
     for epoch in range(1, parameter["epochs"] + 1):
