@@ -24,7 +24,7 @@ if __name__ == '__main__':
         "log_interval": 10,
         "lr": 0.01,
         "dataset": "MNIST",
-        "batch_size": 1,
+        "batch_size": 3,
         "epochs": 1,
         "max_epoch_size": 300,
         "seed": 1,
@@ -50,15 +50,15 @@ if __name__ == '__main__':
         parameter["shape_img"] = (28, 28)
         parameter["num_classes"] = 10
         parameter["channel"] = 1
-        train_dataset = datasets.MNIST('./datasets', train=True, download=True, transform=transforms.ToTensor)
-        test_dataset = datasets.MNIST('./datasets', train=False, download=True, transform=transforms.ToTensor)
+        train_dataset = datasets.MNIST('./datasets', train=True, download=True)
+        test_dataset = datasets.MNIST('./datasets', train=False, download=True)
         channel = 1
     elif parameter["dataset"] == 'CIFAR':
         parameter["shape_img"] = (32, 32)
         parameter["num_classes"] = 100
         parameter["channel"] = 3
-        train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=transforms.ToTensor)
-        test_dataset = datasets.CIFAR100('./datasets', train=False, download=True, transform=transforms.ToTensor)
+        train_dataset = datasets.CIFAR100('./datasets', train=True, download=True)
+        test_dataset = datasets.CIFAR100('./datasets', train=False, download=True)
     else:
         print("Unsupported dataset '" + parameter["dataset"] + "'")
         exit()
