@@ -4,7 +4,7 @@ from pathlib import Path
 import torch
 from torchvision import datasets, transforms
 from train import train
-from dlg import dlg
+from dlg import dlg, idlg
 from net import Net
 
 
@@ -85,5 +85,6 @@ if __name__ == '__main__':
     # dlg
     dlg(model, train_dataset, parameter, device)
 
+    print("Run finished")
     
 

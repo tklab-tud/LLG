@@ -13,7 +13,7 @@ class Net(nn.Module):
             act(),
         )
         self.fc = nn.Sequential(
-            nn.Linear(768, parameter["num_classes"])
+            nn.Linear(588, parameter["num_classes"])
         )
 
     def forward(self, x):
