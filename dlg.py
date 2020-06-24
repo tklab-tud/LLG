@@ -4,21 +4,19 @@ from torchvision import datasets, transforms
 import torch.nn as nn
 from PIL import Image
 
-def closure():
-    print("")
 
 def attack(model, train_dataset, parameter, device, improved):
-    dummy_data = torch.rand((parameter["batch_size"], 1 ,parameter["shape_img"][0] ,parameter["shape_img"][1] )).to(device).requires_grad_(True)
-    dummy_label = torch.randn((parameter["batch_size"], parameter["num_classes"])).to(device).requires_grad_(True)
 
+    # select attacked ids
     ids= np.random.permutation(len(train_dataset))[:parameter["batch_size"]]
-
 
     # prepare attacked batch (orig)
     orig_data = torch.Tensor(parameter["batch_size"],1,parameter["shape_img"][0] ,parameter["shape_img"][1]).to(device)
     orig_label = torch.Tensor(parameter["batch_size"])
     orig_label = orig_label.long().to(device)
     orig_label = orig_label.view(parameter["batch_size"],)
+
+    print("Attacked label: ", orig_label.data)
 
     for index, id in enumerate(ids):
         orig_data[index] = transforms.ToTensor()(train_dataset[id][0])
@@ -32,25 +30,47 @@ def attack(model, train_dataset, parameter, device, improved):
     gradient = torch.autograd.grad(y, model.parameters())
     gradient = list((_.detach().clone() for _ in gradient))
 
+    #prepare dummy data
+    dummy_data = torch.rand((parameter["batch_size"], 1 ,parameter["shape_img"][0] ,parameter["shape_img"][1] )).to(device).requires_grad_(True)
+    dummy_label = torch.randn((parameter["batch_size"], parameter["num_classes"])).to(device).requires_grad_(True)
+
     #optimizer setup
     if not improved:
         optimizer = torch.optim.LBFGS([dummy_data, dummy_label], lr=parameter["dlg_lr"])
     else:
         optimizer = torch.optim.LBFGS([dummy_data, ], lr=parameter["dlg_lr"])
         # predict label of dummy gradient
-        label_pred = torch.argmin(torch.sum(gradient[-2], dim=-1), dim=-1).detach().reshape((1,)).requires_grad_(
+        idlg_pred = torch.argmin(torch.sum(gradient[-2], dim=-1), dim=-1).detach().reshape((1,)).requires_grad_(
             False)
 
 
     for iteration in range(parameter["dlg_iterations"]):
-        print("")
-        """
+
+        # clears gradients, computes loss, returns loss
+        def closure():
+            optimizer.zero_grad()
+            pred = model(dummy_data)
+            if not improved:
+                dummy_loss = - torch.mean(
+                    torch.sum(torch.softmax(dummy_label, -1) * torch.log(torch.softmax(pred, -1)), dim=-1))
+            else:
+                dummy_loss = criterion(pred, idlg_pred)
+
+            dummy_gradient = torch.autograd.grad(dummy_loss, model.parameters(), create_graph=True)
+
+            grad_diff = 0
+            for gx, gy in zip(dummy_gradient, gradient):
+                grad_diff += ((gx - gy) ** 2).sum()
+            grad_diff.backward()
+            return grad_diff
+
         optimizer.step(closure)
-        current_loss = closure().item()
-        train_iters.append(iters)
-        losses.append(current_loss)
-        mses.append(torch.mean((dummy_data - gt_data) ** 2).item())
-        """
+
+    return dummy_data
+
+
+
+
 
 
 

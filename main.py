@@ -6,6 +6,7 @@ from torchvision import datasets, transforms
 from train import train
 from dlg import dlg, idlg
 from net import Net
+import matplotlib.pyplot as plt
 
 
 
@@ -83,7 +84,13 @@ if __name__ == '__main__':
     train(model, train_dataset, parameter, device)
 
     # dlg
-    dlg(model, train_dataset, parameter, device)
+    dlg_result = dlg(model, train_dataset, parameter, device)
+    tensor_image = dlg_result.view(parameter["shape_img"][0] ,parameter["shape_img"][1], parameter["batch_size"]).cpu().detach()
+
+    plt.imshow(tensor_image)
+
+    plt.show()
+
 
     print("Run finished")
     
