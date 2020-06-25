@@ -16,7 +16,6 @@ def attack(model, train_dataset, parameter, device, improved):
     orig_label = orig_label.long().to(device)
     orig_label = orig_label.view(parameter["batch_size"],)
 
-    print("Attacked label: ", orig_label.data)
 
     for index, id in enumerate(ids):
         orig_data[index] = transforms.ToTensor()(train_dataset[id][0])

@@ -2,11 +2,13 @@ import datetime
 import logging
 from pathlib import Path
 import torch
+import torchvision
 from torchvision import datasets, transforms
 from train import train
 from dlg import dlg, idlg
 from net import Net
 import matplotlib.pyplot as plt
+
 
 
 
@@ -31,8 +33,9 @@ if __name__ == '__main__':
         "seed": 1,
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
         "dlg_lr": 0.1,
-        "dlg_iterations": 300,
-        "dlg_start_at": 100
+        "dlg_iterations": 100,
+        "dlg_start_at": 100,
+        "num_samples": 1
     }
 
     # Check CUDA
@@ -80,17 +83,23 @@ if __name__ == '__main__':
     model.weights_init()
     model = model.to(device)
 
+    ######################################################
+
     # train x epochs
     train(model, train_dataset, parameter, device)
 
     # dlg
     dlg_result = dlg(model, train_dataset, parameter, device)
-    tensor_image = dlg_result.view(parameter["shape_img"][0] ,parameter["shape_img"][1], parameter["batch_size"]).cpu().detach()
 
-    plt.imshow(tensor_image)
+    for i in range(parameter["batch_size"]):
+        plt.subplot(parameter["batch_size"], parameter["num_samples"], i + 1)
+        images_batch = dlg_result[i].view(parameter["shape_img"][0] ,parameter["shape_img"][1]).cpu().detach()
+        plt.imshow(images_batch, cmap='Greys_r')
+        plt.axis('off')
 
     plt.show()
 
+    #####################################################
 
     print("Run finished")
     
