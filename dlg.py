@@ -3,7 +3,8 @@ import numpy as np
 from torchvision import datasets, transforms
 import torch.nn as nn
 from PIL import Image
-
+from result import Result
+import matplotlib.pyplot as plt
 
 def attack(model, train_dataset, parameter, device, improved):
 
@@ -42,6 +43,8 @@ def attack(model, train_dataset, parameter, device, improved):
         idlg_pred = torch.argmin(torch.sum(gradient[-2], dim=-1), dim=-1).detach().reshape((1,)).requires_grad_(
             False)
 
+    res = Result(parameter)
+    res.set_origin(orig_data.cpu().detach(), orig_label)
 
     for iteration in range(parameter["dlg_iterations"]):
 
@@ -65,7 +68,10 @@ def attack(model, train_dataset, parameter, device, improved):
 
         optimizer.step(closure)
 
-    return dummy_data
+        if iteration % 10 == 0:
+            res.add_snapshot(dummy_data.cpu().detach())
+
+    return res
 
 
 

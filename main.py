@@ -7,7 +7,8 @@ from torchvision import datasets, transforms
 from train import train
 from dlg import dlg, idlg
 from net import Net
-import matplotlib.pyplot as plt
+from result import Result
+
 
 
 
@@ -91,13 +92,7 @@ if __name__ == '__main__':
     # dlg
     dlg_result = dlg(model, train_dataset, parameter, device)
 
-    for i in range(parameter["batch_size"]):
-        plt.subplot(parameter["batch_size"], parameter["num_samples"], i + 1)
-        images_batch = dlg_result[i].view(parameter["shape_img"][0] ,parameter["shape_img"][1]).cpu().detach()
-        plt.imshow(images_batch, cmap='Greys_r')
-        plt.axis('off')
-
-    plt.show()
+    dlg_result.show()
 
     #####################################################
 
