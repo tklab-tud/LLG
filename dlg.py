@@ -68,7 +68,7 @@ def attack(model, train_dataset, parameter, device, improved):
 
         optimizer.step(closure)
 
-        if iteration % 10 == 0:
+        if iteration % parameter["log_interval"] == 0:
             res.add_snapshot(dummy_data.cpu().detach())
 
     return res

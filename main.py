@@ -25,18 +25,17 @@ if __name__ == '__main__':
     # Parameters
 
     parameter = {
-        "log_interval": 10,
+        "log_interval": 2,
         "lr": 0.01,
         "dataset": "MNIST",
-        "batch_size": 3,
+        "batch_size": 5,
         "epochs": 1,
         "max_epoch_size": 300,
         "seed": 1,
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
         "dlg_lr": 0.1,
-        "dlg_iterations": 100,
+        "dlg_iterations": 10,
         "dlg_start_at": 100,
-        "num_samples": 1
     }
 
     # Check CUDA
