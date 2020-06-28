@@ -1,27 +1,32 @@
-import torch
 import numpy as np
-from torchvision import datasets, transforms
+import torch
 import torch.nn as nn
-from PIL import Image
+from torchvision import transforms
+
 from result import Result
-import matplotlib.pyplot as plt
+
+""" 
+The DLG and iDLG attack were taken and adapted from the repository linked in the original paper:
+"iDLG: Improved Deep Leakage from Gradients" by Zhao et Al.
+https://arxiv.org/pdf/2001.02610.pdf
+https://github.com/PatrickZH/Improved-Deep-Leakage-from-Gradients
+"""
+
 
 def attack(model, train_dataset, parameter, device, improved):
-
     # select attacked ids
-    ids= np.random.permutation(len(train_dataset))[:parameter["batch_size"]]
+    ids = np.random.permutation(len(train_dataset))[:parameter["batch_size"]]
 
     # prepare attacked batch (orig)
-    orig_data = torch.Tensor(parameter["batch_size"],1,parameter["shape_img"][0] ,parameter["shape_img"][1]).to(device)
+    orig_data = torch.Tensor(parameter["batch_size"], 1, parameter["shape_img"][0], parameter["shape_img"][1]).to(
+        device)
     orig_label = torch.Tensor(parameter["batch_size"])
     orig_label = orig_label.long().to(device)
-    orig_label = orig_label.view(parameter["batch_size"],)
-
+    orig_label = orig_label.view(parameter["batch_size"], )
 
     for index, id in enumerate(ids):
         orig_data[index] = transforms.ToTensor()(train_dataset[id][0])
-        orig_label[index] = torch.Tensor([train_dataset[id][1]]).long().to(device).view(1,)
-
+        orig_label[index] = torch.Tensor([train_dataset[id][1]]).long().to(device).view(1, )
 
     # calculate orig gradients
     orig_out = model(orig_data)
@@ -30,11 +35,12 @@ def attack(model, train_dataset, parameter, device, improved):
     gradient = torch.autograd.grad(y, model.parameters())
     gradient = list((_.detach().clone() for _ in gradient))
 
-    #prepare dummy data
-    dummy_data = torch.rand((parameter["batch_size"], 1 ,parameter["shape_img"][0] ,parameter["shape_img"][1] )).to(device).requires_grad_(True)
+    # prepare dummy data
+    dummy_data = torch.rand((parameter["batch_size"], 1, parameter["shape_img"][0], parameter["shape_img"][1])).to(
+        device).requires_grad_(True)
     dummy_label = torch.randn((parameter["batch_size"], parameter["num_classes"])).to(device).requires_grad_(True)
 
-    #optimizer setup
+    # optimizer setup
     if not improved:
         optimizer = torch.optim.LBFGS([dummy_data, dummy_label], lr=parameter["dlg_lr"])
     else:
@@ -74,15 +80,9 @@ def attack(model, train_dataset, parameter, device, improved):
     return res
 
 
-
-
-
-
-
 def idlg(model, train_dataset, parameter, device):
-    return attack(model, train_dataset, parameter,device, True)
+    return attack(model, train_dataset, parameter, device, True)
 
 
 def dlg(model, train_dataset, parameter, device):
-    return attack(model, train_dataset, parameter,device, False)
-
+    return attack(model, train_dataset, parameter, device, False)

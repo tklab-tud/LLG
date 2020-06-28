@@ -1,17 +1,11 @@
 import datetime
-import logging
-from pathlib import Path
+
 import torch
-import torchvision
-from torchvision import datasets, transforms
-from train import train
-from dlg import dlg, idlg
+from torchvision import datasets
+
+from dlg import dlg
 from net import Net
-from result import Result
-
-
-
-
+from train import train
 
 if __name__ == '__main__':
     """
@@ -34,7 +28,7 @@ if __name__ == '__main__':
         "seed": 1,
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
         "dlg_lr": 0.1,
-        "dlg_iterations": 10,
+        "dlg_iterations": 24,
         "dlg_start_at": 100,
     }
 
@@ -68,15 +62,12 @@ if __name__ == '__main__':
         exit()
 
     # Setting max_epoch_size; 0 will set size to set-length
-    if parameter["max_epoch_size"] == 0 :
+    if parameter["max_epoch_size"] == 0:
         parameter["max_epoch_size"] = len(train_dataset) / parameter["batch_size"]
-
 
     # Log Parameters
     for entry in parameter:
         print("{}: {}".format(entry, parameter[entry]))
-
-
 
     # prepare the model
     model = Net(parameter)
@@ -96,5 +87,3 @@ if __name__ == '__main__':
     #####################################################
 
     print("Run finished")
-    
-
