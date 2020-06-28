@@ -49,7 +49,8 @@ class Result:
         self.calc_mse()
 
         fig, subplots = plt.subplots(self.parameter["batch_size"], len(self.snapshots) + 1)
-        fig.set_size_inches((len(self.snapshots)+1) * self.parameter["shape_img"][0] / 10, len(self.origin_data) * self.parameter["shape_img"][1] / 10)
+        fig.set_size_inches((len(self.snapshots) + 1) * self.parameter["shape_img"][0] / 10,
+                            len(self.origin_data) * self.parameter["shape_img"][1] / 10)
 
         for i_b in range(self.parameter["batch_size"]):
             # original
