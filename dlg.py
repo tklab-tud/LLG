@@ -25,8 +25,8 @@ def attack(model, train_dataset, parameter, device, improved):
     orig_label = orig_label.view(parameter["batch_size"], )
 
     for index, id in enumerate(ids):
-        orig_data[index] = transforms.ToTensor()(train_dataset[id][0])
-        orig_label[index] = torch.Tensor([train_dataset[id][1]]).long().to(device).view(1, )
+        orig_data[index] = train_dataset[id][0]
+        orig_label[index] = train_dataset[id][1]
 
     # calculate orig gradients
     orig_out = model(orig_data)

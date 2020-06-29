@@ -1,6 +1,7 @@
 import datetime
 
 import torch
+import torchvision
 from torchvision import datasets
 
 from dlg import dlg, idlg
@@ -20,11 +21,11 @@ if __name__ == '__main__':
 
     parameter = {
         "log_interval": 5,
-        "lr": 0.01,
+        "lr": 0.1,
         "dataset": "MNIST",
-        "batch_size": 3,
-        "epochs": 1,
-        "max_epoch_size": 300,
+        "batch_size": 5,
+        "epochs": 3,
+        "max_epoch_size": 250,
         "seed": 1,
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
         "dlg_lr": 0.1,
@@ -44,19 +45,20 @@ if __name__ == '__main__':
     torch.manual_seed(parameter["seed"])
 
     # Initialising datasets
+    tt = torchvision.transforms.ToTensor()
     if parameter["dataset"] == "MNIST":
         parameter["shape_img"] = (28, 28)
         parameter["num_classes"] = 10
         parameter["channel"] = 1
-        train_dataset = datasets.MNIST('./datasets', train=True, download=True)
-        test_dataset = datasets.MNIST('./datasets', train=False, download=True)
+        train_dataset = datasets.MNIST('./datasets', train=True, download=True, transform=tt)
+        test_dataset = datasets.MNIST('./datasets', train=False, download=True, transform=tt)
         channel = 1
     elif parameter["dataset"] == 'CIFAR':
         parameter["shape_img"] = (32, 32)
         parameter["num_classes"] = 100
         parameter["channel"] = 3
-        train_dataset = datasets.CIFAR100('./datasets', train=True, download=True)
-        test_dataset = datasets.CIFAR100('./datasets', train=False, download=True)
+        train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt)
+        test_dataset = datasets.CIFAR100('./datasets', train=False, download=True, transform=tt)
     else:
         print("Unsupported dataset '" + parameter["dataset"] + "'")
         exit()
