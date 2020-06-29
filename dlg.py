@@ -46,7 +46,7 @@ def attack(model, train_dataset, parameter, device, improved):
     else:
         optimizer = torch.optim.LBFGS([dummy_data, ], lr=parameter["dlg_lr"])
         # predict label of dummy gradient
-        idlg_pred = torch.argmin(torch.sum(gradient[-2], dim=-1), dim=-1).detach().reshape((1,)).requires_grad_(
+        idlg_pred = torch.argmin(torch.sum(gradient_list[-2], dim=-1), dim=-1).detach().reshape((1,)).requires_grad_(
             False)
 
     res = Result(parameter)
@@ -70,9 +70,11 @@ def attack(model, train_dataset, parameter, device, improved):
             for gx, gy in zip(dummy_gradient, gradient_list):
                 grad_diff += ((gx - gy) ** 2).sum()
             grad_diff.backward()
+            res.add_loss(grad_diff)
             return grad_diff
 
         optimizer.step(closure)
+
 
         if iteration % parameter["log_interval"] == 0:
             res.add_snapshot(dummy_data.cpu().detach())

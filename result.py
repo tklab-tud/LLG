@@ -8,6 +8,7 @@ class Result:
         self.snapshots = []
         self.parameter = parameter
         self.mses = [[]]
+        self.losses = []
 
     def set_origin(self, batch, labels):
         self.origin_data = batch
@@ -15,6 +16,10 @@ class Result:
 
     def add_snapshot(self, batch):
         self.snapshots.append(batch)
+
+    def add_loss(self, loss):
+        self.losses.append(loss)
+
 
     def calc_mse(self):
         self.mses = np.zeros((len(self.snapshots), self.parameter["batch_size"]))
@@ -51,7 +56,7 @@ class Result:
         fig, subplots = plt.subplots(self.parameter["batch_size"], len(self.snapshots) + 1)
 
         # fix subplots returning obj instead of array at bs = 1
-        if self.parameter["batch_size"]:
+        if self.parameter["batch_size"]==1:
             subplots = [subplots]
 
         fig.set_size_inches((len(self.snapshots) + 1) * self.parameter["shape_img"][0] / 10,
@@ -71,6 +76,6 @@ class Result:
                                            self.parameter["shape_img"][1]).cpu().detach()
                 subplots[i_b][i_s + 1].imshow(images_batch, cmap='Greys_r')
                 subplots[i_b][i_s + 1].axis('off')
-                subplots[i_b][i_s + 1].title.set_text(str(self.mses[i_s][i_b])[:7])
+                subplots[i_b][i_s + 1].title.set_text("mse:{}\nloss:{}".format(str(self.mses[i_s][i_b])[:7], str(self.losses[i_s].item())[:7]))
 
         fig.show()

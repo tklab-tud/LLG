@@ -3,7 +3,7 @@ import datetime
 import torch
 from torchvision import datasets
 
-from dlg import dlg
+from dlg import dlg, idlg
 from net import Net
 from train import train
 
@@ -19,16 +19,16 @@ if __name__ == '__main__':
     # Parameters
 
     parameter = {
-        "log_interval": 2,
+        "log_interval": 5,
         "lr": 0.01,
         "dataset": "MNIST",
-        "batch_size": 1,
+        "batch_size": 3,
         "epochs": 1,
         "max_epoch_size": 300,
         "seed": 1,
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
         "dlg_lr": 0.1,
-        "dlg_iterations": 24,
+        "dlg_iterations": 30,
         "dlg_start_at": 100,
     }
 
