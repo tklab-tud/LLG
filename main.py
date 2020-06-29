@@ -22,7 +22,7 @@ if __name__ == '__main__':
         "log_interval": 2,
         "lr": 0.01,
         "dataset": "MNIST",
-        "batch_size": 5,
+        "batch_size": 1,
         "epochs": 1,
         "max_epoch_size": 300,
         "seed": 1,
@@ -81,7 +81,6 @@ if __name__ == '__main__':
 
     # dlg
     dlg_result = dlg(model, train_dataset, parameter, device)
-
     dlg_result.show()
 
     #####################################################

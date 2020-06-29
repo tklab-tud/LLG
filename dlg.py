@@ -11,6 +11,8 @@ The DLG and iDLG attack were taken and adapted from the repository linked in the
 https://arxiv.org/pdf/2001.02610.pdf
 https://github.com/PatrickZH/Improved-Deep-Leakage-from-Gradients
 """
+
+
 def attack(model, train_dataset, parameter, device, improved):
     # select attacked ids
     ids = np.random.permutation(len(train_dataset))[:parameter["batch_size"]]
@@ -31,7 +33,7 @@ def attack(model, train_dataset, parameter, device, improved):
     criterion = nn.CrossEntropyLoss().to(device)
     y = criterion(orig_out, orig_label)
     gradient = torch.autograd.grad(y, model.parameters())
-    gradient = list((_.detach().clone() for _ in gradient))
+    gradient_list = list((_.detach().clone() for _ in gradient))
 
     # prepare dummy data
     dummy_data = torch.rand((parameter["batch_size"], 1, parameter["shape_img"][0], parameter["shape_img"][1])).to(
@@ -55,17 +57,17 @@ def attack(model, train_dataset, parameter, device, improved):
         # clears gradients, computes loss, returns loss
         def closure():
             optimizer.zero_grad()
-            pred = model(dummy_data)
+            dummy_pred = model(dummy_data)
             if not improved:
                 dummy_loss = - torch.mean(
-                    torch.sum(torch.softmax(dummy_label, -1) * torch.log(torch.softmax(pred, -1)), dim=-1))
+                    torch.sum(torch.softmax(dummy_label, -1) * torch.log(torch.softmax(dummy_pred, -1)), dim=-1))
             else:
-                dummy_loss = criterion(pred, idlg_pred)
+                dummy_loss = criterion(dummy_pred, idlg_pred)
 
             dummy_gradient = torch.autograd.grad(dummy_loss, model.parameters(), create_graph=True)
 
             grad_diff = 0
-            for gx, gy in zip(dummy_gradient, gradient):
+            for gx, gy in zip(dummy_gradient, gradient_list):
                 grad_diff += ((gx - gy) ** 2).sum()
             grad_diff.backward()
             return grad_diff

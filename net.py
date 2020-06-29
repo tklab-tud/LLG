@@ -1,5 +1,6 @@
 import torch.nn as nn
 
+
 class Net(nn.Module):
     def __init__(self, parameter):
         super(Net, self).__init__()
@@ -33,4 +34,3 @@ class Net(nn.Module):
                 self.bias.data.uniform_(-0.5, 0.5)
         except Exception:
             print('warning: failed in weights_init for %s.bias' % self._get_name())
-

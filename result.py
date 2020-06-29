@@ -49,6 +49,11 @@ class Result:
         self.calc_mse()
 
         fig, subplots = plt.subplots(self.parameter["batch_size"], len(self.snapshots) + 1)
+
+        # fix subplots returning obj instead of array at bs = 1
+        if self.parameter["batch_size"]:
+            subplots = [subplots]
+
         fig.set_size_inches((len(self.snapshots) + 1) * self.parameter["shape_img"][0] / 10,
                             len(self.origin_data) * self.parameter["shape_img"][1] / 10)
 
