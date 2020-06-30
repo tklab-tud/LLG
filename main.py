@@ -7,6 +7,7 @@ from torchvision import datasets
 from dlg import dlg, idlg
 from net import Net
 from train import train
+from test import test
 
 if __name__ == '__main__':
     """
@@ -20,17 +21,17 @@ if __name__ == '__main__':
     # Parameters
 
     parameter = {
-        "log_interval": 5,
-        "lr": 0.1,
+        "log_interval": 20,
+        "lr": 0.01,
         "dataset": "MNIST",
-        "batch_size": 5,
-        "epochs": 3,
-        "max_epoch_size": 250,
+        "batch_size": 8,
+        "epochs": 1,
+        "max_epoch_size": 100,
+        "test_size": 1000,
         "seed": 1,
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
         "dlg_lr": 0.1,
-        "dlg_iterations": 30,
-        "dlg_start_at": 100,
+        "dlg_iterations": 200,
     }
 
     # Check CUDA
@@ -80,6 +81,7 @@ if __name__ == '__main__':
 
     # train x epochs
     train(model, train_dataset, parameter, device)
+    test(model, test_dataset, parameter, device)
 
     # dlg
     dlg_result = dlg(model, train_dataset, parameter, device)
