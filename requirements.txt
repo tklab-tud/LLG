@@ -45,3 +45,4 @@ urllib3==1.25.9
 websocket-client==0.57.0
 websockets==8.1
 Werkzeug==1.0.1
+opencv-python==4.2.0.34

@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-
+import torch
+import cv2
 
 class Result:
 
@@ -24,7 +25,7 @@ class Result:
     def calc_mse(self):
         self.mses = np.zeros((len(self.snapshots), self.parameter["batch_size"]))
         for i_s, s in enumerate(self.snapshots):
-            self.mses[i_s] = np.squeeze(self.mse(self.origin_data, s))
+            self.mses[i_s] = np.squeeze(torch.sum(self.mse(self.origin_data, s)))
 
     def mse(self, a, b):
         mse = (a - b)
@@ -44,7 +45,7 @@ class Result:
             err = []
             for i_r in range(self.parameter["batch_size"]):
                 recreation = self.snapshots[-1][i_r]
-                err.append(self.mse(orig, recreation))
+                err.append(torch.sum(self.mse(orig, recreation)))
 
             if np.argmin(err) != i_o:
                 self.swap_samples_in_snapshots(np.argmin(err), i_o)
@@ -56,7 +57,7 @@ class Result:
         fig, subplots = plt.subplots(self.parameter["batch_size"], len(self.snapshots) + 1)
 
         # fix subplots returning obj instead of array at bs = 1
-        if self.parameter["batch_size"]==1:
+        if self.parameter["batch_size"] == 1:
             subplots = [subplots]
 
         fig.set_size_inches((len(self.snapshots) + 1) * self.parameter["shape_img"][0] / 10,
@@ -64,17 +65,28 @@ class Result:
 
         for i_b in range(self.parameter["batch_size"]):
             # original
-            orig = self.origin_data[i_b].view(self.parameter["shape_img"][0],
-                                              self.parameter["shape_img"][1]).cpu().detach()
-            subplots[i_b][0].imshow(orig, cmap='Greys_r')
+            orig = np.squeeze(self.origin_data[i_b].numpy())
+
+            if self.parameter["channel"] == 1:
+                subplots[i_b][0].imshow(orig, cmap="Greys_r")
+            elif self.parameter["channel"] == 3:
+                rgb_img = cv2.merge([orig[0], orig[1], orig[2]])
+                subplots[i_b][0].imshow(rgb_img)
+
+
             subplots[i_b][0].axis('off')
             subplots[i_b][0].title.set_text("Label: {}".format(self.origin_labels.cpu().detach().numpy()[i_b]))
 
             # recreations
             for i_s, s in enumerate(self.snapshots):
-                images_batch = s[i_b].view(self.parameter["shape_img"][0],
-                                           self.parameter["shape_img"][1]).cpu().detach()
-                subplots[i_b][i_s + 1].imshow(images_batch, cmap='Greys_r')
+                images_batch = np.squeeze(s[i_b].numpy())
+
+                if self.parameter["channel"] == 1:
+                    subplots[i_b][i_s + 1].imshow(images_batch, cmap="Greys_r")
+                elif self.parameter["channel"] == 3:
+                    rgb_img = cv2.merge([images_batch[0], images_batch[1], images_batch[2]])
+                    subplots[i_b][i_s + 1].imshow(rgb_img)
+
                 subplots[i_b][i_s + 1].axis('off')
                 subplots[i_b][i_s + 1].title.set_text("mse:{}\nloss:{}".format(str(self.mses[i_s][i_b])[:7], str(self.losses[i_s].item())[:7]))
 

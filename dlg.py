@@ -18,7 +18,7 @@ def attack(model, train_dataset, parameter, device, improved):
     ids = np.random.permutation(len(train_dataset))[:parameter["batch_size"]]
 
     # prepare attacked batch (orig)
-    orig_data = torch.Tensor(parameter["batch_size"], 1, parameter["shape_img"][0], parameter["shape_img"][1]).to(
+    orig_data = torch.Tensor(parameter["batch_size"], parameter["channel"], parameter["shape_img"][0], parameter["shape_img"][1]).to(
         device)
     orig_label = torch.Tensor(parameter["batch_size"])
     orig_label = orig_label.long().to(device)
@@ -36,7 +36,7 @@ def attack(model, train_dataset, parameter, device, improved):
     gradient_list = list((_.detach().clone() for _ in gradient))
 
     # prepare dummy data
-    dummy_data = torch.rand((parameter["batch_size"], 1, parameter["shape_img"][0], parameter["shape_img"][1])).to(
+    dummy_data = torch.rand((parameter["batch_size"], parameter["channel"], parameter["shape_img"][0], parameter["shape_img"][1])).to(
         device).requires_grad_(True)
     dummy_label = torch.randn((parameter["batch_size"], parameter["num_classes"])).to(device).requires_grad_(True)
 

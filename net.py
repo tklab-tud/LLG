@@ -7,6 +7,7 @@ class Net(nn.Module):
     def __init__(self, parameter):
         super(Net, self).__init__()
         act = nn.Sigmoid
+        self.parameter = parameter
 
         self.body = nn.Sequential(
             nn.Conv2d(parameter["channel"], 12, kernel_size=5, padding=5 // 2, stride=2),
@@ -17,12 +18,12 @@ class Net(nn.Module):
             act(),
         )
         self.fc = nn.Sequential(
-            nn.Linear(588, parameter["num_classes"])
+            nn.Linear(parameter["hidden"], parameter["num_classes"])
         )
 
     def forward(self, x):
         x = self.body(x)
-        x = x.view(x.size(0), -1)
+        x = x.view(self.parameter["batch_size"], -1)
         x = self.fc(x)
         return x
 

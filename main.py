@@ -8,6 +8,7 @@ from dlg import dlg, idlg
 from net import Net
 from train import train
 from test import test
+import cv2
 
 if __name__ == '__main__':
     """
@@ -21,17 +22,17 @@ if __name__ == '__main__':
     # Parameters
 
     parameter = {
-        "log_interval": 20,
+        "log_interval": 10,
         "lr": 0.01,
-        "dataset": "MNIST",
-        "batch_size": 8,
+        "dataset": "CIFAR",
+        "batch_size": 2,
         "epochs": 1,
         "max_epoch_size": 100,
         "test_size": 1000,
         "seed": 1,
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
         "dlg_lr": 0.1,
-        "dlg_iterations": 200,
+        "dlg_iterations": 30,
     }
 
     # Check CUDA
@@ -51,6 +52,7 @@ if __name__ == '__main__':
         parameter["shape_img"] = (28, 28)
         parameter["num_classes"] = 10
         parameter["channel"] = 1
+        parameter["hidden"] = 588
         train_dataset = datasets.MNIST('./datasets', train=True, download=True, transform=tt)
         test_dataset = datasets.MNIST('./datasets', train=False, download=True, transform=tt)
         channel = 1
@@ -58,6 +60,7 @@ if __name__ == '__main__':
         parameter["shape_img"] = (32, 32)
         parameter["num_classes"] = 100
         parameter["channel"] = 3
+        parameter["hidden"] = 768
         train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt)
         test_dataset = datasets.CIFAR100('./datasets', train=False, download=True, transform=tt)
     else:
@@ -80,8 +83,8 @@ if __name__ == '__main__':
     ######################################################
 
     # train x epochs
-    train(model, train_dataset, parameter, device)
-    test(model, test_dataset, parameter, device)
+    #train(model, train_dataset, parameter, device)
+    #test(model, test_dataset, parameter, device)
 
     # dlg
     dlg_result = dlg(model, train_dataset, parameter, device)
