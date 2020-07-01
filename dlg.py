@@ -75,9 +75,10 @@ def attack(model, train_dataset, parameter, device, improved):
 
         optimizer.step(closure)
         current_loss = closure().item()
-        print("Current_loss: {0:.8f} ".format(current_loss))
+
 
         if iteration % parameter["log_interval"] == 0:
+            print(iteration, 'loss = %.8f' % current_loss)
             res.add_snapshot(dummy_data.cpu().detach())
 
         #if current_loss < parameter["dlg_convergence"]:  # converge
