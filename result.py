@@ -88,6 +88,6 @@ class Result:
                     subplots[i_b][i_s + 1].imshow(rgb_img)
 
                 subplots[i_b][i_s + 1].axis('off')
-                subplots[i_b][i_s + 1].title.set_text("mse:{}\nloss:{}".format(str(self.mses[i_s][i_b])[:7], str(self.losses[i_s].item())[:7]))
+                subplots[i_b][i_s + 1].title.set_text("mse:{0:.8f}\nloss:{0:.8f}".format(self.mses[i_s][i_b], self.losses[i_s].item()))
 
         fig.show()

@@ -24,15 +24,16 @@ if __name__ == '__main__':
     parameter = {
         "log_interval": 10,
         "lr": 0.01,
-        "dataset": "CIFAR",
-        "batch_size": 2,
+        "dataset": "MNIST",
+        "batch_size": 1,
         "epochs": 1,
         "max_epoch_size": 100,
         "test_size": 1000,
-        "seed": 1,
+        "seed": 0,
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
-        "dlg_lr": 0.1,
-        "dlg_iterations": 30,
+        "dlg_lr": 1,
+        "dlg_iterations": 100,
+        #"dlg_convergence": 0.00000001
     }
 
     # Check CUDA

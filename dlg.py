@@ -36,7 +36,7 @@ def attack(model, train_dataset, parameter, device, improved):
     gradient_list = list((_.detach().clone() for _ in gradient))
 
     # prepare dummy data
-    dummy_data = torch.rand((parameter["batch_size"], parameter["channel"], parameter["shape_img"][0], parameter["shape_img"][1])).to(
+    dummy_data = torch.randn((parameter["batch_size"], parameter["channel"], parameter["shape_img"][0], parameter["shape_img"][1])).to(
         device).requires_grad_(True)
     dummy_label = torch.randn((parameter["batch_size"], parameter["num_classes"])).to(device).requires_grad_(True)
 
@@ -74,10 +74,14 @@ def attack(model, train_dataset, parameter, device, improved):
             return grad_diff
 
         optimizer.step(closure)
-
+        current_loss = closure().item()
+        print("Current_loss: {0:.8f} ".format(current_loss))
 
         if iteration % parameter["log_interval"] == 0:
             res.add_snapshot(dummy_data.cpu().detach())
+
+        #if current_loss < parameter["dlg_convergence"]:  # converge
+        #    break
 
     return res
 
