@@ -14,11 +14,12 @@ https://github.com/PatrickZH/Improved-Deep-Leakage-from-Gradients
 
 
 def attack(model, train_dataset, parameter, device, improved):
-    # select attacked ids
+    # select attacked ids randomly
     ids = np.random.permutation(len(train_dataset))[:parameter["batch_size"]]
 
     # prepare attacked batch (orig)
-    orig_data = torch.Tensor(parameter["batch_size"], parameter["channel"], parameter["shape_img"][0], parameter["shape_img"][1]).to(
+    orig_data = torch.Tensor(parameter["batch_size"], parameter["channel"], parameter["shape_img"][0],
+                             parameter["shape_img"][1]).to(
         device)
     orig_label = torch.Tensor(parameter["batch_size"])
     orig_label = orig_label.long().to(device)
@@ -36,7 +37,8 @@ def attack(model, train_dataset, parameter, device, improved):
     gradient_list = list((_.detach().clone() for _ in gradient))
 
     # prepare dummy data
-    dummy_data = torch.randn((parameter["batch_size"], parameter["channel"], parameter["shape_img"][0], parameter["shape_img"][1])).to(
+    dummy_data = torch.randn(
+        (parameter["batch_size"], parameter["channel"], parameter["shape_img"][0], parameter["shape_img"][1])).to(
         device).requires_grad_(True)
     dummy_label = torch.randn((parameter["batch_size"], parameter["num_classes"])).to(device).requires_grad_(True)
 
@@ -46,8 +48,52 @@ def attack(model, train_dataset, parameter, device, improved):
     else:
         optimizer = torch.optim.LBFGS([dummy_data, ], lr=parameter["dlg_lr"])
         # predict label of dummy gradient
-        idlg_pred = torch.argmin(torch.sum(gradient_list[-2], dim=-1), dim=-1).detach().reshape((1,)).requires_grad_(
-            False)
+
+        # classic way
+        # idlg_pred = torch.argmin(torch.sum(gradient_list[-2], dim=-1), dim=-1).detach().reshape((1,)).requires_grad_(False)
+
+        # new way
+        gradients_for_prediction = torch.sum(gradient_list[-2], dim=-1).clone()
+        candidates = []
+        idlg_pred = []
+        mean = 0
+
+        #filter negative values
+        for i_cg, class_gradient in enumerate(gradients_for_prediction):
+            if class_gradient < 0:
+                candidates.append((i_cg, class_gradient))
+                mean += class_gradient
+
+        #mean value
+        mean /= parameter["batch_size"]
+
+        #save predictions
+        for (i_c , _) in candidates:
+            idlg_pred.append(i_c)
+
+        #predict the rest
+        for _ in range(parameter["batch_size"] - len(idlg_pred)):
+            #add minimal candidat, likely to be doubled, to prediction
+            min = (0, 0)
+            min_id = 0
+            for (i, tuple) in enumerate(candidates):
+                if tuple[1]< min[1]:
+                    min = tuple
+                    min_id = i
+
+            idlg_pred.append(min[0])
+
+            #add the mean value of one accurance to the candidate
+            candidates[min_id] = (min[0], candidates[min_id][1].add(-mean))
+
+
+        #Convert into tensor
+        idlg_pred=torch.Tensor(idlg_pred).long().to(device)
+        pred_str = idlg_pred.data.tolist()
+        pred_str.sort()
+        orig_str = orig_label.data.tolist()
+        orig_str.sort()
+        print("Predicted: \t{}\nOrignal:\t{}".format(pred_str, orig_str))
 
     res = Result(parameter)
     res.set_origin(orig_data.cpu().detach(), orig_label)
@@ -76,12 +122,11 @@ def attack(model, train_dataset, parameter, device, improved):
         optimizer.step(closure)
         current_loss = closure().item()
 
-
         if iteration % parameter["log_interval"] == 0:
             print(iteration, 'loss = %.8f' % current_loss)
             res.add_snapshot(dummy_data.cpu().detach())
 
-        #if current_loss < parameter["dlg_convergence"]:  # converge
+        # if current_loss < parameter["dlg_convergence"]:  # converge
         #    break
 
     return res

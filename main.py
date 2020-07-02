@@ -88,7 +88,7 @@ if __name__ == '__main__':
     #test(model, test_dataset, parameter, device)
 
     # dlg
-    dlg_result = dlg(model, train_dataset, parameter, device)
+    dlg_result = idlg(model, train_dataset, parameter, device)
     dlg_result.show()
 
     #####################################################
