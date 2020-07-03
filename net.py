@@ -23,26 +23,27 @@ class Net(nn.Module):
 
     def forward(self, x):
         x = self.body(x)
-        x = x.view(self.parameter["batch_size"], -1)
+        x = x.view(x.size(0), -1)
         x = self.fc(x)
         return x
 
-    def weights_init(self):
-        try:
-            if hasattr(self, "weight"):
-                self.weight.data.uniform_(-0.5, 0.5)
-        except Exception:
-            print('warning: failed in weights_init for %s.weight' % self._get_name())
-        try:
-            if hasattr(self, "bias"):
-                self.bias.data.uniform_(-0.5, 0.5)
-        except Exception:
-            print('warning: failed in weights_init for %s.bias' % self._get_name())
+def weights_init(m):
+    try:
+        if hasattr(m, "weight"):
+            m.weight.data.uniform_(-0.5, 0.5)
+    except Exception:
+        print('warning: failed in weights_init for %s.weight' % m._get_name())
+    try:
+        if hasattr(m, "bias"):
+            m.bias.data.uniform_(-0.5, 0.5)
+    except Exception:
+        print('warning: failed in weights_init for %s.bias' % m._get_name())
 
 
 class Net2(nn.Module):
-    def __init__(self):
+    def __init__(self, parameter):
         super(Net2, self).__init__()
+        self.parameter = parameter
         self.conv1 = nn.Conv2d(1, 32, 3, 1)
         self.conv2 = nn.Conv2d(32, 64, 3, 1)
         self.dropout1 = nn.Dropout2d(0.25)

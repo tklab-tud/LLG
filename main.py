@@ -5,7 +5,7 @@ import torchvision
 from torchvision import datasets
 
 from dlg import dlg, idlg
-from net import Net
+from net import Net, weights_init
 from train import train
 from test import test
 import cv2
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     # Parameters
 
     parameter = {
-        "log_interval": 10,
+        "log_interval": 1,
         "lr": 0.01,
         "dataset": "MNIST",
         "batch_size": 1,
@@ -32,7 +32,7 @@ if __name__ == '__main__':
         "seed": 0,
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
         "dlg_lr": 1,
-        "dlg_iterations": 100,
+        "dlg_iterations": 30,
         #"dlg_convergence": 0.00000001
     }
 
@@ -78,7 +78,7 @@ if __name__ == '__main__':
 
     # prepare the model
     model = Net(parameter)
-    model.weights_init()
+    model.apply(weights_init)
     model = model.to(device)
 
     ######################################################
