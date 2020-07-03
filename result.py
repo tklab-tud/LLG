@@ -1,7 +1,8 @@
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-import cv2
+
 
 class Result:
 
@@ -21,7 +22,6 @@ class Result:
     def add_loss(self, loss):
         self.losses.append(loss)
 
-
     def calc_mse(self):
         self.mses = np.zeros((len(self.snapshots), self.parameter["batch_size"]))
         for i_s, s in enumerate(self.snapshots):
@@ -34,21 +34,44 @@ class Result:
         mse = mse / (self.parameter["shape_img"][0] * self.parameter["shape_img"][1])
         return mse
 
-    def swap_samples_in_snapshots(self, a, b):
-        for snap in self.snapshots:
-            tmp = snap[a].clone()
-            snap[a] = snap[b]
-            snap[b] = tmp
+    def realign_snapshops(self, alignment):
+        #make a temporary copy
+        tmp = [x.clone() for x in self.snapshots]
+
+        # fix one row after another to be correct aligned
+        for i_orig, i_reco in enumerate(alignment):
+            # fix the row by going through every snapshot at the position of the row
+            for i_s, snap in enumerate(self.snapshots):
+                snap[i_orig] = tmp[i_s][i_reco]
+
+
 
     def fix_snapshot_order(self):
+        #fill the mse matrix
+        err = [[1 for x in range(self.parameter["batch_size"])] for x in range(self.parameter["batch_size"])]
         for i_o, orig in enumerate(self.origin_data):
-            err = []
-            for i_r in range(self.parameter["batch_size"]):
-                recreation = self.snapshots[-1][i_r]
-                err.append(torch.sum(self.mse(orig, recreation)))
+            for i_b in range(self.parameter["batch_size"]):
+                err[i_o][i_b] = torch.sum(self.mse(orig, self.snapshots[-1][i_b]))
 
-            if np.argmin(err) != i_o:
-                self.swap_samples_in_snapshots(np.argmin(err), i_o)
+        alignment = [1 for x in range(self.parameter["batch_size"])]
+
+        for _ in range(self.parameter["batch_size"]):
+            # find best alignment
+            max_orig = torch.Tensor(err).argmin() // self.parameter["batch_size"]
+            max_reco = torch.Tensor(err).argmin() % self.parameter["batch_size"]
+            max_reco = max_reco.data.item()
+            alignment[max_orig] = max_reco
+
+            # purge column
+            for orig in range(self.parameter["batch_size"]):
+                err[orig][max_reco] = torch.Tensor([1])
+
+            # purge row
+            for reco in range(self.parameter["batch_size"]):
+                err[max_orig][reco] = torch.Tensor([1])
+
+        self.realign_snapshops(alignment)
+
 
     def show(self):
         self.fix_snapshot_order()
@@ -73,7 +96,6 @@ class Result:
                 rgb_img = cv2.merge([orig[0], orig[1], orig[2]])
                 subplots[i_b][0].imshow(rgb_img)
 
-
             subplots[i_b][0].axis('off')
             subplots[i_b][0].title.set_text("Label: {}".format(self.origin_labels.cpu().detach().numpy()[i_b]))
 
@@ -88,6 +110,7 @@ class Result:
                     subplots[i_b][i_s + 1].imshow(rgb_img)
 
                 subplots[i_b][i_s + 1].axis('off')
-                subplots[i_b][i_s + 1].title.set_text("mse:{:.8f}\nloss:{:.8f}".format(self.mses[i_s][i_b], self.losses[i_s].item()))
+                subplots[i_b][i_s + 1].title.set_text(
+                    "mse:{:.8f}\nloss:{:.8f}".format(self.mses[i_s][i_b], self.losses[i_s].item()))
 
         fig.show()

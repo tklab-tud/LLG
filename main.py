@@ -18,14 +18,14 @@ if __name__ == '__main__':
         "dataset": "MNIST",
         "batch_size": 4,
         "model": 1,
-        "log_interval": 2,
+        "log_interval": 5,
         "use_seed": True,
         "seed": 0,
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
 
         # Attack settings
-        "dlg_lr": 0.2,
-        "dlg_iterations": 20,
+        "dlg_lr": 0.3,
+        "dlg_iterations": 50,
         "prediction": "simplified",
         "improved": True,
 
