@@ -90,9 +90,6 @@ def attack(model, train_dataset, parameter, device, improved):
             print(iteration, 'loss = %.8f' % current_loss)
             res.add_snapshot(dummy_data.cpu().detach())
 
-        # if current_loss < parameter["dlg_convergence"]:  # converge
-        #    break
-
     return res
 
 

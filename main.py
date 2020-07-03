@@ -14,21 +14,27 @@ if __name__ == '__main__':
 
     # Parameters
     parameter = {
-        "log_interval": 2,
-        "lr": 0.1,
+        #General settings
         "dataset": "MNIST",
         "batch_size": 8,
+        "model": 1,
+        "log_interval": 2,
+        "use_seed": True,
+        "seed": 0,
+        "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
+
+        #Attack settings
+        "dlg_lr": 1,
+        "dlg_iterations": 20,
+        "prediction": "simplified",
+        "improved": True,
+
+        #Pretrain settings
+        "pretrain": False,
+        "lr": 0.1,
         "epochs": 1,
         "max_epoch_size": 1000,
         "test_size": 1000,
-        "seed": 0,
-        "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
-        "dlg_lr": 1,
-        "dlg_iterations": 20,
-        "model": 1,
-        "prediction": "simplified",
-        "improved": True
-        #"dlg_convergence": 0.00000001
     }
 
     # Check CUDA
@@ -40,8 +46,9 @@ if __name__ == '__main__':
         exit()
 
     # Setting Torch Seed
-    torch.manual_seed(parameter["seed"])
-    numpy.random.seed(parameter["seed"])
+    if parameter["use_seed"]:
+        torch.manual_seed(parameter["seed"])
+        numpy.random.seed(parameter["seed"])
 
     # Initialising datasets
     tt = torchvision.transforms.ToTensor()
@@ -87,12 +94,15 @@ if __name__ == '__main__':
     ######################################################
 
     # pretrain model
-    #train(model, train_dataset, parameter, device)
-    #test(model, test_dataset, parameter, device)
+    if parameter["pretrain"]:
+        train(model, train_dataset, parameter, device)
+        test(model, test_dataset, parameter, device)
 
     # dlg
     dlg_result = attack(model, train_dataset, parameter, device, parameter["improved"])
     dlg_result.show()
+    #dlg_result.store(parameter["result_path"])
+
 
     #####################################################
 
