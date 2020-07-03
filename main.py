@@ -5,7 +5,7 @@ import torchvision
 from torchvision import datasets
 
 from dlg import dlg, idlg
-from net import Net, weights_init
+from net import Net, Net2, weights_init
 from train import train
 from test import test
 import cv2
@@ -22,17 +22,17 @@ if __name__ == '__main__':
     # Parameters
 
     parameter = {
-        "log_interval": 1,
-        "lr": 0.01,
-        "dataset": "MNIST",
+        "log_interval": 2,
+        "lr": 0.1,
+        "dataset": "CIFAR",
         "batch_size": 1,
         "epochs": 1,
-        "max_epoch_size": 100,
+        "max_epoch_size": 1000,
         "test_size": 1000,
         "seed": 0,
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
         "dlg_lr": 1,
-        "dlg_iterations": 30,
+        "dlg_iterations": 10,
         #"dlg_convergence": 0.00000001
     }
 
@@ -54,6 +54,7 @@ if __name__ == '__main__':
         parameter["num_classes"] = 10
         parameter["channel"] = 1
         parameter["hidden"] = 588
+        parameter["hidden2"] = 9216
         train_dataset = datasets.MNIST('./datasets', train=True, download=True, transform=tt)
         test_dataset = datasets.MNIST('./datasets', train=False, download=True, transform=tt)
         channel = 1
@@ -62,6 +63,7 @@ if __name__ == '__main__':
         parameter["num_classes"] = 100
         parameter["channel"] = 3
         parameter["hidden"] = 768
+        parameter["hidden2"] = 12544
         train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt)
         test_dataset = datasets.CIFAR100('./datasets', train=False, download=True, transform=tt)
     else:
@@ -77,8 +79,8 @@ if __name__ == '__main__':
         print("{}: {}".format(entry, parameter[entry]))
 
     # prepare the model
-    model = Net(parameter)
-    model.apply(weights_init)
+    model = Net2(parameter)
+    #model.apply(weights_init)
     model = model.to(device)
 
     ######################################################
