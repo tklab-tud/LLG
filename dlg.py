@@ -1,10 +1,9 @@
 import numpy as np
 import torch
 import torch.nn as nn
-from torchvision import transforms
 
-from result import Result
 from prediction import prediction
+from result import Result
 
 """ 
 The DLG and iDLG attack were taken and adapted from the repository linked in the original paper:

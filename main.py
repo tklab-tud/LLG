@@ -1,20 +1,20 @@
 import datetime
 
+import numpy
 import torch
 import torchvision
 from torchvision import datasets
 
-import numpy
-from dlg import dlg, idlg, attack
+from dlg import attack
 from net import Net1, Net2, weights_init
-from train import train
 from test import test
+from train import train
 
 if __name__ == '__main__':
 
     # Parameters
     parameter = {
-        #General settings
+        # General settings
         "dataset": "MNIST",
         "batch_size": 8,
         "model": 1,
@@ -23,13 +23,13 @@ if __name__ == '__main__':
         "seed": 0,
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
 
-        #Attack settings
+        # Attack settings
         "dlg_lr": 1,
         "dlg_iterations": 20,
         "prediction": "simplified",
         "improved": True,
 
-        #Pretrain settings
+        # Pretrain settings
         "pretrain": False,
         "lr": 0.1,
         "epochs": 1,
@@ -82,12 +82,11 @@ if __name__ == '__main__':
         print("{}: {}".format(entry, parameter[entry]))
 
     # prepare the model
-    if parameter["model"]==1:
+    if parameter["model"] == 1:
         model = Net1(parameter)
         model.apply(weights_init)
-    elif parameter["model"]==2:
+    elif parameter["model"] == 2:
         model = Net2(parameter)
-
 
     model = model.to(device)
 
@@ -101,8 +100,7 @@ if __name__ == '__main__':
     # dlg
     dlg_result = attack(model, train_dataset, parameter, device, parameter["improved"])
     dlg_result.show()
-    #dlg_result.store(parameter["result_path"])
-
+    # dlg_result.store(parameter["result_path"])
 
     #####################################################
 
