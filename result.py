@@ -25,7 +25,7 @@ class Result:
     def calc_mse(self):
         self.mses = np.zeros((len(self.snapshots), self.parameter["batch_size"]))
         for i_s, s in enumerate(self.snapshots):
-            self.mses[i_s] = np.squeeze(torch.sum(self.mse(self.origin_data, s)))
+            self.mses[i_s] = np.squeeze(self.mse(self.origin_data, s))
 
     def mse(self, a, b):
         mse = (a - b)
@@ -88,6 +88,6 @@ class Result:
                     subplots[i_b][i_s + 1].imshow(rgb_img)
 
                 subplots[i_b][i_s + 1].axis('off')
-                subplots[i_b][i_s + 1].title.set_text("mse:{0:.8f}\nloss:{0:.8f}".format(self.mses[i_s][i_b], self.losses[i_s].item()))
+                subplots[i_b][i_s + 1].title.set_text("mse:{:.8f}\nloss:{:.8f}".format(self.mses[i_s][i_b], self.losses[i_s].item()))
 
         fig.show()

@@ -16,7 +16,7 @@ if __name__ == '__main__':
     parameter = {
         # General settings
         "dataset": "MNIST",
-        "batch_size": 8,
+        "batch_size": 4,
         "model": 1,
         "log_interval": 2,
         "use_seed": True,
@@ -24,7 +24,7 @@ if __name__ == '__main__':
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
 
         # Attack settings
-        "dlg_lr": 1,
+        "dlg_lr": 0.2,
         "dlg_iterations": 20,
         "prediction": "simplified",
         "improved": True,
