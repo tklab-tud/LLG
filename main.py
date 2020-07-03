@@ -4,6 +4,7 @@ import torch
 import torchvision
 from torchvision import datasets
 
+import numpy
 from dlg import dlg, idlg
 from net import Net1, Net2, weights_init
 from train import train
@@ -11,20 +12,12 @@ from test import test
 import cv2
 
 if __name__ == '__main__':
-    """
-    # get the arguments
-    args = vars(ap.parse_args())
-    argstr = "arg"
-    for arg in args:
-        argstr += ("_" + str(args[arg]))
-    """
 
     # Parameters
-
     parameter = {
-        "log_interval": 6,
+        "log_interval": 2,
         "lr": 0.1,
-        "dataset": "CIFAR",
+        "dataset": "MNIST",
         "batch_size": 1,
         "epochs": 1,
         "max_epoch_size": 1000,
@@ -32,8 +25,9 @@ if __name__ == '__main__':
         "seed": 0,
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
         "dlg_lr": 1,
-        "dlg_iterations": 30,
-        "model": 1
+        "dlg_iterations": 20,
+        "model": 1,
+        "prediction": "simplified"
         #"dlg_convergence": 0.00000001
     }
 
@@ -47,6 +41,7 @@ if __name__ == '__main__':
 
     # Setting Torch Seed
     torch.manual_seed(parameter["seed"])
+    numpy.random.seed(parameter["seed"])
 
     # Initialising datasets
     tt = torchvision.transforms.ToTensor()
@@ -91,7 +86,7 @@ if __name__ == '__main__':
 
     ######################################################
 
-    # train x epochs
+    # pretrain model
     #train(model, train_dataset, parameter, device)
     #test(model, test_dataset, parameter, device)
 
