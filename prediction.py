@@ -62,17 +62,11 @@ def prediction(parameter, gradient_list, model, orig_data, orig_label, device):
         # predict the rest
         for _ in range(parameter["batch_size"] - len(idlg_pred)):
             # add minimal candidat, likely to be doubled, to prediction
-            min = (0, 0)
-            min_id = 0
-            for (i, tuple) in enumerate(candidates):
-                if tuple[1] < min[1]:
-                    min = tuple
-                    min_id = i
-
-            idlg_pred.append(min[0])
+            min_id = torch.argmin(gradients_for_prediction)
+            idlg_pred.append(min_id)
 
             # add the mean value of one accurance to the candidate
-            candidates[min_id] = (min[0], candidates[min_id][1].add(-mean))
+            gradients_for_prediction[min_id] = gradients_for_prediction[min_id].add(-mean)
 
 
     return idlg_pred

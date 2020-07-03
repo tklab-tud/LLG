@@ -5,11 +5,10 @@ import torchvision
 from torchvision import datasets
 
 import numpy
-from dlg import dlg, idlg
+from dlg import dlg, idlg, attack
 from net import Net1, Net2, weights_init
 from train import train
 from test import test
-import cv2
 
 if __name__ == '__main__':
 
@@ -18,7 +17,7 @@ if __name__ == '__main__':
         "log_interval": 2,
         "lr": 0.1,
         "dataset": "MNIST",
-        "batch_size": 1,
+        "batch_size": 8,
         "epochs": 1,
         "max_epoch_size": 1000,
         "test_size": 1000,
@@ -27,7 +26,8 @@ if __name__ == '__main__':
         "dlg_lr": 1,
         "dlg_iterations": 20,
         "model": 1,
-        "prediction": "simplified"
+        "prediction": "simplified",
+        "improved": True
         #"dlg_convergence": 0.00000001
     }
 
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     #test(model, test_dataset, parameter, device)
 
     # dlg
-    dlg_result = idlg(model, train_dataset, parameter, device)
+    dlg_result = attack(model, train_dataset, parameter, device, parameter["improved"])
     dlg_result.show()
 
     #####################################################
