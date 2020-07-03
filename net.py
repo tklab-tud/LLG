@@ -3,9 +3,9 @@ import torch
 import torch.nn.functional as F
 
 
-class Net(nn.Module):
+class Net1(nn.Module):
     def __init__(self, parameter):
-        super(Net, self).__init__()
+        super(Net1, self).__init__()
         act = nn.Sigmoid
         self.parameter = parameter
 

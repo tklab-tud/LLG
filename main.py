@@ -5,7 +5,7 @@ import torchvision
 from torchvision import datasets
 
 from dlg import dlg, idlg
-from net import Net, Net2, weights_init
+from net import Net1, Net2, weights_init
 from train import train
 from test import test
 import cv2
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     # Parameters
 
     parameter = {
-        "log_interval": 2,
+        "log_interval": 6,
         "lr": 0.1,
         "dataset": "CIFAR",
         "batch_size": 1,
@@ -32,7 +32,8 @@ if __name__ == '__main__':
         "seed": 0,
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
         "dlg_lr": 1,
-        "dlg_iterations": 10,
+        "dlg_iterations": 30,
+        "model": 1
         #"dlg_convergence": 0.00000001
     }
 
@@ -79,8 +80,13 @@ if __name__ == '__main__':
         print("{}: {}".format(entry, parameter[entry]))
 
     # prepare the model
-    model = Net2(parameter)
-    #model.apply(weights_init)
+    if parameter["model"]==1:
+        model = Net1(parameter)
+        model.apply(weights_init)
+    elif parameter["model"]==2:
+        model = Net2(parameter)
+
+
     model = model.to(device)
 
     ######################################################
