@@ -68,5 +68,14 @@ def prediction(parameter, gradient_list, model, orig_data, orig_label, device):
             # add the mean value of one accurance to the candidate
             gradients_for_prediction[min_id] = gradients_for_prediction[min_id].add(-mean)
 
+    #convert to tensor
+    idlg_pred = torch.Tensor(idlg_pred).long().to(device)
+
+    #print
+    pred_str = idlg_pred.data.tolist()
+    pred_str.sort()
+    orig_str = orig_label.data.tolist()
+    orig_str.sort()
+    print("Predicted: \t{}\nOrignal:\t{}".format(pred_str, orig_str))
 
     return idlg_pred

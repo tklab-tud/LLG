@@ -50,13 +50,7 @@ def attack(model, train_dataset, parameter, device, improved):
         # predict label of dummy gradient
         idlg_pred = prediction(parameter, gradient_list, model, orig_data, orig_label, device)
 
-        # Convert into tensor
-        idlg_pred = torch.Tensor(idlg_pred).long().to(device)
-        pred_str = idlg_pred.data.tolist()
-        pred_str.sort()
-        orig_str = orig_label.data.tolist()
-        orig_str.sort()
-        print("Predicted: \t{}\nOrignal:\t{}".format(pred_str, orig_str))
+
 
     res = Result(parameter)
     res.set_origin(orig_data.cpu().detach(), orig_label)
