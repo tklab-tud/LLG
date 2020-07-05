@@ -50,10 +50,8 @@ def attack(model, train_dataset, parameter, device, improved):
         # predict label of dummy gradient
         idlg_pred = prediction(parameter, gradient_list, model, orig_data, orig_label, device)
 
-
-
     res = Result(parameter)
-    res.set_origin(orig_data.cpu().detach(), orig_label)
+    res.set_origin(orig_data.cpu().detach().numpy(), orig_label.cpu().detach().numpy())
 
     for iteration in range(parameter["dlg_iterations"]):
 
@@ -73,7 +71,7 @@ def attack(model, train_dataset, parameter, device, improved):
             for gx, gy in zip(dummy_gradient, gradient_list):
                 grad_diff += ((gx - gy) ** 2).sum()
             grad_diff.backward()
-            res.add_loss(grad_diff)
+            res.add_loss(grad_diff.item())
             return grad_diff
 
         optimizer.step(closure)
@@ -81,7 +79,7 @@ def attack(model, train_dataset, parameter, device, improved):
 
         if iteration % parameter["log_interval"] == 0:
             print(iteration, 'loss = %.8f' % current_loss)
-            res.add_snapshot(dummy_data.cpu().detach())
+            res.add_snapshot(dummy_data.cpu().detach().numpy())
 
     return res
 

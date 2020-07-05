@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
+
 from net import Net1, Net2, weights_init
+
 
 def prediction(parameter, gradient_list, model, orig_data, orig_label, device):
     idlg_pred = []
@@ -16,7 +18,7 @@ def prediction(parameter, gradient_list, model, orig_data, orig_label, device):
 
     # Simplified Way as described in the paper
     elif parameter["prediction"] == "simplified":
-        #creating bs 1 model for single prediction
+        # creating bs 1 model for single prediction
         parameter_bs1 = parameter.copy()
         parameter_bs1["batch_size"] = 1
 
@@ -29,7 +31,7 @@ def prediction(parameter, gradient_list, model, orig_data, orig_label, device):
         model_bs1 = model.to(device)
 
         for i_s, sample in enumerate(orig_data):
-            orig_out = model_bs1(sample.view(1,1,28,28))
+            orig_out = model_bs1(sample.view(1, 1, 28, 28))
             sample_label = torch.split(orig_label, 1)[i_s]
             criterion = nn.CrossEntropyLoss().to(device)
             y = criterion(orig_out, sample_label)
@@ -68,10 +70,10 @@ def prediction(parameter, gradient_list, model, orig_data, orig_label, device):
             # add the mean value of one accurance to the candidate
             gradients_for_prediction[min_id] = gradients_for_prediction[min_id].add(-mean)
 
-    #convert to tensor
+    # convert to tensor
     idlg_pred = torch.Tensor(idlg_pred).long().to(device)
 
-    #print
+    # print
     pred_str = idlg_pred.data.tolist()
     pred_str.sort()
     orig_str = orig_label.data.tolist()

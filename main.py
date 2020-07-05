@@ -24,7 +24,7 @@ if __name__ == '__main__':
         "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
 
         # Attack settings
-        "dlg_lr": 1.2,
+        "dlg_lr": 0.2,
         "dlg_iterations": 20,
         "prediction": "v1",
         "improved": True,
@@ -97,10 +97,18 @@ if __name__ == '__main__':
         train(model, train_dataset, parameter, device)
         test(model, test_dataset, parameter, device)
 
-    # dlg
+    # filling the result with snapshots and loss-values
     dlg_result = attack(model, train_dataset, parameter, device, parameter["improved"])
-    dlg_result.show()
-    # dlg_result.store(parameter["result_path"])
+    # calculate image, calculate mses, fix order
+    dlg_result.process()
+    # show composed image
+    dlg_result.show_composed_image()
+    # store composed image
+    dlg_result.store_composed_image()
+    # store seperate images
+    dlg_result.store_separate_images()
+    # store raw data
+    dlg_result.store_data()
 
     #####################################################
 
