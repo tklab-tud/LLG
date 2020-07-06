@@ -10,6 +10,7 @@ from dlg import attack
 from net import Net1, Net2, weights_init
 from test import test
 from train import train
+from prediction import predict_setting
 
 
 class Setting:
@@ -153,3 +154,6 @@ class Setting:
 
     def delete(self):
         self.result.delete()
+
+    def predict(self):
+        return predict_setting(self)

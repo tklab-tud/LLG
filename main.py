@@ -4,21 +4,25 @@ from Setting import Setting
 def main():
     ############## Build your attack here ######################
 
-    setting = Setting(dlg_iterations=30,
-                      log_interval=3,
+    setting = Setting(dlg_iterations=50,
+                      log_interval=5,
                       use_seed=True,
-                      target=[1, 2, 3, 4, 5, 6, 7, 8, 9]
+                      batch_size=8,
+                      prediction="random"
                       )
 
-    for i in [1, 2, 4, 8]:
-        setting.configure(run_name=str(i), batch_size=i)
-        setting.print_parameter()
-        setting.attack()
-        setting.show_composed_image()
-        setting.store_composed_image()
-        setting.store_data()
-        setting.store_separate_images()
-        setting.delete()
+    for i in [4,8,16,32,64,128,256]:
+        half = i // 2
+        for pred in ["random", "v1", "simplified"]:
+            setting.configure(run_name=str("_1"),
+                              target=list([1]*half+[2,3,4,5,6,7,8,9]*half),
+                              batch_size=i,
+                              prediction=pred
+                              )
+            print("{}-Prediction:".format(pred))
+            setting.predict()
+
+
 
     ############################################################
 
