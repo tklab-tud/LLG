@@ -92,7 +92,7 @@ def attack(setting):
         current_loss = closure().item()
 
         if iteration % parameter["log_interval"] == 0:
-            print(iteration, 'loss = %.8f' % current_loss)
+            print('{: 3d} loss = {:1.8f}'.format(iteration, current_loss))
             res.add_snapshot(dummy_data.cpu().detach().numpy())
 
     return res

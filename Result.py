@@ -17,6 +17,8 @@ class Result:
         self.composed_subplots = None
         self.separate_figs = []
         self.unprocessed = True
+        self.origin_data = None
+        self.origin_labels = None
 
     def set_origin(self, batch, labels):
         self.origin_data = batch

@@ -14,30 +14,23 @@ from train import train
 
 class Setting:
     def __init__(self, **kwargs):
-        # Parameters
+        self.check_cuda()
+
+        self.result = None
+        self.target = []
+        self.device = None
+        self.train_dataset = None
+        self.test_dataset = None
+        self.model = None
+
         self.parameter = {}
         self.restore_default_parameter()
         self.configure(**kwargs)
 
-        # General
-        self.device = None
-        self.check_cuda()
         self.reset_seeds()
-
-        # Attack
-        self.result = None
-        self.target = []
-
-        # Datasets
-        self.train_dataset = None
-        self.test_dataset = None
         self.load_dataset()
-
-        # Model
-        self.model = None
         self.load_model()
 
-        self.print_parameter()
 
     def configure(self, **kwargs):
         for key, value in kwargs.items():
@@ -52,6 +45,8 @@ class Setting:
                 self.reset_seeds()
             elif key == "max_epoch_size" and value == 0:
                 self.parameter["max_epoch_size"] = len(self.train_dataset) / self.parameter["batch_size"]
+            elif key == "target":
+                self.target = value
 
     def restore_default_parameter(self):
         self.parameter = {
@@ -107,7 +102,6 @@ class Setting:
             self.parameter["hidden2"] = 9216
             self.train_dataset = datasets.MNIST('./datasets', train=True, download=True, transform=tt)
             self.test_dataset = datasets.MNIST('./datasets', train=False, download=True, transform=tt)
-            channel = 1
         elif self.parameter["dataset"] == 'CIFAR':
             self.parameter["shape_img"] = (32, 32)
             self.parameter["num_classes"] = 100
@@ -156,9 +150,6 @@ class Setting:
 
     def show_composed_image(self):
         self.result.show_composed_image()
-
-    def target(self, targets):
-        self.target = targets
 
     def delete(self):
         self.result.delete()
