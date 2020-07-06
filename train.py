@@ -1,11 +1,15 @@
 import torch
 
 
-def train(model, train_dataset, parameter, device):
+def train(setting):
+    # some abbreviations
+    parameter = setting.parameter
+    device = setting.device
+    train_dataset = setting.train_dataset
+    model = setting.model
+
     print("Training for {} epochs sized {} in batches of {}".format(parameter["epochs"], parameter["max_epoch_size"],
                                                                     parameter["batch_size"]))
-
-    #model = Net2().to(device)
 
     train_loader = torch.utils.data.DataLoader(train_dataset, parameter["batch_size"], shuffle=True)
     optimizer = torch.optim.SGD(model.parameters(), lr=parameter["lr"])

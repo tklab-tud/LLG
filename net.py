@@ -1,5 +1,5 @@
-import torch.nn as nn
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 
 
@@ -27,18 +27,6 @@ class Net1(nn.Module):
         x = self.fc(x)
         return x
 
-def weights_init(m):
-    try:
-        if hasattr(m, "weight"):
-            m.weight.data.uniform_(-0.5, 0.5)
-    except Exception:
-        print('warning: failed in weights_init for %s.weight' % m._get_name())
-    try:
-        if hasattr(m, "bias"):
-            m.bias.data.uniform_(-0.5, 0.5)
-    except Exception:
-        print('warning: failed in weights_init for %s.bias' % m._get_name())
-
 
 class Net2(nn.Module):
     def __init__(self, parameter):
@@ -65,3 +53,16 @@ class Net2(nn.Module):
         x = self.fc2(x)
         output = F.log_softmax(x, dim=1)
         return output
+
+
+def weights_init(m):
+    try:
+        if hasattr(m, "weight"):
+            m.weight.data.uniform_(-0.5, 0.5)
+    except Exception:
+        print('warning: failed in weights_init for %s.weight' % m._get_name())
+    try:
+        if hasattr(m, "bias"):
+            m.bias.data.uniform_(-0.5, 0.5)
+    except Exception:
+        print('warning: failed in weights_init for %s.bias' % m._get_name())

@@ -1,16 +1,19 @@
-#https://github.com/pytorch/examples/blob/master/mnist/main.py
-
 import torch
-import torch.nn.functional as F
 
-def test(model, test_dataset, parameter, device):
+
+def test(setting):
+    # some abbreviations
+    parameter = setting.parameter
+    device = setting.device
+    test_dataset = setting.test_dataset
+    model = setting.model
+
     model.eval()
     test_loss = 0
     correct = 0
 
     test_loader = torch.utils.data.DataLoader(test_dataset, parameter["batch_size"], shuffle=True)
     criterion = torch.nn.CrossEntropyLoss().to(device)
-
 
     with torch.no_grad():
         for i, (data, target) in enumerate(test_loader):
@@ -25,5 +28,5 @@ def test(model, test_dataset, parameter, device):
     test_loss /= parameter["test_size"]
 
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-        test_loss, correct, parameter["test_size"]*parameter["batch_size"],
-        100. * correct /(parameter["test_size"]*parameter["batch_size"])))
+        test_loss, correct, parameter["test_size"] * parameter["batch_size"],
+                            100. * correct / (parameter["test_size"] * parameter["batch_size"])))

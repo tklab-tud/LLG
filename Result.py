@@ -16,16 +16,20 @@ class Result:
         self.composed_fig = None
         self.composed_subplots = None
         self.separate_figs = []
+        self.unprocessed = True
 
     def set_origin(self, batch, labels):
         self.origin_data = batch
         self.origin_labels = labels
+        self.unprocessed = True
 
     def add_snapshot(self, batch):
         self.snapshots.append(batch)
+        self.unprocessed = True
 
     def add_loss(self, loss):
         self.losses.append(loss)
+        self.unprocessed = True
 
     def calc_mse(self):
         self.mses = np.zeros((len(self.snapshots), self.parameter["batch_size"]))
@@ -109,51 +113,64 @@ class Result:
         else:
             subplot.title.set_text("mse:{:.8f}\nloss:{:.8f}".format(self.mses[snap][batch], self.losses[snap]))
 
-    def process(self):
-        self.fix_snapshot_order()
-        self.calc_mse()
+    def update_figures(self):
+        if self.unprocessed:
+            self.fix_snapshot_order()
+            self.calc_mse()
 
-        # initialise composed fig
-        self.composed_fig, self.composed_subplots = plt.subplots(self.parameter["batch_size"], len(self.snapshots) + 1)
-        self.composed_fig.set_size_inches((len(self.snapshots) + 1) * self.parameter["shape_img"][0] / 10,
-                                          len(self.origin_data) * self.parameter["shape_img"][1] / 10)
+            # initialise composed fig
+            self.composed_fig, self.composed_subplots = plt.subplots(self.parameter["batch_size"],
+                                                                     len(self.snapshots) + 1)
+            self.composed_fig.set_size_inches((len(self.snapshots) + 1) * self.parameter["shape_img"][0] / 10,
+                                              len(self.origin_data) * self.parameter["shape_img"][1] / 10)
 
-        # fix subplots returning obj instead of array at bs = 1
-        if self.parameter["batch_size"] == 1:
-            self.composed_subplots = [self.composed_subplots]
+            # fix subplots returning obj instead of array at bs = 1
+            if self.parameter["batch_size"] == 1:
+                self.composed_subplots = [self.composed_subplots]
 
-        # Generate Images
-        # Iterate over Originals
-        for i_b, orig in enumerate(self.origin_data):
-            # Original Image
-            self.add_composed_image(orig, True, i_b, None)
-            self.add_seperate_image(orig, True, i_b, None)
+            # Generate Images
+            # Iterate over Originals
+            for i_b, orig in enumerate(self.origin_data):
+                # Original Image
+                self.add_composed_image(orig, True, i_b, None)
+                self.add_seperate_image(orig, True, i_b, None)
 
-            # Recreations
-            for i_s, snap in enumerate(self.snapshots):
-                self.add_composed_image(snap[i_b], False, i_b, i_s)
-                self.add_seperate_image(snap[i_b], False, i_b, i_s)
+                # Recreations
+                for i_s, snap in enumerate(self.snapshots):
+                    self.add_composed_image(snap[i_b], False, i_b, i_s)
+                    self.add_seperate_image(snap[i_b], False, i_b, i_s)
+
+            self.unprocessed = False
 
     def show_composed_image(self):
+        self.update_figures()
         self.composed_fig.show()
 
     def store_composed_image(self):
-        if not os.path.exists(self.parameter["result_path"] + "Images"):
+        self.update_figures()
+        if not os.path.exists(self.parameter["result_path"]):
             os.makedirs(self.parameter["result_path"])
 
-        self.composed_fig.savefig(self.parameter["result_path"] + "composed_image.png")
+        self.composed_fig.savefig(
+            self.parameter["result_path"] + "composed_image{}.png".format(self.parameter["run_name"]))
 
     def store_separate_images(self):
-        if not os.path.exists(self.parameter["result_path"] + "Images"):
-            os.makedirs(self.parameter["result_path"] + "Images")
+        self.update_figures()
+        if not os.path.exists(self.parameter["result_path"] + "Images{}".format(self.parameter["run_name"])):
+            os.makedirs(self.parameter["result_path"] + "Images{}".format(self.parameter["run_name"]))
 
         for (fig, batch, snap, original) in self.separate_figs:
             if original:
-                fig.savefig(self.parameter["result_path"] + "Images/{:03d}_original.png".format(batch))
+                fig.savefig(
+                    self.parameter["result_path"] + "Images{}/{:03d}_original.png".format(self.parameter["run_name"],
+                                                                                          batch))
             else:
-                fig.savefig(self.parameter["result_path"] + "Images/{:03d}s{:04d}.png".format(batch, snap))
+                fig.savefig(
+                    self.parameter["result_path"] + "Images{}/{:03d}s{:04d}.png".format(self.parameter["run_name"],
+                                                                                        batch, snap))
 
     def store_data(self):
+        self.update_figures()
         if not os.path.exists(self.parameter["result_path"]):
             os.makedirs(self.parameter["result_path"])
 
@@ -166,5 +183,15 @@ class Result:
         }
 
         # dump to json
-        with open(self.parameter["result_path"] + "data.json", "w") as file:
+        with open(self.parameter["result_path"] + "data{}.json".format(self.parameter["run_name"]), "w") as file:
             json.dump(data_dic, file)
+
+    def delete(self):
+        plt.close(self.composed_fig)
+        for fig, _, _, _ in self.separate_figs:
+            plt.close(fig)
+
+    def store_everything(self):
+        self.store_composed_image()
+        self.store_separate_images()
+        self.store_data()
