@@ -23,13 +23,14 @@ It adds additional features:
     [x] Specific targets
     [x] Make attack iterable
     [x] Make attack configurable
+    [x] Make prediction use Settings in order to allow better configuration, e.g. call accuracy
 
 Todo:
     [ ] Visualize mse, loss
     [ ] Poison Model to increase accuracy
     [ ] Machine Learning as prediction strategy
     [ ] Further prediction strategies
-    [ ] Make prediction use Settings in order to allow better configuration, e.g. call accuracy
+
 
 
 # Build your attack based on these elements:
