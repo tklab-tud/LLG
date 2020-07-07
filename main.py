@@ -1,28 +1,24 @@
 from Setting import Setting
+import time
 
 
 def main():
     ############## Build your attack here ######################
 
-    setting = Setting(dlg_iterations=50,
-                      log_interval=5,
+    setting = Setting(dlg_iterations=1,
+                      log_interval=1,
                       use_seed=True,
-                      batch_size=8,
-                      prediction="random"
+                      batch_size=4,
+                      prediction="v1",
+                      dlg_lr=0.5
                       )
 
-    for i in [4,8,16,32,64,128,256]:
-        half = i // 2
-        for pred in ["random", "v1", "simplified"]:
-            setting.configure(run_name=str("_1"),
-                              target=list([1]*half+[2,3,4,5,6,7,8,9]*half),
-                              batch_size=i,
-                              prediction=pred
-                              )
-            print("{}-Prediction:".format(pred))
-            setting.predict()
-
-
+    for bs in [4, 8, 16, 32]:
+        print("\nBS: ", bs)
+        s= int(time.time()*1000)%2**32
+        for strat in ["random", "v1", "simplified"]:
+            setting.configure(batch_size=bs, prediction=strat, seed=s)
+            setting.predict(True)
 
     ############################################################
 

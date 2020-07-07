@@ -8,9 +8,10 @@ import numpy as np
 
 class Result:
 
-    def __init__(self, parameter):
+    def __init__(self, setting):
+        self.setting = setting
+        self.parameter = setting.parameter
         self.snapshots = []
-        self.parameter = parameter
         self.mses = [[]]
         self.losses = []
         self.composed_fig = None
@@ -19,6 +20,7 @@ class Result:
         self.unprocessed = True
         self.origin_data = None
         self.origin_labels = None
+        plt.rcParams.update({'figure.max_open_warning': 0})
 
     def set_origin(self, batch, labels):
         self.origin_data = batch
@@ -34,7 +36,7 @@ class Result:
         self.unprocessed = True
 
     def calc_mse(self):
-        self.mses = np.zeros((len(self.snapshots), self.parameter["batch_size"]))
+        self.mses = np.zeros((len(self.snapshots), self.setting.parameter["batch_size"]))
         for i_s, s in enumerate(self.snapshots):
             self.mses[i_s] = self.mse(self.origin_data, s).sum(1)
 
