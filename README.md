@@ -24,9 +24,9 @@ It adds additional features:
     [x] Make attack iterable
     [x] Make attack configurable
     [x] Make prediction use Settings in order to allow better configuration, e.g. call accuracy
+    [x] Visualization
 
 Todo:
-    [ ] Visualize mse, loss
     [ ] Poison Model to increase accuracy
     [ ] Machine Learning as prediction strategy
     [ ] Further prediction strategies

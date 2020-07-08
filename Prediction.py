@@ -59,7 +59,7 @@ class Predictor:
     def classic_prediction(self):
         # Abbreviations
         parameter = self.setting.parameter
-        gradient= self.setting.dlg.gradient
+        gradient = self.setting.dlg.gradient
 
         # Classic way from the authors repository does not allow bs <> 1
         if parameter["batch_size"] == 1:
@@ -68,24 +68,23 @@ class Predictor:
         else:
             exit("classic prediction does not support batch_size <> 1")
 
+    def simplified_prediction(self):
+        # Simplified Way as described in the paper
+        # Abbreviations
+        parameter = self.setting.parameter
+
+        # creating bs 1 model for single prediction
+        tmp_setting = self.setting.copy()
+        tmp_setting.configure(batch_size=1, prediction="classic")
+        for b in range(parameter["batch_size"]):
+            tmp_setting.configure(ids=[self.setting.ids[b]])
+            self.prediction.extend(tmp_setting.predict())
+
     def random_prediction(self):
         parameter = self.setting.parameter
 
         for _ in range(parameter["batch_size"]):
             self.prediction.append(np.random.randint(0, parameter["num_classes"]))
-
-    def simplified_prediction(self):
-        # Simplified Way as described in the paper
-
-        # Abbreviations
-        parameter = self.setting.parameter
-
-        # creating bs 1 model for single prediction
-        for b in range(parameter["batch_size"]):
-            tmp_setting = self.setting.copy()
-            tmp_setting.configure(batch_size=1, prediction="classic", ids=[self.setting.ids[b]])
-
-            self.prediction.extend(tmp_setting.predict())
 
     def v1_prediction(self):
         # New way, first idea, choosing smallest values as prediction

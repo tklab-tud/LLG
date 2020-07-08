@@ -8,53 +8,53 @@ from torchvision import datasets
 
 from Dlg import Dlg
 from Prediction import Predictor
+from Result import Result
 from net import Net1, Net2, weights_init
 from test import test
 from train import train
-from Result import Result
 
 
 class Setting:
     def __init__(self, **kwargs):
-        self.initialised = False
         self.target = []
         self.device = None
         self.check_cuda()
         self.train_dataset = None
         self.test_dataset = None
         self.model = None
-
         self.dlg = None
         self.ids = []
         self.orig_data = None
         self.orig_label = None
-
         self.parameter = {}
+
         self.restore_default_parameter()
-        self.configure(**kwargs)
+        self.update_parameter(**kwargs)
 
         self.reset_seeds()
         self.load_dataset()
         self.load_model()
 
         self.result = Result(self)
-        self.dlg = Dlg(self)
         self.predictor = Predictor(self)
-        self.initialised = True
+
+        self.configure(**kwargs)
+
+        if len(self.target) == 0:
+            self.fill_ids()
+            self.fix_targets()
 
     def configure(self, **kwargs):
         for key, value in kwargs.items():
             if key == "target":
                 self.target = value
+                self.fill_targets()
                 self.fix_ids()
             elif key == "ids":
                 self.ids = value
+                self.fill_ids()
                 self.fix_targets()
-            else:
-                self.parameter[key] = value
-
-            # The following parameter changes require additional action
-            if key == "dataset":
+            elif key == "dataset":
                 self.load_dataset()
             elif key == "model":
                 self.load_model()
@@ -62,9 +62,21 @@ class Setting:
                 self.reset_seeds()
             elif key == "max_epoch_size" and value == 0:
                 self.parameter["max_epoch_size"] = len(self.train_dataset) / self.parameter["batch_size"]
+            elif key == "batch_size":
+                self.fill_ids()
+                self.fix_targets()
+                self.update_parameter(**kwargs)
+            else:
+                self.update_parameter(**kwargs)
 
         # Renew Attack with new settings, does not execute yet
-        if self.initialised: self.dlg = Dlg(self)
+        self.dlg = Dlg(self)
+
+    def update_parameter(self, **kwargs):
+        # update existing parameters
+        for key, value in kwargs.items():
+            if self.parameter.__contains__(key):
+                self.parameter[key] = value
 
     def restore_default_parameter(self):
         self.parameter = {
@@ -95,7 +107,7 @@ class Setting:
         # Check CUDA
         if torch.cuda.is_available():
             self.device = torch.device("cuda")
-            #print("Torch successfully connected to CUDA device: {}".format(torch.cuda.current_device()))
+            # print("Torch successfully connected to CUDA device: {}".format(torch.cuda.current_device()))
         else:
             print("Error: Torch can't connect to CUDA")
             exit()
@@ -178,17 +190,17 @@ class Setting:
         if self.result is not None:
             self.result.delete()
 
-    def predict(self, *verbose):
+    def predict(self, verbose=False):
         self.predictor = Predictor(self)
         self.predictor.predict()
         if verbose:
             orig = self.target[:self.parameter["batch_size"]].copy()
             orig.sort()
-            #print("Orig:", orig)
-            #print("Pred:", self.predictor.prediction)
+            print("Orig:", orig)
+            print("Pred:", self.predictor.prediction)
             print(
-            "Correct: {}\tFalse: {}\tAcc: {}\tUsing: {}".format(self.predictor.correct, self.predictor.false,
-                                                                self.predictor.acc, self.parameter["prediction"]))
+                "Correct: {}\tFalse: {}\tAcc: {}\tUsing: {}".format(self.predictor.correct, self.predictor.false,
+                                                                    self.predictor.acc, self.parameter["prediction"]))
         return self.predictor.prediction
 
     def fix_targets(self):
@@ -211,9 +223,13 @@ class Setting:
         for i in range(self.parameter["batch_size"] - len(self.target)):
             self.target.append(np.random.randint(0, self.parameter["num_classes"]))
 
-        self.fix_ids()
+    def fill_ids(self):
+        # fill missing targets if underspecified
+        for i in range(self.parameter["batch_size"] - len(self.ids)):
+            self.ids.append(np.random.randint(0, len(self.train_dataset)))
 
     def copy(self):
-        return Setting(**self.parameter)
-
-
+        kwargs = {}
+        kwargs.update(**self.parameter)
+        kwargs.update({"ids":self.ids})
+        return Setting(**kwargs)

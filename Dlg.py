@@ -1,10 +1,8 @@
-import numpy as np
 import torch
 import torch.nn as nn
-import torchvision
 
-from Result import Result
 from Prediction import Predictor
+from Result import Result
 
 
 class Dlg:
@@ -13,17 +11,17 @@ class Dlg:
         self.gradient = None
         self.criterion = nn.CrossEntropyLoss().to(setting.device)
 
-        self.orig_data = torch.Tensor(setting.parameter["batch_size"], setting.parameter["channel"], setting.parameter["shape_img"][0],
+        self.orig_data = torch.Tensor(setting.parameter["batch_size"], setting.parameter["channel"],
+                                      setting.parameter["shape_img"][0],
                                       setting.parameter["shape_img"][1]).to(setting.device)
-        self.orig_label = torch.Tensor(setting.parameter["batch_size"]).long().to(setting.device).view(setting.parameter["batch_size"], )
+        self.orig_label = torch.Tensor(setting.parameter["batch_size"]).long().to(setting.device).view(
+            setting.parameter["batch_size"], )
         self.dummy_data = torch.randn(
-            (setting.parameter["batch_size"], setting.parameter["channel"], setting.parameter["shape_img"][0], setting.parameter["shape_img"][1])).to(
+            (setting.parameter["batch_size"], setting.parameter["channel"], setting.parameter["shape_img"][0],
+             setting.parameter["shape_img"][1])).to(
             setting.device).requires_grad_(True)
-        self.dummy_label = torch.randn((setting.parameter["batch_size"], setting.parameter["num_classes"])).to(setting.device).requires_grad_(True)
-
-        self.setting.fill_targets()
-
-
+        self.dummy_label = torch.randn((setting.parameter["batch_size"], setting.parameter["num_classes"])).to(
+            setting.device).requires_grad_(True)
 
     def victim_side(self):
         # abbreviations
@@ -40,8 +38,6 @@ class Dlg:
         y = self.criterion(orig_out, self.orig_label)
         grad = torch.autograd.grad(y, model.parameters())
         self.gradient = list((_.detach().clone() for _ in grad))
-
-
 
     def attack(self):
         # abbreviations
@@ -71,7 +67,8 @@ class Dlg:
                 dummy_pred = model(self.dummy_data)
                 if not parameter["improved"]:
                     dummy_loss = - torch.mean(
-                        torch.sum(torch.softmax(self.dummy_label, -1) * torch.log(torch.softmax(dummy_pred, -1)), dim=-1))
+                        torch.sum(torch.softmax(self.dummy_label, -1) * torch.log(torch.softmax(dummy_pred, -1)),
+                                  dim=-1))
                 else:
                     dummy_loss = self.criterion(dummy_pred, torch.Tensor(self.setting.predict()).long().to(device))
 
