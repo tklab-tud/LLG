@@ -11,6 +11,7 @@ from Prediction import Predictor
 from net import Net1, Net2, weights_init
 from test import test
 from train import train
+from Result import Result
 
 
 class Setting:
@@ -36,7 +37,7 @@ class Setting:
         self.load_dataset()
         self.load_model()
 
-        self.result = None
+        self.result = Result(self)
         self.dlg = Dlg(self)
         self.predictor = Predictor(self)
         self.initialised = True
@@ -154,28 +155,28 @@ class Setting:
         self.dlg.attack()
 
     def store_everything(self):
-        if self.result is None: exit("No result found, run attack first")
-        self.result.store_everything()
+        if self.result is not None:
+            self.result.store_everything()
 
     def store_composed_image(self):
-        if self.result is None: exit("No result found, run attack first")
-        self.result.store_composed_image()
+        if self.result is not None:
+            self.result.store_composed_image()
 
     def store_separate_images(self):
-        if self.result is None: exit("No result found, run attack first")
-        self.result.store_separate_images()
+        if self.result is not None:
+            self.result.store_separate_images()
 
     def store_data(self):
-        if self.result is None: exit("No result found, run attack first")
-        self.result.store_data()
+        if self.result is not None:
+            self.result.store_data()
 
     def show_composed_image(self):
-        if self.result is None: exit("No result found, run attack first")
-        self.result.show_composed_image()
+        if self.result is not None:
+            self.result.show_composed_image()
 
     def delete(self):
-        if self.result is None: exit("No result found, run attack first")
-        self.result.delete()
+        if self.result is not None:
+            self.result.delete()
 
     def predict(self, *verbose):
         self.predictor = Predictor(self)

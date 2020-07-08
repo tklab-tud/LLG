@@ -12,7 +12,7 @@ class Result:
         self.setting = setting
         self.parameter = setting.parameter
         self.snapshots = []
-        self.mses = [[]]
+        self.mses = np.array([])
         self.losses = []
         self.composed_fig = None
         self.composed_subplots = None
@@ -147,19 +147,22 @@ class Result:
             self.unprocessed = False
 
     def show_composed_image(self):
-        self.update_figures()
-        self.composed_fig.show()
+        if self.composed_fig is not None:
+            self.update_figures()
+            self.composed_fig.show()
 
     def store_composed_image(self):
-        self.update_figures()
-        if not os.path.exists(self.parameter["result_path"]):
-            os.makedirs(self.parameter["result_path"])
+        if self.composed_fig is not None:
+            self.update_figures()
+            if not os.path.exists(self.parameter["result_path"]):
+                os.makedirs(self.parameter["result_path"])
 
-        self.composed_fig.savefig(
-            self.parameter["result_path"] + "composed_image{}.png".format(self.parameter["run_name"]))
+            self.composed_fig.savefig(
+                self.parameter["result_path"] + "composed_image{}.png".format(self.parameter["run_name"]))
 
     def store_separate_images(self):
-        self.update_figures()
+        if self.composed_fig is not None:
+            self.update_figures()
         if not os.path.exists(self.parameter["result_path"] + "Images{}".format(self.parameter["run_name"])):
             os.makedirs(self.parameter["result_path"] + "Images{}".format(self.parameter["run_name"]))
 
@@ -174,15 +177,25 @@ class Result:
                                                                                         batch, snap))
 
     def store_data(self):
-        self.update_figures()
+        if self.composed_fig is not None:
+            self.update_figures()
+
         if not os.path.exists(self.parameter["result_path"]):
             os.makedirs(self.parameter["result_path"])
 
-        # fill dictionary with parameter, testdata
+        # fill dictionary with parameter, data and prediction
         data_dic = {
             "parameter": self.parameter,
             "losses": self.losses,
             "mses": self.mses.tolist(),
+            "prediction": {
+                "correct": self.setting.predictor.correct,
+                "false": self.setting.predictor.false,
+                "accuracy": self.setting.predictor.acc,
+                "prediction": self.setting.predictor.prediction,
+            },
+            "target": self.setting.target,
+            "ids": self.setting.ids,
             "snapshots": list(map(lambda x: x.tolist(), self.snapshots))
         }
 
@@ -199,3 +212,6 @@ class Result:
         self.store_composed_image()
         self.store_separate_images()
         self.store_data()
+
+
+

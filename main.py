@@ -17,8 +17,9 @@ def main():
         print("\nBS: ", bs)
         s= int(time.time()*1000)%2**32
         for strat in ["random", "v1", "simplified"]:
-            setting.configure(batch_size=bs, prediction=strat, seed=s)
+            setting.configure(run_name=str(bs)+str(strat), batch_size=bs, prediction=strat, seed=s)
             setting.predict(True)
+            setting.store_data()
 
     ############################################################
 
