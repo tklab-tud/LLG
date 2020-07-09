@@ -1,6 +1,7 @@
 import os
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 class Graph:
@@ -37,3 +38,12 @@ class Graph:
         if not os.path.exists(self.setting.parameter["result_path"]):
             os.makedirs(self.setting.parameter["result_path"])
         self.fig.savefig(path_name)
+
+    def add_mses(self):
+        mses_list = []
+        mses = self.setting.result.mses
+        for i_m, step in enumerate(mses):
+            mses[i_m] = np.mean(step)
+
+        li = self.setting.parameter["log_interval"]
+        self.add_datarow(list(range(li, len(mses) * li + 1, li)), mses, "dlg")

@@ -35,11 +35,11 @@ def accuracy_test():
 
 
 def mse_test():
-    setting = Setting(dlg_iterations=10,
-                      log_interval=2,
-                      batch_size=4,
+    setting = Setting(dlg_iterations=20,
+                      log_interval=1,
+                      batch_size=8,
                       use_seed=False,
-                      dlg_lr=0.5,
+                      dlg_lr=0.3,
                       )
 
     graph = Graph(setting, "Iterations", "MSE")
@@ -58,7 +58,7 @@ def mse_test():
     data = [0] * len(mses)
 
     for i_s in range(len(mses)):
-        for i_n in range(1):
+        for i_n in range(n):
             data[i_s] += mses_list[i_n][i_s][0] / n
 
     li = setting.parameter["log_interval"]
@@ -87,3 +87,19 @@ def mse_test():
 
     print("done")
     return setting, graph
+
+def simple_attack():
+    setting = Setting(dlg_iterations=30,
+                      log_interval=3,
+                      batch_size=4,
+                      use_seed=False,
+                      dlg_lr=0.5,
+                      )
+
+    graph = Graph(setting, "Iterations", "MSE")
+
+    setting.attack()
+    setting.show_composed_image()
+    graph.add_mses()
+    graph.show()
+
