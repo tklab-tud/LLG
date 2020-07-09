@@ -1,12 +1,13 @@
-import examples
+from Graph import Graph
+from Setting import Setting
+from examples import mse_test, accuracy_test
 
 
 def main():
     ############## Build your attack here ######################
 
-    setting, graph = examples.accuracy_test()
-    graph.save(setting.parameter["result_path"]+"acc_test.jpg")
-
+    setting, graph = mse_test()
+    graph.save(setting.parameter["result_path"]+"mse_test.jpg")
     ############################################################
 
 

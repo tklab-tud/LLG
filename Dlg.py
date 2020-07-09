@@ -53,7 +53,7 @@ class Dlg:
         else:
             optimizer = torch.optim.LBFGS([self.dummy_data, ], lr=parameter["dlg_lr"])
             # predict label of dummy gradient
-            self.setting.predictor = Predictor(self.setting)
+            pred = self.setting.predict()
 
         # Prepare Result Object
         res = Result(self.setting)
@@ -70,7 +70,7 @@ class Dlg:
                         torch.sum(torch.softmax(self.dummy_label, -1) * torch.log(torch.softmax(dummy_pred, -1)),
                                   dim=-1))
                 else:
-                    dummy_loss = self.criterion(dummy_pred, torch.Tensor(self.setting.predict()).long().to(device))
+                    dummy_loss = self.criterion(dummy_pred, torch.Tensor(pred).long().to(device))
 
                 dummy_gradient = torch.autograd.grad(dummy_loss, model.parameters(), create_graph=True)
 
@@ -87,5 +87,5 @@ class Dlg:
             if iteration % parameter["log_interval"] == 0:
                 print('{: 3d} loss = {:1.8f}'.format(iteration, current_loss))
                 res.add_snapshot(self.dummy_data.cpu().detach().numpy())
-
+        res.update_figures()
         self.setting.result = res

@@ -26,6 +26,7 @@ class Setting:
         self.ids = []
         self.orig_data = None
         self.orig_label = None
+        self.predictor = None
         self.parameter = {}
 
         self.restore_default_parameter()
@@ -36,7 +37,6 @@ class Setting:
         self.load_model()
 
         self.result = Result(self)
-        self.predictor = Predictor(self)
 
         self.configure(**kwargs)
 
@@ -164,6 +164,7 @@ class Setting:
         test(self)
 
     def attack(self):
+        self.dlg = Dlg(self)
         self.dlg.attack()
 
     def store_everything(self):
