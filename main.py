@@ -7,11 +7,10 @@ import numpy as np
 def main():
     ############## Build your attack here ######################
 
+    prediction_accuracy_vs_batchsize_line()
+    #mse_vs_iteration_line(False,1)
 
-    mse_vs_iteration_line(False,1)
 
-
-    exit(0)
 
     ############################################################
 

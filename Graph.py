@@ -2,6 +2,7 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pdb
 
 
 class Graph:
@@ -83,10 +84,14 @@ class Mses_vs_Iterations_graph(Graph):
             mses.append(np.mean(step))
 
         li = self.setting.parameter["log_interval"]
-        self.add_datarow(label, mses, list(range(li, len(mses) * li + 1, li)))
 
-        if self.setting.result.mses.mean() > 3:
-            pdb.set_trace()
+        if self.setting.result.mses.mean() < 3:
+            self.add_datarow(label, mses, list(range(li, len(mses) * li + 1, li)))
+        else:
+            print("########### batch did not converge #################", label, mses)
+
+
+
 
     def add_last_mse(self, label, x=0):
         mses_unprocessed = self.setting.result.mses

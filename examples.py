@@ -52,17 +52,21 @@ def prediction_accuracy_vs_strategie_bar(biased=False):
 
     graph = Prediction_accuracy_graph(setting, "Batch-Size", "Accuracy")
 
-    bs = 8
+    bs = 1
 
     if biased:
         target = (bs // 2) * [0] + (bs // 4) * [1]
     else:
         target = []
 
-    for strat in ["v1", "random"]:
-        for i in range(100):
-            setting.configure(batch_size=bs, prediction=strat, target=list(target))
-            setting.predict()
+    for strat in ["v1", "random", "dlg"]:
+        for i in range(1):
+            if strat == "dlg":
+                setting.configure(improved=False, target=target,batch_size=bs, dlg_iterations=30)
+            else:
+                setting.configure(improved=True, prediction=strat, target=target, batch_size=bs)
+
+            setting.predict(True)
             graph.add_prediction_acc(strat, bs)
 
     graph.plot_bar()
@@ -71,11 +75,11 @@ def prediction_accuracy_vs_strategie_bar(biased=False):
 
 
 def mse_vs_iteration_line(biased=False, bs=1):
-    setting = Setting(dlg_iterations=5,
+    setting = Setting(dlg_iterations=20,
                       log_interval=1,
                       batch_size=bs,
                       use_seed=False,
-                      dlg_lr=0.3,
+                      dlg_lr=1,
                       )
 
     graph = Mses_vs_Iterations_graph(setting, "Iterations", "MSE")
@@ -86,19 +90,16 @@ def mse_vs_iteration_line(biased=False, bs=1):
         target = []
 
     # idlg strats
-    for strat in ["v1" ]:
-        for n in range(10):
+    for strat in ["v1", "simplified", "dlg"]:
+        for n in range(3):
             print(strat, n)
             if strat == "dlg":
                 setting.configure(improved=False, target=target)
             else:
-                setting.configure(prediction=strat, target=target)
+                setting.configure(improved=True, prediction=strat, target=target)
 
             setting.attack()
             graph.add_all_mses(strat)
-
-            if setting.result.mses.mean()> 3:
-                pdb.set_trace()
 
             setting.delete()
 

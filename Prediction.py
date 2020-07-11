@@ -20,17 +20,25 @@ class Predictor:
         # run victim side
         self.setting.dlg.victim_side()
 
-        # Run prediction strategie
-        if parameter["prediction"] == "classic":
-            self.classic_prediction()
-        elif parameter["prediction"] == "random":
-            self.random_prediction()
-        elif parameter["prediction"] == "simplified":
-            self.simplified_prediction()
-        elif parameter["prediction"] == "v1":
-            self.v1_prediction()
-        else:
-            exit("Unknown prediction strategy {}".format(parameter["prediction"]))
+        if parameter["improved"]:
+            # Run prediction strategie
+            if parameter["prediction"] == "classic":
+                self.classic_prediction()
+            elif parameter["prediction"] == "random":
+                self.random_prediction()
+            elif parameter["prediction"] == "simplified":
+                self.simplified_prediction()
+            elif parameter["prediction"] == "v1":
+                self.v1_prediction()
+            else:
+                exit("Unknown prediction strategy {}".format(parameter["prediction"]))
+        elif parameter["batch_size"] != 1:
+            exit("DLG Prediction ist not defined for batchsizes other than one")
+        elif len(self.prediction) == 0:
+            print("DLG needs to be run first in order to make predictions. Starting Attack")
+            self.setting.attack()
+
+
 
         self.prediction.sort()
 
