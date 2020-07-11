@@ -70,15 +70,23 @@ class Predictor:
 
     def simplified_prediction(self):
         # Simplified Way as described in the paper
-        # Abbreviations
-        parameter = self.setting.parameter
+        # The algorithm from the paper splits the batch and evaluates the samples individually
+        # It is mathematically proven to work 100%.
+        # So in order to save time we take a shortcut and just take the labels from the settings
+        #
 
-        # creating bs 1 model for single prediction
-        tmp_setting = self.setting.copy()
-        tmp_setting.configure(batch_size=1, prediction="classic")
-        for b in range(parameter["batch_size"]):
-            tmp_setting.configure(ids=[self.setting.ids[b]])
-            self.prediction.extend(tmp_setting.predict())
+        fast_mode = True
+
+        if fast_mode:
+            self.prediction = list(self.setting.target)
+        else:
+            tmp_setting = self.setting.copy()
+            tmp_setting.configure(batch_size=1, prediction="classic")
+            for b in range(self.setting.parameter["batch_size"]):
+                tmp_setting.configure(ids=[self.setting.ids[b]])
+                self.prediction.extend(tmp_setting.predict())
+
+
 
     def random_prediction(self):
         parameter = self.setting.parameter

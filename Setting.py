@@ -47,11 +47,11 @@ class Setting:
     def configure(self, **kwargs):
         for key, value in kwargs.items():
             if key == "target":
-                self.target = value
+                self.target = list(value)
                 self.fill_targets()
                 self.fix_ids()
             elif key == "ids":
-                self.ids = value
+                self.ids = list(value)
                 self.fill_ids()
                 self.fix_targets()
             elif key == "dataset":
@@ -67,7 +67,7 @@ class Setting:
                 self.fix_targets()
                 self.update_parameter(**kwargs)
             else:
-                self.update_parameter(**kwargs)
+                self.update_parameter(**{key: kwargs[key]})
 
         # Renew Attack with new settings, does not execute yet
         self.dlg = Dlg(self)
@@ -77,6 +77,8 @@ class Setting:
         for key, value in kwargs.items():
             if self.parameter.__contains__(key):
                 self.parameter[key] = value
+            elif key != "target" and key != "ids":
+                exit("Unknown Parameter: "+key)
 
     def restore_default_parameter(self):
         self.parameter = {
@@ -221,6 +223,7 @@ class Setting:
 
     def fill_targets(self):
         # fill missing targets if underspecified
+
         for i in range(self.parameter["batch_size"] - len(self.target)):
             self.target.append(np.random.randint(0, self.parameter["num_classes"]))
 
