@@ -82,7 +82,8 @@ def mse_vs_iteration_line(biased=False, bs=1):
     setting = Setting(dlg_iterations=20,
                       log_interval=1,
                       batch_size=bs,
-                      use_seed=False,
+                      use_seed=True,
+                      seed=1337,
                       dlg_lr=1,
                       )
 
@@ -95,6 +96,7 @@ def mse_vs_iteration_line(biased=False, bs=1):
 
     # idlg strats
     for strat in ["v1", "simplified", "dlg"]:
+        setting.reset_seeds()
         for n in range(3):
             run_name = "{}{:2.0f}".format(strat,n)
 
@@ -103,7 +105,7 @@ def mse_vs_iteration_line(biased=False, bs=1):
             else:
                 setting.configure(improved=True, prediction=strat, target=target, run_name=run_name)
 
-            print(run_name)
+            print(run_name, setting.ids)
             setting.attack()
             graph.add_all_mses(strat)
             setting.store_everything()

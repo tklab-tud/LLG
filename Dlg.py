@@ -89,6 +89,6 @@ class Dlg:
                 res.calc_mse()
                 current_mse = res.mses[-1].mean()
                 current_loss = closure().item()
-                print('{: 3d} loss = {:1.8f} mse = {:1.8f}'.format(iteration, current_loss, current_mse))
+                #print('{: 3d} loss = {:1.8f} mse = {:1.8f}'.format(iteration, current_loss, current_mse))
         res.update_figures()
         self.setting.result = res

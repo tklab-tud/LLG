@@ -20,17 +20,20 @@ from train import train
 class Setting:
     def __init__(self, **kwargs):
         self.target = []
-        self.device = None
-        self.check_cuda()
-        self.train_dataset = None
-        self.test_dataset = None
-        self.model = None
-        self.dlg = None
         self.ids = []
         self.orig_data = None
         self.orig_label = None
+
+        self.device = None
+        self.model = None
+        self.dlg = None
+        self.check_cuda()
         self.predictor = None
+
         self.parameter = {}
+
+        self.train_dataset = None
+        self.test_dataset = None
 
         self.restore_default_parameter()
         self.update_parameter(**kwargs)
@@ -224,12 +227,14 @@ class Setting:
 
     def fix_ids(self):
         self.ids = []
+        random_offset = np.random.randint(0, len(self.train_dataset))
         for i in range(len(self.target)):
             # searching for a sample with target label
-            for i_s, sample in enumerate(self.train_dataset):
+            for i_s in range(len(self.train_dataset)):
+                sample_id = (i_s+random_offset)%len(self.train_dataset)
                 # does this sample have the right label and was not used before?
-                if sample[1] == self.target[i] and not self.ids.__contains__(i_s):
-                    self.ids.append(i_s)
+                if self.train_dataset[sample_id][1] == self.target[i] and not self.ids.__contains__(sample_id):
+                    self.ids.append(sample_id)
                     break
 
     def fill_targets(self):
@@ -258,7 +263,7 @@ class Setting:
                 dump = json.load(f)
                 setting.append(Setting(**dump["parameter"]))
                 setting[-1].result.losses = dump["losses"]
-                setting[-1].result.mses = dump["mses"]
+                setting[-1].result.mses = np.array(dump["mses"])
                 setting[-1].target = dump["target"]
                 setting[-1].ids = dump["ids"]
                 setting[-1].result.snapshots = dump["snapshots"]
