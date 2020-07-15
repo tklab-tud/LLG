@@ -79,11 +79,11 @@ def prediction_accuracy_vs_strategie_bar(biased=False):
 
 
 def mse_vs_iteration_line(biased=False, bs=1):
-    setting = Setting(dlg_iterations=20,
+    setting = Setting(dlg_iterations=60,
                       log_interval=1,
                       batch_size=bs,
                       use_seed=True,
-                      seed=1337,
+                      seed=1338,
                       dlg_lr=1,
                       )
 
@@ -97,7 +97,7 @@ def mse_vs_iteration_line(biased=False, bs=1):
     # idlg strats
     for strat in ["v1", "simplified", "dlg"]:
         setting.reset_seeds()
-        for n in range(3):
+        for n in range(1):
             run_name = "{}{:2.0f}".format(strat,n)
 
             if strat == "dlg":

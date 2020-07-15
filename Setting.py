@@ -227,8 +227,9 @@ class Setting:
 
     def fix_ids(self):
         self.ids = []
-        random_offset = np.random.randint(0, len(self.train_dataset))
+
         for i in range(len(self.target)):
+            random_offset = np.random.randint(0, len(self.train_dataset))
             # searching for a sample with target label
             for i_s in range(len(self.train_dataset)):
                 sample_id = (i_s+random_offset)%len(self.train_dataset)
