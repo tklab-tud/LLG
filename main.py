@@ -1,5 +1,5 @@
 from Graph import *
-from Setting import Setting
+from Setting import *
 from examples import *
 import numpy as np
 
@@ -7,8 +7,18 @@ import numpy as np
 def main():
     ############## Build your attack here ######################
 
-    prediction_accuracy_vs_batchsize_line()
-    #mse_vs_iteration_line(False,1)
+    setting, graph = prediction_accuracy_vs_batchsize_line()
+    graph.show()
+    print("continue")
+    setting = Setting.load_json(None)
+    graph = Prediction_accuracy_graph(setting[0], "Batch-Size", "Accuracy")
+    for s in setting:
+        graph.setting = s
+        graph.add_prediction_acc(s.parameter["prediction"], s.parameter["batch_size"])
+
+    graph.plot_line()
+    graph.show()
+    print("done")
 
 
 

@@ -27,9 +27,11 @@ It adds additional features:
     [x] Visualization
 
 Todo:
+    [ ] Dump loader
+    [ ] Image creaetion from dump
+    [ ] MSE vs BS graph
     [ ] Poison Model to increase accuracy
-    [ ] Machine Learning as prediction strategy
-    [ ] Further prediction strategies
+    [ ] Further prediction strategies (abs, fake-mean, ml)
 
 
 

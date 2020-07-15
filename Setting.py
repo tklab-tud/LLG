@@ -1,5 +1,8 @@
 import datetime
+import json
 import time
+from tkinter import Tk
+from tkinter.filedialog import askopenfilenames
 
 import numpy as np
 import torch
@@ -78,7 +81,7 @@ class Setting:
             if self.parameter.__contains__(key):
                 self.parameter[key] = value
             elif key != "target" and key != "ids":
-                exit("Unknown Parameter: "+key)
+                exit("Unknown Parameter: " + key)
 
     def restore_default_parameter(self):
         self.parameter = {
@@ -103,6 +106,14 @@ class Setting:
             "epochs": 1,
             "max_epoch_size": 1000,
             "test_size": 1000,
+
+            # dataset settings
+            "shape_img": (32, 32),
+            "num_classes": 100,
+            "channel": 3,
+            "hidden": 768,
+            "hidden2": 12544
+
         }
 
     def check_cuda(self):
@@ -235,5 +246,28 @@ class Setting:
     def copy(self):
         kwargs = {}
         kwargs.update(**self.parameter)
-        kwargs.update({"ids":self.ids})
+        kwargs.update({"ids": self.ids})
         return Setting(**kwargs)
+
+    def load_json(self):
+        Tk().withdraw()
+        filenames = askopenfilenames(initialdir="./results", defaultextension='.json', filetypes=[('Json', '*.json')])
+        setting = []
+        for f_name in filenames:
+            with open(f_name) as f:
+                dump = json.load(f)
+                setting.append(Setting(**dump["parameter"]))
+                setting[-1].result.losses = dump["losses"]
+                setting[-1].result.mses = dump["mses"]
+                setting[-1].target = dump["target"]
+                setting[-1].ids = dump["ids"]
+                setting[-1].result.snapshots = dump["snapshots"]
+                setting[-1].predictor = Predictor(setting[-1])
+                setting[-1].predictor.correct = dump["prediction"]["correct"]
+                setting[-1].predictor.false = dump["prediction"]["false"]
+                setting[-1].predictor.acc = dump["prediction"]["accuracy"]
+                setting[-1].predictor.prediction = dump["prediction"]["prediction"]
+
+        return setting
+
+        # fix this
