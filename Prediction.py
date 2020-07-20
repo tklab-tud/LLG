@@ -2,6 +2,9 @@ import numpy as np
 import torch
 
 
+
+
+
 class Predictor:
     def __init__(self, setting):
         self.prediction = []
@@ -9,6 +12,7 @@ class Predictor:
         self.correct = 0
         self.false = 0
         self.acc = 0
+        self.gradients_for_prediction = None
 
     def predict(self):
         # abbreviaton
@@ -30,6 +34,8 @@ class Predictor:
                 self.simplified_prediction()
             elif parameter["prediction"] == "v1":
                 self.v1_prediction()
+            elif parameter["prediction"] == "v2":
+                self.v2_prediction()
             else:
                 exit("Unknown prediction strategy {}".format(parameter["prediction"]))
         elif parameter["batch_size"] != 1:
@@ -54,6 +60,7 @@ class Predictor:
                 self.false += 1
 
         self.acc = self.correct / (self.correct + self.false)
+        print(self.setting.parameter["prediction"], ": ACC: ",self.acc)
 
     def print_prediction(self):
         orig_label = self.setting.dlg.orig_label
@@ -76,6 +83,8 @@ class Predictor:
         else:
             exit("classic prediction does not support batch_size <> 1")
 
+        self.prediction.sort()
+
     def simplified_prediction(self):
         # Simplified Way as described in the paper
         # The algorithm from the paper splits the batch and evaluates the samples individually
@@ -94,6 +103,8 @@ class Predictor:
                 tmp_setting.configure(ids=[self.setting.ids[b]])
                 self.prediction.extend(tmp_setting.predict())
 
+        self.prediction.sort()
+
 
 
     def random_prediction(self):
@@ -102,17 +113,22 @@ class Predictor:
         for _ in range(parameter["batch_size"]):
             self.prediction.append(np.random.randint(0, parameter["num_classes"]))
 
+        self.prediction.sort()
+
+
+
     def v1_prediction(self):
         # New way, first idea, choosing smallest values as prediction
         parameter = self.setting.parameter
 
+
         # Version 1 improvement suggestion
-        gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
+        self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
         candidates = []
         mean = 0
 
         # filter negative values
-        for i_cg, class_gradient in enumerate(gradients_for_prediction):
+        for i_cg, class_gradient in enumerate(self.gradients_for_prediction):
             if class_gradient < 0:
                 candidates.append((i_cg, class_gradient))
                 mean += class_gradient
@@ -127,8 +143,67 @@ class Predictor:
         # predict the rest
         for _ in range(parameter["batch_size"] - len(self.prediction)):
             # add minimal candidat, likely to be doubled, to prediction
-            min_id = torch.argmin(gradients_for_prediction).item()
+            min_id = torch.argmin(self.gradients_for_prediction).item()
             self.prediction.append(min_id)
 
             # add the mean value of one accurance to the candidate
-            gradients_for_prediction[min_id] = gradients_for_prediction[min_id].add(-mean)
+            self.gradients_for_prediction[min_id] = self.gradients_for_prediction[min_id].add(-mean)
+
+        self.prediction.sort()
+
+    def v2_prediction(self):
+        # Version 2 includes Gradient-Substraction
+        parameter = self.setting.parameter
+
+        self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
+        candidates = []
+        mean = 0
+
+        # Gradient-Substraction
+        netbias = self.get_netbias()
+
+        self.gradients_for_prediction -= netbias
+
+        # filter negative values
+        for i_cg, class_gradient in enumerate(self.gradients_for_prediction):
+            if class_gradient < 0:
+                candidates.append((i_cg, class_gradient))
+                mean += class_gradient
+
+        # mean value
+        mean /= parameter["batch_size"]
+
+        # save predictions
+        for (i_c, _) in candidates:
+            self.prediction.append(i_c)
+
+        # predict the rest
+        for _ in range(parameter["batch_size"] - len(self.prediction)):
+            # add minimal candidat, likely to be doubled, to prediction
+            min_id = torch.argmin(self.gradients_for_prediction).item()
+            self.prediction.append(min_id)
+
+            # add the mean value of one accurance to the candidate
+            self.gradients_for_prediction[min_id] = self.gradients_for_prediction[min_id].add(-mean)
+
+        self.prediction.sort()
+
+    def get_netbias(self):
+        tmp_setting = self.setting.copy()
+        tmp_setting.model = self.setting.model
+        parameter = self.setting.parameter
+        tmp_gradients = []
+
+
+        for i in range(100):
+            tmp_setting.configure(target=[])
+            tmp_setting.dlg.victim_side()
+            tmp_gradients.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy())
+
+        bias = np.mean(tmp_gradients, 0)
+        i_m = np.argmax(bias)
+
+        netbias = torch.Tensor([0]*parameter["num_classes"]).to(self.setting.device)
+        netbias[i_m] = bias[i_m].item()
+
+        return netbias

@@ -6,8 +6,8 @@ import numpy as np
 
 def main():
     ############## Build your attack here ######################
-    """"
-    setting, graph = mse_vs_iteration_line(True, 16)
+
+    setting, graph = prediction_accuracy_vs_batchsize_line(False)
     """
 
     setting = Setting.load_json(None)
@@ -21,7 +21,7 @@ def main():
 
         graph.add_all_mses(label)
     graph.plot_line()
-
+    """
 
     graph.show()
     print("done")
