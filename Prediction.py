@@ -2,9 +2,6 @@ import numpy as np
 import torch
 
 
-
-
-
 class Predictor:
     def __init__(self, setting):
         self.prediction = []
@@ -44,8 +41,6 @@ class Predictor:
             print("DLG needs to be run first in order to make predictions. Starting Attack")
             self.setting.attack()
 
-
-
         self.prediction.sort()
 
         orig_label = self.setting.dlg.orig_label.data.tolist()
@@ -60,7 +55,7 @@ class Predictor:
                 self.false += 1
 
         self.acc = self.correct / (self.correct + self.false)
-        print(self.setting.parameter["prediction"], ": ACC: ",self.acc)
+        print(self.setting.parameter["prediction"], ": ACC: ", self.acc)
 
     def print_prediction(self):
         orig_label = self.setting.dlg.orig_label
@@ -105,8 +100,6 @@ class Predictor:
 
         self.prediction.sort()
 
-
-
     def random_prediction(self):
         parameter = self.setting.parameter
 
@@ -115,17 +108,15 @@ class Predictor:
 
         self.prediction.sort()
 
-
-
     def v1_prediction(self):
         # New way, first idea, choosing smallest values as prediction
         parameter = self.setting.parameter
-
 
         # Version 1 improvement suggestion
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
         candidates = []
         mean = 0
+
 
         # filter negative values
         for i_cg, class_gradient in enumerate(self.gradients_for_prediction):
@@ -157,24 +148,20 @@ class Predictor:
 
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
         candidates = []
-        mean = -230/parameter["batch_size"]
 
         # backup negative values
         for i_cg, class_gradient in enumerate(self.gradients_for_prediction):
             if class_gradient < 0:
                 candidates.append((i_cg, class_gradient))
 
-
         # NetBias
-        netbias = self.get_netbias()
+        netbias, mean = self.get_netbias()
         self.gradients_for_prediction -= netbias
-
 
         # save predictions
         for (i_c, _) in candidates:
             self.prediction.append(i_c)
             self.gradients_for_prediction[i_c] = self.gradients_for_prediction[i_c].add(-mean)
-
 
         # predict the rest
         for _ in range(parameter["batch_size"] - len(self.prediction)):
@@ -188,16 +175,24 @@ class Predictor:
         self.prediction.sort()
 
     def get_netbias(self):
+        # create a new setting
         tmp_setting = self.setting.copy()
         tmp_setting.model = self.setting.model
         tmp_gradients = []
 
-
+        # calculate bias
         for i in range(100):
             tmp_setting.configure(target=[])
             tmp_setting.dlg.victim_side()
             tmp_gradients.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy())
 
+        # get the impact
+        tmp_setting.configure(target=[0]*self.setting.parameter["batch_size"])
+        tmp_setting.dlg.victim_side()
+        impact = torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy()[0]
+        impact /= self.setting.parameter["batch_size"]
+
+
         bias = np.mean(tmp_gradients, 0)
 
-        return torch.Tensor(bias).to(self.setting.device)
+        return torch.Tensor(bias).to(self.setting.device), impact
