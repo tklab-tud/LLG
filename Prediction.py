@@ -157,25 +157,24 @@ class Predictor:
 
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
         candidates = []
-        mean = 0
+        mean = -230/parameter["batch_size"]
 
-        # Gradient-Substraction
-        netbias = self.get_netbias()
-
-        self.gradients_for_prediction -= netbias
-
-        # filter negative values
+        # backup negative values
         for i_cg, class_gradient in enumerate(self.gradients_for_prediction):
             if class_gradient < 0:
                 candidates.append((i_cg, class_gradient))
-                mean += class_gradient
 
-        # mean value
-        mean /= parameter["batch_size"]
+
+        # NetBias
+        netbias = self.get_netbias()
+        self.gradients_for_prediction -= netbias
+
 
         # save predictions
         for (i_c, _) in candidates:
             self.prediction.append(i_c)
+            self.gradients_for_prediction[i_c] = self.gradients_for_prediction[i_c].add(-mean)
+
 
         # predict the rest
         for _ in range(parameter["batch_size"] - len(self.prediction)):
@@ -191,7 +190,6 @@ class Predictor:
     def get_netbias(self):
         tmp_setting = self.setting.copy()
         tmp_setting.model = self.setting.model
-        parameter = self.setting.parameter
         tmp_gradients = []
 
 
@@ -201,9 +199,5 @@ class Predictor:
             tmp_gradients.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy())
 
         bias = np.mean(tmp_gradients, 0)
-        i_m = np.argmax(bias)
 
-        netbias = torch.Tensor([0]*parameter["num_classes"]).to(self.setting.device)
-        netbias[i_m] = bias[i_m].item()
-
-        return netbias
+        return torch.Tensor(bias).to(self.setting.device)

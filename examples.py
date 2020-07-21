@@ -1,5 +1,5 @@
 import torch
-
+import time
 from Graph import *
 from Setting import Setting
 
@@ -31,8 +31,9 @@ def prediction_accuracy_vs_batchsize_line(biased=False):
     prediction_string = ""
     maxbs = 33
     reinit = False
-
+    global_id = 0
     setting = Setting(log_interval=1, use_seed=False)
+
 
     for bs in range(1, maxbs):
         print("\nBS ", bs)
@@ -53,11 +54,12 @@ def prediction_accuracy_vs_batchsize_line(biased=False):
                     setting.configure(batch_size=bs, prediction=strat, target=list(target), run_name=run_name)
 
                 graph.setting = setting
+                setting.reset_seeds()
                 setting.predict()
                 graph.add_prediction_acc(strat, bs)
                 grads = setting.predictor.gradients_for_prediction
 
-                prediction_string += strat + "; " + str(i) + "; "
+                prediction_string += strat + "; " + str(i) + "; " + str(global_id) + "; "
                 prediction_string += "; ".join(["{0:,.2f}".format(x) for x in grads]) + "; "
                 prediction_string += "; " + "{0:,.2f}".format(setting.predictor.acc) + "; "
                 prediction_string += "; ".join([str(x) for x in list(setting.predictor.prediction)]) + "; " * (
@@ -66,6 +68,8 @@ def prediction_accuracy_vs_batchsize_line(biased=False):
                 origlabels.sort()
                 prediction_string += "; ".join([str(x.item()) for x in origlabels])
                 prediction_string += "\n"
+
+                global_id += 1
 
     prediction_string = prediction_string.replace(".", ",")
 
