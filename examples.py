@@ -25,7 +25,7 @@ def prediction_accuracy_vs_batchsize_line(biased=False):
                       )
 
     graph = Prediction_accuracy_graph(setting, "Batch-Size", "Accuracy")
-    maxbs = 9
+    maxbs = 129
     reinit = False
     global_id = 0
     setting = Setting(log_interval=1, use_seed=False)
@@ -44,7 +44,7 @@ def prediction_accuracy_vs_batchsize_line(biased=False):
         else:
             target = []
 
-        for strat in ["v1", "v2", "random"]:
+        for strat in ["v1", "v2"]:
 
             for i in range(1):
 

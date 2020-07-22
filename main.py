@@ -7,21 +7,7 @@ import numpy as np
 def main():
     ############## Build your attack here ######################
 
-    setting, graph = prediction_accuracy_vs_batchsize_line(False)
-    """
-
-    setting = Setting.load_json(None)
-    graph = Mses_vs_Iterations_graph(setting[0], "Iterations", "MSE")
-    for s in setting:
-        graph.setting = s
-        if s.parameter["improved"]:
-            label = s.parameter["prediction"]
-        else:
-            label = "dlg"
-
-        graph.add_all_mses(label)
-    graph.plot_line()
-    """
+    setting, graph = prediction_accuracy_vs_batchsize_line(True)
 
     graph.show()
     print("done")

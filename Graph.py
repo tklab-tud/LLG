@@ -31,6 +31,7 @@ class Graph:
             self.subplot.bar(dat[0], dat[1], 0.5, color="blue")
 
     def plot_line(self):
+        self.subplot.clear()
         self.take_average()
         # For every line
         for label in dict.fromkeys([label for (label, _, _) in self.data]):

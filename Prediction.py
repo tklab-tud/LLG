@@ -175,24 +175,25 @@ class Predictor:
         self.prediction.sort()
 
     def get_netbias(self):
+        parameter = self.setting.parameter
         # create a new setting
         tmp_setting = self.setting.copy()
         tmp_setting.model = self.setting.model
         tmp_gradients = []
+        impact = 0
 
-        # calculate bias
-        for i in range(100):
-            tmp_setting.configure(target=[])
+        # calculate bias and impact
+        for i in range(parameter["num_classes"]):
+            tmp_setting.configure(target=[i]*parameter["batch_size"])
             tmp_setting.dlg.victim_side()
             tmp_gradients.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy())
+            impact += torch.sum(tmp_setting.dlg.gradient[-2], dim=-1)[i].item()
 
-        # get the impact
-        tmp_setting.configure(target=[0]*self.setting.parameter["batch_size"])
-        tmp_setting.dlg.victim_side()
-        impact = torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy()[0]
-        impact /= self.setting.parameter["batch_size"]
+        bias = torch.Tensor(np.mean(tmp_gradients, 0)).to(self.setting.device)
+        impact /= (parameter["num_classes"] * parameter["batch_size"])
+        return bias, impact*1.1
 
 
-        bias = np.mean(tmp_gradients, 0)
 
-        return torch.Tensor(bias).to(self.setting.device), impact
+
+
