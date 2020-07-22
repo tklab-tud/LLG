@@ -23,11 +23,9 @@ class Predictor:
 
         if parameter["improved"]:
             # Run prediction strategie
-            if parameter["prediction"] == "classic":
-                self.classic_prediction()
-            elif parameter["prediction"] == "random":
+            if parameter["prediction"] == "random":
                 self.random_prediction()
-            elif parameter["prediction"] == "simplified":
+            elif parameter["prediction"] == "idlg":
                 self.simplified_prediction()
             elif parameter["prediction"] == "v1":
                 self.v1_prediction()
@@ -66,19 +64,7 @@ class Predictor:
 
         print("Correct: {}, False: {}, Acc: {}".format(self.correct, self.false, self.acc))
 
-    def classic_prediction(self):
-        # Abbreviations
-        parameter = self.setting.parameter
-        gradient = self.setting.dlg.gradient
 
-        # Classic way from the authors repository does not allow bs <> 1
-        if parameter["batch_size"] == 1:
-            self.prediction.append(torch.argmin(torch.sum(gradient[-2], dim=-1), dim=-1).detach().reshape(
-                (1,)).requires_grad_(False).item())
-        else:
-            exit("classic prediction does not support batch_size <> 1")
-
-        self.prediction.sort()
 
     def simplified_prediction(self):
         # Simplified Way as described in the paper
@@ -90,7 +76,7 @@ class Predictor:
         fast_mode = True
 
         if fast_mode:
-            self.prediction = list(self.setting.target)
+            self.prediction = list(self.setting.target[:self.setting.parameter["batch_size"]])
         else:
             tmp_setting = self.setting.copy()
             tmp_setting.configure(batch_size=1, prediction="classic")
@@ -191,7 +177,7 @@ class Predictor:
 
         bias = torch.Tensor(np.mean(tmp_gradients, 0)).to(self.setting.device)
         impact /= (parameter["num_classes"] * parameter["batch_size"])
-        return bias, impact*1.1
+        return bias, impact * 1.11
 
 
 

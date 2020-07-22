@@ -15,7 +15,7 @@ class Dlg:
                                       setting.parameter["shape_img"][0],
                                       setting.parameter["shape_img"][1]).to(setting.device)
         self.orig_label = torch.Tensor(setting.parameter["batch_size"]).long().to(setting.device).view(
-            setting.parameter["batch_size"], )
+            setting.parameter["batch_size"])
         self.dummy_data = torch.randn(
             (setting.parameter["batch_size"], setting.parameter["channel"], setting.parameter["shape_img"][0],
              setting.parameter["shape_img"][1])).to(
@@ -33,7 +33,9 @@ class Dlg:
             self.orig_data[i_i] = self.setting.train_dataset[id][0]
             self.orig_label[i_i] = self.setting.train_dataset[id][1]
 
+
         # calculate orig gradients
+
         orig_out = model(self.orig_data)
         y = self.criterion(orig_out, self.orig_label)
         grad = torch.autograd.grad(y, model.parameters())

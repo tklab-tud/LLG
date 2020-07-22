@@ -69,9 +69,10 @@ class Setting:
             elif key == "max_epoch_size" and value == 0:
                 self.parameter["max_epoch_size"] = len(self.train_dataset) / self.parameter["batch_size"]
             elif key == "batch_size":
+                self.parameter["batch_size"] = value
                 self.fill_ids()
                 self.fix_targets()
-                self.update_parameter(**kwargs)
+                #self.update_parameter(**kwargs)
             else:
                 self.update_parameter(**{key: kwargs[key]})
 
@@ -238,6 +239,9 @@ class Setting:
                     self.ids.append(sample_id)
                     break
 
+        if len(self.ids) != self.parameter["batch_size"]:
+            exit("could not find enough samples in the dataset")
+
     def fill_targets(self):
         # fill missing targets if underspecified
 
@@ -248,6 +252,7 @@ class Setting:
         # fill missing targets if underspecified
         for i in range(self.parameter["batch_size"] - len(self.ids)):
             self.ids.append(np.random.randint(0, len(self.train_dataset)))
+
 
     def copy(self):
         kwargs = {}

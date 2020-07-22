@@ -44,7 +44,7 @@ def prediction_accuracy_vs_batchsize_line(biased=False):
         else:
             target = []
 
-        for strat in ["v1", "v2"]:
+        for strat in ["v2"]:
 
             for i in range(1):
 
@@ -135,23 +135,25 @@ def mse_vs_iteration_line(biased=False, bs=1):
         target = []
 
     # idlg strats
-    for strat in ["v1", "simplified", "dlg"]:
+    for strat in ["v1", "v2", "simplified", "dlg"]:
         setting.reset_seeds()
         for n in range(1):
             run_name = "{}{:2.0f}".format(strat, n)
+            print(run_name)
 
             if strat == "dlg":
                 setting.configure(improved=False, target=target, run_name=run_name)
             else:
                 setting.configure(improved=True, prediction=strat, target=target, run_name=run_name)
 
-            print(run_name, setting.ids)
             setting.attack()
             graph.add_all_mses(strat)
             setting.store_everything()
             setting.delete()
 
-    graph.plot_line()
+        graph.plot_line()
+        graph.show()
+
     graph.save("Mses_vs_Iterations")
 
     return setting, graph
@@ -174,7 +176,7 @@ def store_and_load():
 
 
 def perfect_prediction_line(biased=False):
-    setting = Setting(improved=True, prediction="v1", use_seed=False)
+    setting = Setting(use_seed=False)
     graph = Prediction_accuracy_graph(setting, "Batch-Size", "Perfect Predictions")
     for bs in range(1, 32):
 
@@ -183,17 +185,60 @@ def perfect_prediction_line(biased=False):
         else:
             target = []
 
-        n = 100
-        cnt = 0
-        for i in range(n):
-            setting.configure(target=target, batch_size=bs)
-            setting.predict()
-            if setting.predictor.acc == 1.0:
-                cnt += 1
+        n = 10
+        for strat in ["v1", "v2"]:
+            print("bs ", bs, "strat ", strat)
+            cnt = 0
+            for i in range(n):
+                setting.configure(target=target,batch_size=bs,  prediction=strat)
+                setting.predict()
+                if setting.predictor.acc == 1.0:
+                    cnt += 1
 
-        graph.add_datapoint("v1", cnt / n, bs)
+            graph.add_datapoint(strat, cnt / n, bs)
 
     graph.plot_line()
     graph.show()
+
+    return setting, graph
+
+
+def mse_vs_batchsize_line(biased=False, iterations=10):
+    setting = Setting(dlg_iterations=iterations,
+                      log_interval=1,
+                      use_seed=True,
+                      seed=1340,
+                      dlg_lr=1,
+                      )
+
+    graph = Graph(setting, "Iterations", "MSE")
+
+    for bs in [1,16,32,64,128]:
+        if biased:
+            target = (bs // 2) * [0] + (bs // 4) * [1]
+        else:
+            target = []
+
+
+
+        for strat in ["v2", "idlg", "dlg"]:
+            setting.reset_seeds()
+            run_name = "{} {}".format(strat, bs)
+            print(run_name)
+
+            if strat == "dlg":
+                setting.configure(improved=False, target=target, run_name=run_name, batch_size=bs)
+            else:
+                setting.configure(improved=True, prediction=strat, target=target, run_name=run_name, batch_size=bs)
+
+            setting.attack()
+            graph.add_datapoint(strat, np.mean(setting.result.mses,0)[-1], bs)
+            setting.delete()
+
+
+
+    graph.plot_line()
+    graph.show()
+    graph.save("Mses_vs_Batchsize")
 
     return setting, graph

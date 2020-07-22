@@ -7,7 +7,7 @@ import numpy as np
 def main():
     ############## Build your attack here ######################
 
-    setting, graph = prediction_accuracy_vs_batchsize_line(True)
+    setting, graph = mse_vs_batchsize_line()
 
     graph.show()
     print("done")
