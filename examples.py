@@ -1,5 +1,3 @@
-import torch
-import time
 from Graph import *
 from Setting import Setting
 
@@ -27,13 +25,17 @@ def prediction_accuracy_vs_batchsize_line(biased=False):
                       )
 
     graph = Prediction_accuracy_graph(setting, "Batch-Size", "Accuracy")
-
-    prediction_string = ""
-    maxbs = 33
+    maxbs = 9
     reinit = False
     global_id = 0
     setting = Setting(log_interval=1, use_seed=False)
-
+    prediction_string = "Strat; #try; #glo;"
+    for i in range(setting.parameter["num_classes"]):
+        prediction_string += "grad_" + str(i) + ";"
+    prediction_string += "Acc;Prediction"
+    for i in range(1,maxbs):
+        prediction_string += ";"
+    prediction_string += "Original\n"
 
     for bs in range(1, maxbs):
         print("\nBS ", bs)
@@ -42,7 +44,7 @@ def prediction_accuracy_vs_batchsize_line(biased=False):
         else:
             target = []
 
-        for strat in ["v1", "v2"]:
+        for strat in ["v1", "v2", "random"]:
 
             for i in range(1):
 
@@ -60,7 +62,8 @@ def prediction_accuracy_vs_batchsize_line(biased=False):
                 grads = setting.predictor.gradients_for_prediction
 
                 prediction_string += strat + "; " + str(i) + "; " + str(global_id) + "; "
-                prediction_string += "; ".join(["{0:,.2f}".format(x) for x in grads]) + "; "
+                prediction_string += "; ".join(["{0:,.2f}".format(x) for x in grads])
+                if strat == "random": prediction_string += "; " * (setting.parameter["num_classes"]-1)
                 prediction_string += "; " + "{0:,.2f}".format(setting.predictor.acc) + "; "
                 prediction_string += "; ".join([str(x) for x in list(setting.predictor.prediction)]) + "; " * (
                         maxbs - setting.parameter["batch_size"])

@@ -9,7 +9,7 @@ class Predictor:
         self.correct = 0
         self.false = 0
         self.acc = 0
-        self.gradients_for_prediction = None
+        self.gradients_for_prediction = []
 
     def predict(self):
         # abbreviaton
