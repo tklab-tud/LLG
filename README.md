@@ -37,7 +37,7 @@ Todo:
 
 Optional:
     [ ] Poison Model to increase accuracy
-    [ ] Further prediction strategies (abs, fake-mean, ml)
+    [ ] Further prediction strategie ML
 
 
 

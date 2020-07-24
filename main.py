@@ -4,7 +4,7 @@ from examples import *
 def main():
     ############## Build your attack here ######################
 
-    setting, graph = mse_vs_batchsize_line()
+    setting, graph = prediction_accuracy_vs_batchsize_line()
 
     #load_with_styles()
 
