@@ -184,6 +184,7 @@ class Result:
             os.makedirs(self.parameter["result_path"])
 
         # fill dictionary with parameter, data and prediction
+
         data_dic = {
             "parameter": self.parameter,
             "losses": self.losses,
@@ -195,7 +196,7 @@ class Result:
                 "prediction": self.setting.predictor.prediction,
             },
             "target": self.setting.target,
-            "ids": self.setting.ids,
+            "ids":self.setting.ids, #[x.item() for x in self.setting.ids],
             "snapshots": list(map(lambda x: x.tolist(), self.snapshots))
         }
 

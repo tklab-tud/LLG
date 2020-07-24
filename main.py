@@ -1,7 +1,4 @@
-from Graph import *
-from Setting import *
 from examples import *
-import numpy as np
 
 
 def main():
@@ -9,10 +6,7 @@ def main():
 
     setting, graph = mse_vs_batchsize_line()
 
-    graph.show()
-    print("done")
-
-
+    #load_with_styles()
 
 
     ############################################################

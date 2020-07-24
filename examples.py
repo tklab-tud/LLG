@@ -23,17 +23,15 @@ def prediction_accuracy_vs_batchsize_line(biased=False):
     setting = Setting(log_interval=1,
                       use_seed=False,
                       )
-
     graph = Prediction_accuracy_graph(setting, "Batch-Size", "Accuracy")
     maxbs = 129
     reinit = False
     global_id = 0
-    setting = Setting(log_interval=1, use_seed=False)
     prediction_string = "Strat; #try; #glo;"
     for i in range(setting.parameter["num_classes"]):
         prediction_string += "grad_" + str(i) + ";"
     prediction_string += "Acc;Prediction"
-    for i in range(1,maxbs):
+    for i in range(1, maxbs):
         prediction_string += ";"
     prediction_string += "Original\n"
 
@@ -59,11 +57,13 @@ def prediction_accuracy_vs_batchsize_line(biased=False):
                 setting.reset_seeds()
                 setting.predict()
                 graph.add_prediction_acc(strat, bs)
-                grads = setting.predictor.gradients_for_prediction
+                setting.store_data()
 
+
+                grads = setting.predictor.gradients_for_prediction
                 prediction_string += strat + "; " + str(i) + "; " + str(global_id) + "; "
                 prediction_string += "; ".join(["{0:,.2f}".format(x) for x in grads])
-                if strat == "random": prediction_string += "; " * (setting.parameter["num_classes"]-1)
+                if strat == "random": prediction_string += "; " * (setting.parameter["num_classes"] - 1)
                 prediction_string += "; " + "{0:,.2f}".format(setting.predictor.acc) + "; "
                 prediction_string += "; ".join([str(x) for x in list(setting.predictor.prediction)]) + "; " * (
                         maxbs - setting.parameter["batch_size"])
@@ -101,7 +101,7 @@ def prediction_accuracy_vs_strategie_bar(biased=False):
     else:
         target = []
 
-    for strat in ["v1", "random", "simplified"]:
+    for strat in ["v1", "random", "idlg"]:
         for i in range(2):
             run_name = "{}{:2.0f}".format(strat, i)
             if strat == "dlg":
@@ -119,7 +119,7 @@ def prediction_accuracy_vs_strategie_bar(biased=False):
 
 
 def mse_vs_iteration_line(biased=False, bs=1):
-    setting = Setting(dlg_iterations=60,
+    setting = Setting(dlg_iterations=20,
                       log_interval=1,
                       batch_size=bs,
                       use_seed=True,
@@ -135,21 +135,24 @@ def mse_vs_iteration_line(biased=False, bs=1):
         target = []
 
     # idlg strats
-    for strat in ["v1", "v2", "simplified", "dlg"]:
-        setting.reset_seeds()
-        for n in range(1):
-            run_name = "{}{:2.0f}".format(strat, n)
-            print(run_name)
+    n = 0
 
-            if strat == "dlg":
-                setting.configure(improved=False, target=target, run_name=run_name)
-            else:
-                setting.configure(improved=True, prediction=strat, target=target, run_name=run_name)
+    ids = np.random.randint(0, len(setting.train_dataset), setting.parameter["batch_size"])
+    ids = [x.item() for x in ids]
+    for strat in [ "v2", "idlg", "dlg"]:
+        run_name = "_{}_{:3.0f}".format(strat, n)
+        n += 1
+        print(run_name)
 
-            setting.attack()
-            graph.add_all_mses(strat)
-            setting.store_everything()
-            setting.delete()
+        if strat == "dlg":
+            setting.configure(improved=False, target=target, run_name=run_name, ids=ids)
+        else:
+            setting.configure(improved=True, prediction=strat, target=target, run_name=run_name, ids=ids)
+
+        setting.attack()
+        graph.add_all_mses(strat)
+        setting.store_data()
+        setting.delete()
 
         graph.plot_line()
         graph.show()
@@ -190,7 +193,7 @@ def perfect_prediction_line(biased=False):
             print("bs ", bs, "strat ", strat)
             cnt = 0
             for i in range(n):
-                setting.configure(target=target,batch_size=bs,  prediction=strat)
+                setting.configure(target=target, batch_size=bs, prediction=strat)
                 setting.predict()
                 if setting.predictor.acc == 1.0:
                     cnt += 1
@@ -203,7 +206,7 @@ def perfect_prediction_line(biased=False):
     return setting, graph
 
 
-def mse_vs_batchsize_line(biased=False, iterations=10):
+def mse_vs_batchsize_line(biased=False, iterations=30):
     setting = Setting(dlg_iterations=iterations,
                       log_interval=1,
                       use_seed=True,
@@ -213,13 +216,11 @@ def mse_vs_batchsize_line(biased=False, iterations=10):
 
     graph = Graph(setting, "Iterations", "MSE")
 
-    for bs in [1,16,32,64,128]:
+    for bs in [16, 32, 64]:
         if biased:
             target = (bs // 2) * [0] + (bs // 4) * [1]
         else:
             target = []
-
-
 
         for strat in ["v2", "idlg", "dlg"]:
             setting.reset_seeds()
@@ -232,13 +233,51 @@ def mse_vs_batchsize_line(biased=False, iterations=10):
                 setting.configure(improved=True, prediction=strat, target=target, run_name=run_name, batch_size=bs)
 
             setting.attack()
-            graph.add_datapoint(strat, np.mean(setting.result.mses,0)[-1], bs)
+            graph.add_datapoint(strat, np.mean(setting.result.mses, 0)[-1], bs)
+            setting.store_data()
             setting.delete()
-
-
 
     graph.plot_line()
     graph.show()
     graph.save("Mses_vs_Batchsize")
 
     return setting, graph
+
+
+def load_with_styles():
+    setting = Setting.load_json(None)
+    graph = Mses_vs_Iterations_graph(setting[0], "Batch-Size", "Accuracy")
+
+    i = 0
+    for s in setting:
+        graph.setting = s
+        graph.add_datapoint(s.parameter["prediction"], s.predictor.false, s.parameter["batch_size"])
+
+
+    style = [(0, (1, 10)), (0, (1, 1)), (0, (1, 1)), (0, (5, 10)), (0, (5, 5)), (0, (5, 1)), (0, (3, 10, 1, 10)),
+             (0, (3, 5, 1, 5)), (0, (3, 1, 1, 1)), (0, (3, 5, 1, 5, 1, 5)), (0, (3, 10, 1, 10, 1, 10)),
+             (0, (3, 1, 1, 1, 1, 1))]
+    for i_l, label in enumerate(dict.fromkeys([label for (label, _, _) in graph.data])):
+        style = style[i_l % 12]
+        graph.plot_line(style=style, clear=False, color=color_map(label))
+        graph.data = []
+        i += 1
+
+    #graph.subplot.set_ylim(0, 0.5)
+    #graph.subplot.set_xlim(0, 10)
+
+    graph.show()
+    print("done")
+    return setting, graph
+
+
+def color_map(label):
+    return {
+        "v1": 'b',
+        "v2": 'g',
+        "v3": 'c',
+        "v4": 'y',
+        "v5": 'k',
+        "dlg": 'r',
+        "idlg": 'm',
+    }[label]
