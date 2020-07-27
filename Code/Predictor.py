@@ -34,7 +34,7 @@ class Predictor:
             else:
                 exit("Unknown prediction strategy {}".format(parameter["prediction"]))
         elif parameter["batch_size"] != 1:
-            exit("DLG Prediction ist not defined for batchsizes other than one")
+            exit("DLG Prediction ist not defined for batch sizes other than one")
         elif len(self.prediction) == 0:
             print("DLG needs to be run first in order to make predictions. Starting Attack")
             self.setting.attack()

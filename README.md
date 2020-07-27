@@ -1,18 +1,20 @@
-# i²DLG - Indeed improved deep leakage from gradients
+# Further improved deep leakage from gradients
 
-This framework implements the iDLG Attack from
+This framework extends the iDLG Attack from
 [iDLG: Improved Deep Leakage from Gradients](https://arxiv.org/pdf/2001.02610.pdf) by Zhao et Al.
 
 It is build upon the authors [implementation](https://github.com/PatrickZH/Improved-Deep-Leakage-from-Gradients)
 
 As the iDLG attack states it "works with a simplified scenario of sharing gradients of every datum. In other words, iDLG can identify the ground-truth labels only if gradients w.r.t. every sample in a training batch are provided."
 
-In other words this attack does not work with batch sizes other than 1. It fails to predict the labels from an intercepted gradient.
-In their workaround they assume the victim will evaluate its data not as batch but one by one and just give away the resulting gradients.
-This is an unrealistic scenario. The concept of having batch sizes other than 1 inherits to pool the gradients (e.g. by calculating the mean value).
+In other words this attack does not work with batch sizes other than 1.
+In their workaround they split the victim's batch into single samples. Those samples get evaluated by their label prediction method.
+In the further steps they recreate images from the predicted labels and the gradients of the pooled batch.
+
+This is an unrealistic scenario. The concept of having batch sizes other than 1 inherits to pool the gradients (e.g. by calculating the mean value or the sum) during the learning process.
 The result is used to update the model or in case of federated learning might be shared to the server. Gradients of single samples are not shared.
 
-This framework tries to fill this gap with the exploration of different label prediction strategies.
+This framework tries to fill this gap with the exploration of different label prediction strategies for batch sizes larger than 1.
 
 
 It adds additional features:
@@ -29,11 +31,11 @@ It adds additional features:
     [x] Visualization
     [x] Dump loader
     [x] Image creaetion from dump
-    [x] MSE vs BS graph
 
 Todo:
+    [ ] Clean up code & doc
     [ ] Improve performance of Dataloading
-    [ ] Clean up code
+
 
 Optional:
     [ ] Poison Model to increase accuracy

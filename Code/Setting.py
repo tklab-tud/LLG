@@ -10,7 +10,7 @@ import torchvision
 from torchvision import datasets
 
 from Dlg import Dlg
-from Prediction import Predictor
+from Predictor import Predictor
 from Result import Result
 from net import Net1, Net2, weights_init
 from test import test
@@ -28,7 +28,7 @@ class Setting:
         self.model = None
         self.dlg = None
         self.check_cuda()
-        self.predictor = None
+        self.predictor = Predictor(self)
 
         self.parameter = {}
 

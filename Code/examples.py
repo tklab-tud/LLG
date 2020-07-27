@@ -8,15 +8,15 @@ def simple_attack():
                       batch_size=4,
                       use_seed=False,
                       dlg_lr=0.5,
-                      )
+                      prediction="DLG",
+                      improved=False
 
-    graph = Graph(setting, "Iterations", "MSE")
+                      )
 
     setting.attack()
     setting.show_composed_image()
-    graph.add_mses()
-    graph.show()
-    return setting, graph
+
+    return setting
 
 
 def prediction_accuracy_vs_batchsize_line(biased=False):
@@ -38,7 +38,7 @@ def prediction_accuracy_vs_batchsize_line(biased=False):
     for bs in range(1, maxbs):
         print("\nBS ", bs)
         if biased:
-            target = (bs // 2) * [0] + (bs // 4) * [1]
+            target = (bs // 2) * [4] + (bs // 4) * [2]
         else:
             target = []
 

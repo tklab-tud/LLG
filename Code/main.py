@@ -5,8 +5,8 @@ def main():
     ############## Build your attack here ######################
 
     setting, graph = prediction_accuracy_vs_batchsize_line(True)
-
     #load_with_styles()
+
 
 
     ############################################################

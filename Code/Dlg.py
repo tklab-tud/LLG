@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from Prediction import Predictor
+from Predictor import Predictor
 from Result import Result
 
 
@@ -71,7 +71,11 @@ class Dlg:
                     dummy_loss = - torch.mean(
                         torch.sum(torch.softmax(self.dummy_label, -1) * torch.log(torch.softmax(dummy_pred, -1)),
                                   dim=-1))
-                    self.setting.predictor.prediction = [torch.argmax(dummy_pred).item()]
+                    self.setting.predictor.prediction = [torch.argmin(dummy_pred).item()]
+                    s=""
+                    for x in dummy_pred:
+                        s += str(torch.argmax(x).item())+", "
+                    print(s)
                 else:
                     dummy_loss = self.criterion(dummy_pred, torch.Tensor(pred).long().to(device))
 
@@ -92,5 +96,6 @@ class Dlg:
                 current_mse = res.mses[-1].mean()
                 current_loss = closure().item()
                 #print('{: 3d} loss = {:1.8f} mse = {:1.8f}'.format(iteration, current_loss, current_mse))
+
         res.update_figures()
         self.setting.result = res
