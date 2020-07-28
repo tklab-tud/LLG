@@ -8,7 +8,6 @@ def simple_attack():
                       batch_size=4,
                       use_seed=False,
                       dlg_lr=0.5,
-                      prediction="DLG",
                       improved=False
 
                       )
@@ -22,6 +21,7 @@ def simple_attack():
 def prediction_accuracy_vs_batchsize_line(biased=False):
     setting = Setting(log_interval=1,
                       use_seed=False,
+                      dataset="MNIST",
                       )
     graph = Prediction_accuracy_graph(setting, "Batch-Size", "Accuracy")
     maxbs = 129
@@ -85,6 +85,78 @@ def prediction_accuracy_vs_batchsize_line(biased=False):
     graph.plot_line()
     graph.save("Accuracy_vs_Batchsize_Biased")
     return setting, graph
+
+
+def prediction_accuracy_fixed_bs(biased=False):
+    setting = Setting(log_interval=1,
+                      use_seed=False,
+                      dataset="MNIST",
+                      batch_size = 128
+                      )
+    graph = Prediction_accuracy_graph(setting, "Batch-Size", "#Try")
+    maxbs = 129
+    reinit = False
+    global_id = 0
+    prediction_string = "Strat; #try; #glo;"
+    for i in range(setting.parameter["num_classes"]):
+        prediction_string += "grad_" + str(i) + ";"
+    prediction_string += "Acc;Prediction"
+    for i in range(1, maxbs):
+        prediction_string += ";"
+    prediction_string += "Original\n"
+
+    for bs in [128]:
+        print("\nBS ", bs)
+        if biased:
+            target = (bs // 2) * [4] + (bs // 4) * [2]
+        else:
+            target = []
+
+        for strat in ["v2"]:
+
+            for i in range(10):
+
+                run_name = "{}{:2.0f}{:2.0f}".format(strat, bs, i)
+                if reinit:
+                    setting = Setting(log_interval=1, use_seed=False, batch_size=bs, prediction=strat,
+                                      target=list(target), run_name=run_name)
+                else:
+                    setting.configure(batch_size=bs, prediction=strat, target=list(target), run_name=run_name)
+
+                graph.setting = setting
+                setting.reset_seeds()
+                setting.predict()
+                graph.add_prediction_acc(strat, i)
+                setting.store_data()
+
+
+                grads = setting.predictor.gradients_for_prediction
+                prediction_string += strat + "; " + str(i) + "; " + str(global_id) + "; "
+                prediction_string += "; ".join(["{0:,.2f}".format(x) for x in grads])
+                if strat == "random": prediction_string += "; " * (setting.parameter["num_classes"] - 1)
+                prediction_string += "; " + "{0:,.2f}".format(setting.predictor.acc) + "; "
+                prediction_string += "; ".join([str(x) for x in list(setting.predictor.prediction)]) + "; " * (
+                        maxbs - setting.parameter["batch_size"])
+                origlabels = list(setting.dlg.orig_label)
+                origlabels.sort()
+                prediction_string += "; ".join([str(x.item()) for x in origlabels])
+                prediction_string += "\n"
+
+                global_id += 1
+
+    prediction_string = prediction_string.replace(".", ",")
+
+    if not os.path.exists(setting.parameter["result_path"]):
+        os.makedirs(setting.parameter["result_path"])
+
+    with open(setting.parameter["result_path"] + "prediction.csv", "w") as file:
+        file.write(prediction_string)
+
+    graph.plot_line()
+    graph.save("Accuracy")
+    return setting, graph
+
+
 
 
 def prediction_accuracy_vs_strategie_bar(biased=False):

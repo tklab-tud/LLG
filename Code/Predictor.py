@@ -64,8 +64,6 @@ class Predictor:
 
         print("Correct: {}, False: {}, Acc: {}".format(self.correct, self.false, self.acc))
 
-
-
     def simplified_prediction(self):
         # Simplified Way as described in the paper
         # The algorithm from the paper splits the batch and evaluates the samples individually
@@ -103,7 +101,6 @@ class Predictor:
         candidates = []
         mean = 0
 
-
         # filter negative values
         for i_cg, class_gradient in enumerate(self.gradients_for_prediction):
             if class_gradient < 0:
@@ -129,57 +126,62 @@ class Predictor:
         self.prediction.sort()
 
     def v2_prediction(self):
-        # Version 2 includes Gradient-Substraction
+        # Version 2 includes Offset and Meanimpact
         parameter = self.setting.parameter
 
+        # Get the gradients from the second last layer
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
-        candidates = []
 
-        # backup negative values
+        # backup negative values, but dont add them yet to our predictions
+        candidates = []
         for i_cg, class_gradient in enumerate(self.gradients_for_prediction):
             if class_gradient < 0:
                 candidates.append((i_cg, class_gradient))
 
-        # NetBias
-        netbias, mean = self.get_netbias()
-        self.gradients_for_prediction -= netbias
+        # create a new temporary setting for impact and offset calculation
+        tmp_setting = self.setting.copy()
+        tmp_setting.model = self.setting.model
+        tmp_gradients = []
+        impact = []
+
+        # for each class create a batch full of that classes samples
+        for i in range(parameter["num_classes"]):
+            tmp_setting.configure(target=[i] * parameter["batch_size"])
+
+            # calculate gradients for this batch
+            tmp_setting.dlg.victim_side()
+
+            # gather gradients from the second last layer and the value of the current classes gradient
+            tmp_gradients.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy())
+            impact.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1)[i].item())
+
+        # Take mean value as offset
+        offset = []
+        for i_class in range(parameter["num_classes"]):
+            uneffected_grads = list(tmp_gradients)
+            uneffected_grads.__delitem__(i_class)
+            offset.append(np.mean(uneffected_grads, 0)[i_class])
+
+        # get the mean impact by adding up the difference from the expected value
+        mean_impact = 0
+        for i_imp, imp in enumerate(impact):
+            mean_impact += imp - offset[i_imp]
+
+        mean_impact /= (parameter["num_classes"] * parameter["batch_size"])
+
+        # Subtract offset
+        self.gradients_for_prediction -= torch.Tensor(offset).to(self.setting.device)
 
         # save predictions
         for (i_c, _) in candidates:
             self.prediction.append(i_c)
-            self.gradients_for_prediction[i_c] = self.gradients_for_prediction[i_c].add(-mean)
+            self.gradients_for_prediction[i_c] = self.gradients_for_prediction[i_c].add(-mean_impact)
 
         # predict the rest
         for _ in range(parameter["batch_size"] - len(self.prediction)):
-            # add minimal candidat, likely to be doubled, to prediction
+            # choose smallest gradient and add it to the prediction
             min_id = torch.argmin(self.gradients_for_prediction).item()
             self.prediction.append(min_id)
 
-            # add the mean value of one accurance to the candidate
-            self.gradients_for_prediction[min_id] = self.gradients_for_prediction[min_id].add(-mean)
-
-        self.prediction.sort()
-
-    def get_netbias(self):
-        parameter = self.setting.parameter
-        # create a new setting
-        tmp_setting = self.setting.copy()
-        tmp_setting.model = self.setting.model
-        tmp_gradients = []
-        impact = 0
-
-        # calculate bias and impact
-        for i in range(parameter["num_classes"]):
-            tmp_setting.configure(target=[i]*parameter["batch_size"])
-            tmp_setting.dlg.victim_side()
-            tmp_gradients.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy())
-            impact += torch.sum(tmp_setting.dlg.gradient[-2], dim=-1)[i].item()
-
-        bias = torch.Tensor(np.mean(tmp_gradients, 0)).to(self.setting.device)
-        impact /= (parameter["num_classes"] * parameter["batch_size"])
-        return bias, impact * 1.11
-
-
-
-
-
+            # add the mean value the corresponding gradient
+            self.gradients_for_prediction[min_id] = self.gradients_for_prediction[min_id].add(-mean_impact)
