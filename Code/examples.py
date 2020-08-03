@@ -9,7 +9,7 @@ result_path = "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%
 
 def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
     setting = Setting(log_interval=1,
-                      use_seed=True,
+                      use_seed=False,
                       seed=1337,
                       dataset=dataset,)
 
