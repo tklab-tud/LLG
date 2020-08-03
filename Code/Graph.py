@@ -5,10 +5,8 @@ import numpy as np
 
 
 class Graph:
-    def __init__(self, setting, xlabel, ylabel):
-        self.setting = setting
+    def __init__(self, xlabel, ylabel):
         self.data = []
-
         self.fig, self.subplot = plt.subplots(1, 1)
         self.subplot.set_xlabel(xlabel)
         self.subplot.set_ylabel(ylabel)
@@ -67,12 +65,12 @@ class Graph:
             for x in dict[label]:
                 self.data.append((label, dict[label][x]["value"] / dict[label][x]["count"], x))
 
-    def save(self, path_name):
-        if not os.path.exists(self.setting.parameter["result_path"]):
-            os.makedirs(self.setting.parameter["result_path"])
-        self.fig.savefig(self.setting.parameter["result_path"] + "/" + path_name)
+    def save(self, path, name):
+        if not os.path.exists(path):
+            os.makedirs(path)
+        self.fig.savefig(path+name)
 
-
+"""
 class Mses_vs_Iterations_graph(Graph):
     def __init__(self, setting, xlabel, ylabel):
         super().__init__(setting, xlabel, ylabel)
@@ -104,3 +102,6 @@ class Prediction_accuracy_graph(Graph):
     def add_prediction_acc(self, label, x):
         acc = self.setting.predictor.acc
         self.add_datapoint(label, acc, x)
+
+
+"""

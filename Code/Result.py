@@ -18,14 +18,10 @@ class Result:
         self.composed_subplots = None
         self.separate_figs = []
         self.unprocessed = True
-        self.origin_data = None
-        self.origin_labels = None
+        self.origin_data = self.setting.parameter["orig_data"]
+        self.origin_labels = self.setting.parameter["orig_label"]
         plt.rcParams.update({'figure.max_open_warning': 0})
 
-    def set_origin(self, batch, labels):
-        self.origin_data = batch
-        self.origin_labels = labels
-        self.unprocessed = True
 
     def add_snapshot(self, batch):
         self.snapshots.append(batch)
@@ -176,43 +172,15 @@ class Result:
                     self.parameter["result_path"] + "Images{}/{:03d}s{:04d}.png".format(self.parameter["run_name"],
                                                                                         batch, snap))
 
-    def store_data(self):
-        if self.composed_fig is not None:
-            self.update_figures()
-
-        if not os.path.exists(self.parameter["result_path"]):
-            os.makedirs(self.parameter["result_path"])
-
-        # fill dictionary with parameter, data and prediction
-
-        data_dic = {
-            "parameter": self.parameter,
-            "losses": self.losses,
-            "mses": self.mses.tolist(),
-            "prediction": {
-                "correct": self.setting.predictor.correct,
-                "false": self.setting.predictor.false,
-                "accuracy": self.setting.predictor.acc,
-                "prediction": self.setting.predictor.prediction,
-            },
-            "target": self.setting.target,
-            "ids":self.setting.ids, #[x.item() for x in self.setting.ids],
-            "snapshots": list(map(lambda x: x.tolist(), self.snapshots))
-        }
-
-        # dump to json
-        with open(self.parameter["result_path"] + "data{}.json".format(self.parameter["run_name"]), "w") as file:
-            json.dump(data_dic, file)
 
     def delete(self):
         plt.close(self.composed_fig)
         for fig, _, _, _ in self.separate_figs:
             plt.close(fig)
 
-    def store_everything(self):
+    def store_reconstructed_images(self):
         self.store_composed_image()
         self.store_separate_images()
-        self.store_data()
 
 
 

@@ -21,27 +21,23 @@ class Predictor:
         # run victim side
         self.setting.dlg.victim_side()
 
-        if parameter["improved"]:
-            # Run prediction strategie
-            if parameter["prediction"] == "random":
-                self.random_prediction()
-            elif parameter["prediction"] == "idlg":
-                self.simplified_prediction()
-            elif parameter["prediction"] == "v1":
-                self.v1_prediction()
-            elif parameter["prediction"] == "v2":
-                self.v2_prediction()
-            else:
-                exit("Unknown prediction strategy {}".format(parameter["prediction"]))
-        elif parameter["batch_size"] != 1:
-            exit("DLG Prediction ist not defined for batch sizes other than one")
-        elif len(self.prediction) == 0:
-            print("DLG needs to be run first in order to make predictions. Starting Attack")
-            self.setting.attack()
+
+        # Run prediction strategie
+        if parameter["prediction"] == "random":
+            self.random_prediction()
+        elif parameter["prediction"] == "idlg":
+            self.simplified_prediction()
+        elif parameter["prediction"] == "v1":
+            self.v1_prediction()
+        elif parameter["prediction"] == "v2":
+            self.v2_prediction()
+        else:
+            exit("Unknown prediction strategy {}".format(parameter["prediction"]))
 
         self.prediction.sort()
 
-        orig_label = self.setting.dlg.orig_label.data.tolist()
+        # analyse prediction
+        orig_label = self.setting.parameter["orig_label"].tolist()
 
         self.correct = 0
         self.false = 0
@@ -56,41 +52,27 @@ class Predictor:
         print(self.setting.parameter["prediction"], ": ACC: ", self.acc)
 
     def print_prediction(self):
-        orig_label = self.setting.dlg.orig_label
-        orig_srt = orig_label.data.tolist()
-        orig_srt.sort()
+        orig_label = self.setting.parameter["orig_label"].tolist()
+        orig_label.sort()
 
-        print("Predicted: \t{}\nOriginal:\t{}".format(self.prediction, orig_srt))
+        print("Predicted: \t{}\nOriginal:\t{}".format(self.prediction, orig_label))
 
         print("Correct: {}, False: {}, Acc: {}".format(self.correct, self.false, self.acc))
 
     def simplified_prediction(self):
-        # Simplified Way as described in the paper
         # The algorithm from the paper splits the batch and evaluates the samples individually
         # It is mathematically proven to work 100%.
         # So in order to save time we take a shortcut and just take the labels from the settings
-        #
 
-        fast_mode = True
+        self.prediction = list(self.setting.parameter["orig_label"])
 
-        if fast_mode:
-            self.prediction = list(self.setting.target[:self.setting.parameter["batch_size"]])
-        else:
-            tmp_setting = self.setting.copy()
-            tmp_setting.configure(batch_size=1, prediction="classic")
-            for b in range(self.setting.parameter["batch_size"]):
-                tmp_setting.configure(ids=[self.setting.ids[b]])
-                self.prediction.extend(tmp_setting.predict())
-
-        self.prediction.sort()
 
     def random_prediction(self):
-        parameter = self.setting.parameter
+        # In order to compare strategies random prediction has been added.
 
-        for _ in range(parameter["batch_size"]):
-            self.prediction.append(np.random.randint(0, parameter["num_classes"]))
+        for _ in range( self.setting.parameter["batch_size"]):
+            self.prediction.append(np.random.randint(0,  self.setting.parameter["num_classes"]))
 
-        self.prediction.sort()
 
     def v1_prediction(self):
         # New way, first idea, choosing smallest values as prediction
@@ -116,11 +98,11 @@ class Predictor:
 
         # predict the rest
         for _ in range(parameter["batch_size"] - len(self.prediction)):
-            # add minimal candidat, likely to be doubled, to prediction
+            # add minimal candidate, likely to be doubled, to prediction
             min_id = torch.argmin(self.gradients_for_prediction).item()
             self.prediction.append(min_id)
 
-            # add the mean value of one accurance to the candidate
+            # add the mean value of one occurrence to the candidate
             self.gradients_for_prediction[min_id] = self.gradients_for_prediction[min_id].add(-mean)
 
         self.prediction.sort()
@@ -141,33 +123,51 @@ class Predictor:
         # create a new temporary setting for impact and offset calculation
         tmp_setting = self.setting.copy()
         tmp_setting.model = self.setting.model
-        tmp_gradients = []
-        impact = []
+        tmp_setting.configure(use_seed=False)
 
-        # for each class create a batch full of that classes samples
-        for i in range(parameter["num_classes"]):
-            tmp_setting.configure(target=[i] * parameter["batch_size"])
+        acc_offset = np.zeros(parameter["num_classes"])
+        acc_impact = 0
 
-            # calculate gradients for this batch
-            tmp_setting.dlg.victim_side()
+        n = 10
+        for _ in range(n):
+            tmp_gradients = []
+            impact = []
 
-            # gather gradients from the second last layer and the value of the current classes gradient
-            tmp_gradients.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy())
-            impact.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1)[i].item())
+            # for each class create a batch full of that classes samples
+            for i in range(parameter["num_classes"]):
+                tmp_setting.configure(targets=[i] * parameter["batch_size"])
 
-        # Take mean value as offset
-        offset = []
-        for i_class in range(parameter["num_classes"]):
-            uneffected_grads = list(tmp_gradients)
-            uneffected_grads.__delitem__(i_class)
-            offset.append(np.mean(uneffected_grads, 0)[i_class])
+                # calculate gradients for this batch
+                tmp_setting.dlg.victim_side()
 
-        # get the mean impact by adding up the difference from the expected value
-        mean_impact = 0
-        for i_imp, imp in enumerate(impact):
-            mean_impact += imp - offset[i_imp]
+                # gather gradients from the second last layer and the value of the current classes gradient
+                tmp_gradients.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy())
+                impact.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1)[i].item())
 
-        mean_impact /= (parameter["num_classes"] * parameter["batch_size"])
+            # Take mean value as offset
+            offset = []
+            for i_class in range(parameter["num_classes"]):
+                uneffected_grads = list(tmp_gradients)
+                uneffected_grads.__delitem__(i_class)
+                offset.append(np.mean(uneffected_grads, 0)[i_class])
+
+            # get the mean impact by adding up the difference from the expected value
+            mean_impact = 0
+            for i_imp, imp in enumerate(impact):
+                mean_impact += imp - offset[i_imp]
+
+            mean_impact /= (parameter["num_classes"] * parameter["batch_size"])
+
+            acc_impact += mean_impact
+            acc_offset += offset
+
+        mean_impact = acc_impact / n
+        offset = np.divide(acc_offset, n)
+
+        # fine scaling
+        offset = np.multiply(offset, 1)
+        mean_impact = mean_impact * 1
+
 
         # Subtract offset
         self.gradients_for_prediction -= torch.Tensor(offset).to(self.setting.device)

@@ -1,123 +1,132 @@
 import datetime
 import json
+import os
 import time
 from tkinter import Tk
 from tkinter.filedialog import askopenfilenames
 
 import numpy as np
 import torch
-import torchvision
-from torchvision import datasets
 
+from Dataloader import Dataloader
 from Dlg import Dlg
 from Predictor import Predictor
 from Result import Result
 from net import Net1, Net2, weights_init
-from test import test
-from train import train
 
 
 class Setting:
-    def __init__(self, **kwargs):
-        self.target = []
-        self.ids = []
-        self.orig_data = None
-        self.orig_label = None
-
-        self.device = None
-        self.model = None
-        self.dlg = None
-        self.check_cuda()
-        self.predictor = Predictor(self)
-
+    def __init__(self, dataloader=None, **kwargs):
+        # Parameter
         self.parameter = {}
-
-        self.train_dataset = None
-        self.test_dataset = None
-
         self.restore_default_parameter()
         self.update_parameter(**kwargs)
 
-        self.reset_seeds()
-        self.load_dataset()
-        self.load_model()
+        # Cuda
+        self.device = None
+        self.check_cuda()
 
+        # Seeds
+        self.reset_seeds()
+
+        # Predictor
+        self.predictor = Predictor(self)
+
+        # Dataloader
+        if self.parameter["dataset"] == "MNIST":
+            self.parameter["shape_img"] = (28, 28)
+            self.parameter["num_classes"] = 10
+            self.parameter["channel"] = 1
+            self.parameter["hidden"] = 588
+            self.parameter["hidden2"] = 9216
+        elif kwargs["dataset"] == 'CIFAR':
+            self.parameter["shape_img"] = (32, 32)
+            self.parameter["num_classes"] = 100
+            self.parameter["channel"] = 3
+            self.parameter["hidden"] = 768
+            self.parameter["hidden2"] = 12544
+
+        if dataloader is None:
+            self.dataloader = Dataloader(self, self.parameter["dataset"])
+        else:
+            self.dataloader = dataloader
+
+        # Data
+        self.load_data()
+
+        # Model
+        self.model = self.load_model()
+
+        # Results
         self.result = Result(self)
 
-        self.configure(**kwargs)
+        # DLG
+        self.dlg = Dlg(self)
 
-        if len(self.target) == 0:
-            self.fill_ids()
-            self.fix_targets()
-
+    # The setting can be changed during a run with configure()
+    # Some arguments need some special treatments, everything else will be just an parameter update
     def configure(self, **kwargs):
+        self.update_parameter(**kwargs)
+
         for key, value in kwargs.items():
-            if key == "target":
-                self.target = list(value)
-                self.fill_targets()
-                self.fix_ids()
-            elif key == "ids":
-                self.ids = list(value)
-                self.fill_ids()
-                self.fix_targets()
-            elif key == "dataset":
-                self.load_dataset()
+            if key == "dataset":
+                self.dataloader = Dataloader(self, value)
+                if value == "MNIST":
+                    self.parameter["shape_img"] = (28, 28)
+                    self.parameter["num_classes"] = 10
+                    self.parameter["channel"] = 1
+                    self.parameter["hidden"] = 588
+                    self.parameter["hidden2"] = 9216
+                elif value == 'CIFAR':
+                    self.parameter["shape_img"] = (32, 32)
+                    self.parameter["num_classes"] = 100
+                    self.parameter["channel"] = 3
+                    self.parameter["hidden"] = 768
+                    self.parameter["hidden2"] = 12544
+                #changing dataset requires new model and new data
+                self.model = self.load_model()
+                self.parameter["orig_data"], self.parameter["orig_label"] = \
+                    self.dataloader.get_batch(self)
             elif key == "model":
-                self.load_model()
+                self.model = self.load_model()
             elif key == "use_seed" or key == "seed":
                 self.reset_seeds()
-            elif key == "max_epoch_size" and value == 0:
-                self.parameter["max_epoch_size"] = len(self.train_dataset) / self.parameter["batch_size"]
-            elif key == "batch_size":
-                self.parameter["batch_size"] = value
-                self.fill_ids()
-                self.fix_targets()
-                #self.update_parameter(**kwargs)
-            else:
-                self.update_parameter(**{key: kwargs[key]})
-
-        # Renew Attack with new settings, does not execute yet
-        self.dlg = Dlg(self)
+            elif key == "targets" or key == "batch_size":
+                self.parameter["orig_data"], self.parameter["orig_label"] = \
+                    self.dataloader.get_batch(self)
 
     def update_parameter(self, **kwargs):
         # update existing parameters
         for key, value in kwargs.items():
             if self.parameter.__contains__(key):
                 self.parameter[key] = value
-            elif key != "target" and key != "ids":
+            else:
                 exit("Unknown Parameter: " + key)
 
     def restore_default_parameter(self):
         self.parameter = {
             # General settings
             "dataset": "MNIST",
+            "targets": [],
             "batch_size": 2,
             "model": 1,
             "log_interval": 5,
             "use_seed": False,
-            "seed": 2,
+            "seed": 1337,
             "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
             "run_name": "",
 
             # Attack settings
-            "dlg_lr": 0.1,
+            "dlg_lr": 1,
             "dlg_iterations": 50,
-            "prediction": "v1",
-            "improved": True,
-
-            # Pretrain settings
-            "lr": 0.01,
-            "epochs": 1,
-            "max_epoch_size": 1000,
-            "test_size": 1000,
-
-            # dataset settings
-            "shape_img": (32, 32),
-            "num_classes": 100,
-            "channel": 3,
-            "hidden": 768,
-            "hidden2": 12544
-
+            "prediction": "v2",
+            "orig_data": [],
+            "orig_label": [],
+            "shape_img": (28, 28),
+            "num_classes": 10,
+            "channel": 1,
+            "hidden": 588,
+            "hidden2": 9216
         }
 
     def check_cuda(self):
@@ -138,147 +147,89 @@ class Setting:
             torch.manual_seed(int(1000 * time.time() % 2 ** 32))
             np.random.seed(int(1000 * time.time() % 2 ** 32))
 
-    def load_dataset(self):
-        # Initialising datasets
-        tt = torchvision.transforms.ToTensor()
-        if self.parameter["dataset"] == "MNIST":
-            self.parameter["shape_img"] = (28, 28)
-            self.parameter["num_classes"] = 10
-            self.parameter["channel"] = 1
-            self.parameter["hidden"] = 588
-            self.parameter["hidden2"] = 9216
-            self.train_dataset = datasets.MNIST('./datasets', train=True, download=True, transform=tt)
-            self.test_dataset = datasets.MNIST('./datasets', train=False, download=True, transform=tt)
-        elif self.parameter["dataset"] == 'CIFAR':
-            self.parameter["shape_img"] = (32, 32)
-            self.parameter["num_classes"] = 100
-            self.parameter["channel"] = 3
-            self.parameter["hidden"] = 768
-            self.parameter["hidden2"] = 12544
-            self.train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt)
-            self.test_dataset = datasets.CIFAR100('./datasets', train=False, download=True, transform=tt)
-        else:
-            print("Unsupported dataset '" + self.parameter["dataset"] + "'")
-            exit()
-
     def load_model(self):
-        # prepare the model, reloads it, undoes training
         if self.parameter["model"] == 1:
-            self.model = Net1(self.parameter)
-            self.model.apply(weights_init)
+            model = Net1(self.parameter)
+            model.apply(weights_init)
         elif self.parameter["model"] == 2:
-            self.model = Net2(self.parameter)
+            model = Net2(self.parameter)
 
-        self.model = self.model.to(self.device)
+        return model.to(self.device)
 
-    def print_parameter(self):
-        # Log Parameters
-        for entry in self.parameter:
-            print("{}: {}".format(entry, self.parameter[entry]))
-
-    def pretrain(self):
-        train(self)
-        test(self)
+    def load_data(self):
+        self.parameter["orig_data"], self.parameter["orig_label"] = \
+            self.dataloader.get_batch(self)
 
     def attack(self):
-        self.dlg = Dlg(self)
         self.dlg.attack()
 
-    def store_everything(self):
-        if self.result is not None:
-            self.result.store_everything()
-
-    def store_composed_image(self):
-        if self.result is not None:
-            self.result.store_composed_image()
-
-    def store_separate_images(self):
-        if self.result is not None:
-            self.result.store_separate_images()
-
-    def store_data(self):
-        if self.result is not None:
-            self.result.store_data()
-
-    def show_composed_image(self):
-        if self.result is not None:
-            self.result.show_composed_image()
-
-    def delete(self):
-        if self.result is not None:
-            self.result.delete()
-
     def predict(self, verbose=False):
-        self.predictor = Predictor(self)
         self.predictor.predict()
         if verbose:
-            orig = self.target[:self.parameter["batch_size"]].copy()
-            orig.sort()
-            print("Orig:", orig)
-            print("Pred:", self.predictor.prediction)
-            print(
-                "Correct: {}\tFalse: {}\tAcc: {}\tUsing: {}".format(self.predictor.correct, self.predictor.false,
-                                                                    self.predictor.acc, self.parameter["prediction"]))
+            self.predictor.print_prediction()
         return self.predictor.prediction
-
-    def fix_targets(self):
-        self.target = []
-        for i in range(len(self.ids)):
-            self.target.append(self.train_dataset[self.ids[i]][1])
-
-    def fix_ids(self):
-        self.ids = []
-
-        for i in range(len(self.target)):
-            random_offset = np.random.randint(0, len(self.train_dataset))
-            # searching for a sample with target label
-            for i_s in range(len(self.train_dataset)):
-                sample_id = (i_s+random_offset)%len(self.train_dataset)
-                # does this sample have the right label and was not used before?
-                if self.train_dataset[sample_id][1] == self.target[i] and not self.ids.__contains__(sample_id):
-                    self.ids.append(sample_id)
-                    break
-
-        if len(self.ids) != self.parameter["batch_size"]:
-            exit("could not find enough samples in the dataset")
-
-    def fill_targets(self):
-        # fill missing targets if underspecified
-
-        for i in range(self.parameter["batch_size"] - len(self.target)):
-            self.target.append(np.random.randint(0, self.parameter["num_classes"]))
-
-    def fill_ids(self):
-        # fill missing targets if underspecified
-        for i in range(self.parameter["batch_size"] - len(self.ids)):
-            self.ids.append(np.random.randint(0, len(self.train_dataset)))
-
 
     def copy(self):
         kwargs = {}
         kwargs.update(**self.parameter)
-        kwargs.update({"ids": self.ids})
-        return Setting(**kwargs)
+        kwargs.__delitem__("orig_data")
+        kwargs.__delitem__("orig_label")
+        kwargs.__delitem__("targets")
+        kwargs.__delitem__("seed")
+        tmp_setting = Setting(
+            dataloader=self.dataloader,
+            **kwargs
+        )
+        return tmp_setting
+
+    def store_json(self):
+        if not os.path.exists(self.parameter["result_path"]):
+            os.makedirs(self.parameter["result_path"])
+
+        tmp_parameter = self.parameter.copy()
+        tmp_parameter.__delitem__("orig_data")
+        tmp_parameter.__delitem__("orig_label")
+
+        data_dic = {
+            "parameter": tmp_parameter,
+            "attack_results": {
+                "losses": self.result.losses,
+                "mses": self.result.mses.tolist(),
+                "snapshots": list(map(lambda x: x.tolist(), self.result.snapshots))
+            },
+            "prediction_results": {
+                "correct": self.predictor.correct,
+                "false": self.predictor.false,
+                "accuracy": self.predictor.acc,
+                "prediction": self.predictor.prediction,
+            },
+
+        }
+
+        # dump to json
+        with open(self.parameter["result_path"] + "data{}.json".format(self.parameter["run_name"]), "w") as file:
+            json.dump(data_dic, file)
 
     def load_json(self):
         Tk().withdraw()
-        filenames = askopenfilenames(initialdir="./results", defaultextension='.json', filetypes=[('Json', '*.json')])
+        filenames = askopenfilenames(initialdir="./results", defaultextension='.json',
+                                     filetypes=[('Json', '*.json')])
         setting = []
         for f_name in filenames:
             with open(f_name) as f:
                 dump = json.load(f)
-                setting.append(Setting(**dump["parameter"]))
-                setting[-1].result.losses = dump["losses"]
-                setting[-1].result.mses = np.array(dump["mses"])
-                setting[-1].target = dump["target"]
-                setting[-1].ids = dump["ids"]
-                setting[-1].result.snapshots = dump["snapshots"]
-                setting[-1].predictor = Predictor(setting[-1])
-                setting[-1].predictor.correct = dump["prediction"]["correct"]
-                setting[-1].predictor.false = dump["prediction"]["false"]
-                setting[-1].predictor.acc = dump["prediction"]["accuracy"]
-                setting[-1].predictor.prediction = dump["prediction"]["prediction"]
+                setting.append(Setting(**dump["attack_results"]["parameter"]))
+                setting[-1].result.losses = dump["attack_results"]["losses"]
+                setting[-1].result.mses = np.array(dump["attack_results"]["mses"])
+                setting[-1].result.snapshots = dump["attack_results"]["snapshots"]
+                setting[-1].predictor.correct = dump["prediction_results"]["correct"]
+                setting[-1].predictor.false = dump["prediction_results"]["false"]
+                setting[-1].predictor.acc = dump["prediction_prediction"]["accuracy"]
+                setting[-1].predictor.prediction = dump["prediction_prediction"]["prediction"]
 
         return setting
 
-        # fix this
+
+    def reinit_weights(self):
+        weights_init(self.model)
+

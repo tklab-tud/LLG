@@ -1,7 +1,71 @@
 from Graph import *
 from Setting import Setting
+import datetime
+
+result_path = "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
 
 
+#################### Experiment 1: Prediction Accuracy ####################
+
+def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
+    setting = Setting(log_interval=1,
+                      use_seed=True,
+                      seed=1337,
+                      dataset=dataset,)
+
+    graph = Graph("Batchsize", "Prediction Accuracy")
+
+    global_id = 0
+    prediction_string = "Strat; #try; #glo; Acc; Prediction"
+    for _ in range(max(bsrange)):
+        prediction_string += ";"
+    prediction_string += "Original\n"
+
+    for bs in bsrange:
+        print("\nBS ", bs)
+        for i in range(n):
+            run_name = "{}_{:3.0f}_{:3.0f}".format("v2", bs, i)
+
+            if balanced:
+                target = []
+            else:
+                target = (bs // 2) * [4] + (bs // 4) * [2]
+                target = target[:bs]
+
+            setting.configure(batch_size=bs, prediction="v2", run_name=run_name, targets=target)
+            setting.reinit_weights()
+            setting.predict()
+            graph.add_datapoint("v2", setting.predictor.acc, bs)
+            setting.store_json()
+
+            prediction_string += "v2;" + str(i) + ";" + str(global_id)
+            prediction_string += "; " + "{0:,.2f}".format(setting.predictor.acc) + "; "
+            prediction_string += "; ".join([str(x) for x in list(setting.predictor.prediction)]) + "; " * (
+                    max(bsrange) - setting.parameter["batch_size"])
+            origlabels = list(setting.parameter["orig_label"])
+            origlabels.sort()
+            prediction_string +=";" + "; ".join([str(x.item()) for x in origlabels])
+            prediction_string += "\n"
+
+            global_id += 1
+
+    prediction_string = prediction_string.replace(".", ",")
+
+    if not os.path.exists(setting.parameter["result_path"]):
+        os.makedirs(setting.parameter["result_path"])
+
+    with open(setting.parameter["result_path"] + "prediction.csv", "w") as file:
+        file.write(prediction_string)
+
+    graph.plot_line()
+    graph.save(setting.parameter["result_path"], "Accuracy_vs_Batchsize.png")
+    return setting, graph
+
+
+
+
+######################## old code ###################################
+"""
 def simple_attack():
     setting = Setting(dlg_iterations=30,
                       log_interval=3,
@@ -21,58 +85,62 @@ def simple_attack():
 def prediction_accuracy_vs_batchsize_line(biased=False):
     setting = Setting(log_interval=1,
                       use_seed=False,
-                      dataset="MNIST",
                       )
     graph = Prediction_accuracy_graph(setting, "Batch-Size", "Accuracy")
     maxbs = 129
     reinit = False
     global_id = 0
     prediction_string = "Strat; #try; #glo;"
-    for i in range(setting.parameter["num_classes"]):
+    for i in range(100):
         prediction_string += "grad_" + str(i) + ";"
     prediction_string += "Acc;Prediction"
     for i in range(1, maxbs):
         prediction_string += ";"
     prediction_string += "Original\n"
 
-    for bs in range(1, maxbs):
-        print("\nBS ", bs)
-        if biased:
-            target = (bs // 2) * [4] + (bs // 4) * [2]
-        else:
-            target = []
-
-        for strat in ["v2"]:
-
-            for i in range(1):
-
-                run_name = "{}{:2.0f}{:2.0f}".format(strat, bs, i)
-                if reinit:
-                    setting = Setting(log_interval=1, use_seed=False, batch_size=bs, prediction=strat,
-                                      target=list(target), run_name=run_name)
-                else:
-                    setting.configure(batch_size=bs, prediction=strat, target=list(target), run_name=run_name)
-
-                graph.setting = setting
-                setting.reset_seeds()
-                setting.predict()
-                graph.add_prediction_acc(strat, bs)
-                setting.store_data()
+    for dataset in ["MNIST", "CIFAR"]:
+        for bs in range(100, 102):
+            print("\nBS ", bs)
+            if biased:
+                target = (bs // 2) * [4] + (bs // 4) * [2]
+            else:
+                target = []
 
 
-                grads = setting.predictor.gradients_for_prediction
-                prediction_string += strat + "; " + str(i) + "; " + str(global_id) + "; "
-                prediction_string += "; ".join(["{0:,.2f}".format(x) for x in grads])
-                if strat == "random": prediction_string += "; " * (setting.parameter["num_classes"] - 1)
-                prediction_string += "; " + "{0:,.2f}".format(setting.predictor.acc) + "; "
-                prediction_string += "; ".join([str(x) for x in list(setting.predictor.prediction)]) + "; " * (
-                        maxbs - setting.parameter["batch_size"])
-                origlabels = list(setting.dlg.orig_label)
-                origlabels.sort()
-                prediction_string += "; ".join([str(x.item()) for x in origlabels])
-                prediction_string += "\n"
+            for strat in ["v2"]:
 
-                global_id += 1
+                for i in range(1):
+
+                    run_name = "{}{:2.0f}{:2.0f}".format(strat, bs, i)
+                    if reinit:
+                        setting = Setting(log_interval=1, use_seed=False, batch_size=bs, prediction=strat,
+                                          targets=list(target), run_name=run_name, dataset=dataset,
+                                          dataloader=setting.dataloader, result_path=result_path)
+                        setting.dataloader.setting = setting
+                    else:
+                        setting.configure(batch_size=bs, prediction=strat, targets=list(target), run_name=run_name,
+                                          dataset=dataset)
+
+                    graph.setting = setting
+                    setting.reset_seeds()
+                    setting.predict()
+                    graph.add_prediction_acc(strat+"_"+dataset, bs)
+                    setting.store_json()
+
+
+                    grads = setting.predictor.gradients_for_prediction
+                    prediction_string += strat + "; " + str(i) + "; " + str(global_id) + "; "
+                    prediction_string += "; ".join(["{0:,.4f}".format(x) for x in grads])
+                    if strat == "random": prediction_string += "; " * (100 - 1)
+                    prediction_string += "; " + "{0:,.2f}".format(setting.predictor.acc) + "; "
+                    prediction_string += "; ".join([str(x) for x in list(setting.predictor.prediction)]) + "; " * (
+                            maxbs - setting.parameter["batch_size"])
+                    origlabels = list(setting.parameter["orig_label"])
+                    origlabels.sort()
+                    prediction_string += "; ".join([str(x.item()) for x in origlabels])
+                    prediction_string += "\n"
+
+                    global_id += 1
 
     prediction_string = prediction_string.replace(".", ",")
 
@@ -83,80 +151,8 @@ def prediction_accuracy_vs_batchsize_line(biased=False):
         file.write(prediction_string)
 
     graph.plot_line()
-    graph.save("Accuracy_vs_Batchsize_Biased")
+    graph.save("Accuracy_vs_Batchsize")
     return setting, graph
-
-
-def prediction_accuracy_fixed_bs(biased=False):
-    setting = Setting(log_interval=1,
-                      use_seed=False,
-                      dataset="MNIST",
-                      batch_size = 128
-                      )
-    graph = Prediction_accuracy_graph(setting, "Batch-Size", "#Try")
-    maxbs = 129
-    reinit = False
-    global_id = 0
-    prediction_string = "Strat; #try; #glo;"
-    for i in range(setting.parameter["num_classes"]):
-        prediction_string += "grad_" + str(i) + ";"
-    prediction_string += "Acc;Prediction"
-    for i in range(1, maxbs):
-        prediction_string += ";"
-    prediction_string += "Original\n"
-
-    for bs in [128]:
-        print("\nBS ", bs)
-        if biased:
-            target = (bs // 2) * [4] + (bs // 4) * [2]
-        else:
-            target = []
-
-        for strat in ["v2"]:
-
-            for i in range(10):
-
-                run_name = "{}{:2.0f}{:2.0f}".format(strat, bs, i)
-                if reinit:
-                    setting = Setting(log_interval=1, use_seed=False, batch_size=bs, prediction=strat,
-                                      target=list(target), run_name=run_name)
-                else:
-                    setting.configure(batch_size=bs, prediction=strat, target=list(target), run_name=run_name)
-
-                graph.setting = setting
-                setting.reset_seeds()
-                setting.predict()
-                graph.add_prediction_acc(strat, i)
-                setting.store_data()
-
-
-                grads = setting.predictor.gradients_for_prediction
-                prediction_string += strat + "; " + str(i) + "; " + str(global_id) + "; "
-                prediction_string += "; ".join(["{0:,.2f}".format(x) for x in grads])
-                if strat == "random": prediction_string += "; " * (setting.parameter["num_classes"] - 1)
-                prediction_string += "; " + "{0:,.2f}".format(setting.predictor.acc) + "; "
-                prediction_string += "; ".join([str(x) for x in list(setting.predictor.prediction)]) + "; " * (
-                        maxbs - setting.parameter["batch_size"])
-                origlabels = list(setting.dlg.orig_label)
-                origlabels.sort()
-                prediction_string += "; ".join([str(x.item()) for x in origlabels])
-                prediction_string += "\n"
-
-                global_id += 1
-
-    prediction_string = prediction_string.replace(".", ",")
-
-    if not os.path.exists(setting.parameter["result_path"]):
-        os.makedirs(setting.parameter["result_path"])
-
-    with open(setting.parameter["result_path"] + "prediction.csv", "w") as file:
-        file.write(prediction_string)
-
-    graph.plot_line()
-    graph.save("Accuracy")
-    return setting, graph
-
-
 
 
 def prediction_accuracy_vs_strategie_bar(biased=False):
@@ -316,6 +312,7 @@ def mse_vs_batchsize_line(biased=False, iterations=30):
     return setting, graph
 
 
+
 def load_with_styles():
     setting = Setting.load_json(None)
     graph = Mses_vs_Iterations_graph(setting[0], "Batch-Size", "Accuracy")
@@ -341,6 +338,8 @@ def load_with_styles():
     graph.show()
     print("done")
     return setting, graph
+    
+"""
 
 
 def color_map(label):
@@ -353,3 +352,4 @@ def color_map(label):
         "dlg": 'r',
         "idlg": 'm',
     }[label]
+
