@@ -6,7 +6,7 @@ def main():
     ############## Build your attack here ######################
 
 
-    setting, graph = prediction_accuracy_vs_batchsize(1, range(60,129), "MNIST", False)
+    setting, graph = prediction_accuracy_vs_batchsize(1, range(60,129), "CIFAR", False)
 
 
 

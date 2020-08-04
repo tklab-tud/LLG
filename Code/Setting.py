@@ -188,7 +188,8 @@ class Setting:
 
         tmp_parameter = self.parameter.copy()
         tmp_parameter.__delitem__("orig_data")
-        tmp_parameter.__delitem__("orig_label")
+        #tmp_parameter.__delitem__("orig_label")
+        tmp_parameter["orig_label"] = self.parameter["orig_label"].cpu().detach().numpy().tolist()
 
         data_dic = {
             "parameter": tmp_parameter,

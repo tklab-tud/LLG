@@ -31,6 +31,8 @@ class Predictor:
             self.v1_prediction()
         elif parameter["prediction"] == "v2":
             self.v2_prediction()
+        elif parameter["prediction"] == "v3":
+            self.v3_prediction()
         else:
             exit("Unknown prediction strategy {}".format(parameter["prediction"]))
 
@@ -107,13 +109,16 @@ class Predictor:
 
         self.prediction.sort()
 
+
+
     def v2_prediction(self):
+        # Version 2 includes Gradient-Substraction
         parameter = self.setting.parameter
 
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
+        candidates = []
 
         # backup negative values
-        candidates = []
         for i_cg, class_gradient in enumerate(self.gradients_for_prediction):
             if class_gradient < 0:
                 candidates.append((i_cg, class_gradient))
@@ -121,35 +126,31 @@ class Predictor:
         # create a new setting
         tmp_setting = self.setting.copy()
         tmp_setting.model = self.setting.model
-        tmp_setting.configure(use_seed=False)
 
-        acc_offset = np.zeros(parameter["num_classes"])
+        impact = 0
+
+        n = 10
+
         acc_impact = 0
+        acc_offset = np.zeros(parameter["num_classes"])
 
-        n = 3
+        # calculate bias and impact
         for _ in range(n):
             tmp_gradients = []
-            impact = 0
 
-            # calculate bias and impact
             for i in range(parameter["num_classes"]):
-                tmp_setting.configure(targets=[i] * parameter["batch_size"])
+                tmp_setting.configure(targets=[i] * parameter["batch_size"], use_seed=False)
                 tmp_setting.dlg.victim_side()
                 tmp_gradients.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy())
                 impact += torch.sum(tmp_setting.dlg.gradient[-2], dim=-1)[i].item()
 
             acc_offset += np.mean(tmp_gradients, 0)
-
             impact /= (parameter["num_classes"] * parameter["batch_size"])
             acc_impact += impact
 
-        impact = acc_impact / n
-        offset = np.divide(acc_offset, n)
-        offset = torch.Tensor(offset).to(self.setting.device)
-
-
-        impact *= 1.1
-
+        impact = (acc_impact / n) * (1 + 1/parameter["num_classes"])
+        acc_offset = np.divide(acc_offset, n)
+        offset = torch.Tensor(acc_offset).to(self.setting.device)
 
         self.gradients_for_prediction -= offset
 
@@ -247,3 +248,8 @@ class Predictor:
 
             # add the mean value the corresponding gradient
             self.gradients_for_prediction[min_id] = self.gradients_for_prediction[min_id].add(-mean_impact)
+
+
+
+
+
