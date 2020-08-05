@@ -2,8 +2,8 @@ import datetime
 import json
 import os
 import time
-from tkinter import Tk
-from tkinter.filedialog import askopenfilenames
+#from tkinter import Tk
+#from tkinter.filedialog import askopenfilenames
 
 import numpy as np
 import torch
@@ -220,7 +220,7 @@ class Setting:
         # dump to json
         with open(self.parameter["result_path"] + "data{}.json".format(self.parameter["run_name"]), "w") as file:
             json.dump(data_dic, file)
-
+    """
     def load_json(self):
         Tk().withdraw()
         filenames = askopenfilenames(initialdir="./results", defaultextension='.json',
@@ -239,7 +239,7 @@ class Setting:
                 setting[-1].predictor.prediction = dump["prediction_prediction"]["prediction"]
 
         return setting
-
+    """
 
     def reinit_weights(self):
         weights_init(self.model)

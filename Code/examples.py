@@ -31,8 +31,8 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
             if balanced:
                 target = []
             else:
-                choice1 = np.random.choice(range(setting.parameter["num_classes"]))
-                choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1))
+                choice1 = np.random.choice(range(setting.parameter["num_classes"])).item()
+                choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1)).item()
                 target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
                 target = target[:bs]
 
@@ -92,8 +92,8 @@ def prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, trainst
             if balanced:
                 target = []
             else:
-                choice1 = np.random.choice(range(setting.parameter["num_classes"]))
-                choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1))
+                choice1 = np.random.choice(range(setting.parameter["num_classes"])).item()
+                choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1)).item()
                 target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
                 target = target[:bs]
 
@@ -143,8 +143,8 @@ def mse_vs_iteration_line(n, bs, iterations, dataset, balanced):
     if balanced:
         target = []
     else:
-        choice1 = np.random.choice(range(setting.parameter["num_classes"]))
-        choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1))
+        choice1 = np.random.choice(range(setting.parameter["num_classes"])).item()
+        choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1)).item()
         target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
         target = target[:bs]
 
@@ -193,8 +193,8 @@ def perfect_prediction(n, bsrange, dataset, balanced):
             if balanced:
                 target = []
             else:
-                choice1 = np.random.choice(range(setting.parameter["num_classes"]))
-                choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1))
+                choice1 = np.random.choice(range(setting.parameter["num_classes"])).item()
+                choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1)).item()
                 target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
                 target = target[:bs]
 
