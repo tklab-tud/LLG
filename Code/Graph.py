@@ -70,38 +70,3 @@ class Graph:
             os.makedirs(path)
         self.fig.savefig(path+name)
 
-"""
-class Mses_vs_Iterations_graph(Graph):
-    def __init__(self, setting, xlabel, ylabel):
-        super().__init__(setting, xlabel, ylabel)
-
-    def add_all_mses(self, label):
-        mses_unprocessed = self.setting.result.mses
-        mses = []
-        for step in mses_unprocessed:
-            mses.append(np.mean(step))
-
-        li = self.setting.parameter["log_interval"]
-        self.add_datarow(label, mses, list(range(li, len(mses) * li + 1, li)))
-
-
-    def add_last_mse(self, label, x=0):
-        mses_unprocessed = self.setting.result.mses
-        mses = []
-        for step in mses_unprocessed:
-            mses.append(np.mean(step))
-
-        li = self.setting.parameter["log_interval"]
-        self.add_datarow(label, mses[-1], x)
-
-
-class Prediction_accuracy_graph(Graph):
-    def __init__(self, setting, xlabel, ylabel):
-        super().__init__(setting, xlabel, ylabel)
-
-    def add_prediction_acc(self, label, x):
-        acc = self.setting.predictor.acc
-        self.add_datapoint(label, acc, x)
-
-
-"""

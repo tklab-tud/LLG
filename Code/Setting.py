@@ -13,6 +13,7 @@ from Dlg import Dlg
 from Predictor import Predictor
 from Result import Result
 from net import Net1, Net2, weights_init
+from train import train, test
 
 
 class Setting:
@@ -98,6 +99,9 @@ class Setting:
     def update_parameter(self, **kwargs):
         # update existing parameters
         for key, value in kwargs.items():
+            if key == "batch_size" and value <= 0:
+                exit("Batch_size must be > 0")
+
             if self.parameter.__contains__(key):
                 self.parameter[key] = value
             else:
@@ -126,7 +130,13 @@ class Setting:
             "num_classes": 10,
             "channel": 1,
             "hidden": 588,
-            "hidden2": 9216
+            "hidden2": 9216,
+
+            # Train settings
+            "test_size": 1000,
+            "train_size": 1000,
+            "train_lr": 0.1,
+            "test_loss": -1
         }
 
     def check_cuda(self):
@@ -233,4 +243,12 @@ class Setting:
 
     def reinit_weights(self):
         weights_init(self.model)
+
+    def train(self, train_size):
+        print("Training started")
+        train(self, train_size)
+        self.parameter["test_loss"] = test(self)
+        print("Training finished, loss = {}".format(self.parameter["test_loss"]))
+
+
 

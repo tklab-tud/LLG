@@ -13,6 +13,8 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
                       seed=1337,
                       dataset=dataset,)
 
+
+
     graph = Graph("Batchsize", "Prediction Accuracy")
 
     global_id = 0
@@ -29,11 +31,13 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
             if balanced:
                 target = []
             else:
-                target = (bs // 2) * [4] + (bs // 4) * [2]
+                choice1 = np.random.choice(range(setting.parameter["num_classes"]))
+                choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1))
+                target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
                 target = target[:bs]
 
             setting.configure(batch_size=bs, prediction="v2", run_name=run_name, targets=target)
-            setting.reinit_weights()
+            #setting.reinit_weights()
             setting.predict()
             graph.add_datapoint("v2", setting.predictor.acc, bs)
             setting.store_json()
@@ -62,6 +66,156 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
     return setting, graph
 
 
+def prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, trainsteps):
+    setting = Setting(log_interval=1,
+                      use_seed=False,
+                      seed=1337,
+                      dataset=dataset, )
+
+    graph = Graph("Train Samples", "Prediction Accuracy")
+
+    global_id = 0
+    prediction_string = "Trainstep; #try; #glo; Acc; Prediction"
+    for _ in range(bs):
+        prediction_string += ";"
+    prediction_string += "Original\n"
+
+    for trainstep in range(trainsteps):
+        print("\nTrainstep ", trainstep)
+
+        #training
+        setting.train(trainsize)
+
+        for i in range(n):
+            run_name = "{}_{:3.0f}_{:3.0f}".format("v2", trainstep, i)
+
+            if balanced:
+                target = []
+            else:
+                choice1 = np.random.choice(range(setting.parameter["num_classes"]))
+                choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1))
+                target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
+                target = target[:bs]
+
+            setting.configure(batch_size=bs, prediction="v2", run_name=run_name, targets=target)
+            setting.predict()
+            graph.add_datapoint("v2", setting.predictor.acc, trainstep)
+            setting.store_json()
+
+            prediction_string += str(trainstep) + ";" + str(i) + ";" + str(global_id)
+            prediction_string += "; " + "{0:,.2f}".format(setting.predictor.acc) + "; "
+            prediction_string += "; ".join([str(x) for x in list(setting.predictor.prediction)]) + "; " * (bs)
+            origlabels = list(setting.parameter["orig_label"])
+            origlabels.sort()
+            prediction_string += ";" + "; ".join([str(x.item()) for x in origlabels])
+            prediction_string += "\n"
+
+            global_id += 1
+
+    prediction_string = prediction_string.replace(".", ",")
+
+    if not os.path.exists(setting.parameter["result_path"]):
+        os.makedirs(setting.parameter["result_path"])
+
+    with open(setting.parameter["result_path"] + "prediction.csv", "w") as file:
+        file.write(prediction_string)
+
+    graph.plot_line()
+    graph.save(setting.parameter["result_path"], "Accuracy_vs_Training.png")
+    return setting, graph
+
+
+#################### Experiment 2: MSE vs Iterations ####################
+
+def mse_vs_iteration_line(n, bs, iterations, dataset, balanced):
+    setting = Setting(dlg_iterations=20,
+                      log_interval=1,
+                      batch_size=bs,
+                      use_seed=False,
+                      seed=1337,
+                      dlg_lr=1,
+                      )
+
+    graph = Graph("Iteration", "MSE")
+
+
+
+    if balanced:
+        target = []
+    else:
+        choice1 = np.random.choice(range(setting.parameter["num_classes"]))
+        choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1))
+        target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
+        target = target[:bs]
+
+    # idlg strats
+    n = 0
+
+    ids = np.random.randint(0, len(setting.train_dataset), setting.parameter["batch_size"])
+    ids = [x.item() for x in ids]
+    for strat in [ "v2", "idlg", "dlg"]:
+        run_name = "_{}_{:3.0f}".format(strat, n)
+        n += 1
+        print(run_name)
+
+        if strat == "dlg":
+            setting.configure(improved=False, target=target, run_name=run_name, ids=ids)
+        else:
+            setting.configure(improved=True, prediction=strat, target=target, run_name=run_name, ids=ids)
+
+        setting.attack()
+        graph.add_all_mses(strat)
+        setting.store_data()
+        setting.delete()
+
+        graph.plot_line()
+        graph.show()
+
+    graph.save("Mses_vs_Iterations")
+
+    return setting, graph
+
+
+#################### Experiment 3: Perfect Prediction vs Batch Size ####################
+
+def perfect_prediction(n, bsrange, dataset, balanced):
+    setting = Setting(log_interval=1,
+                      use_seed=False,
+                      seed=1337,
+                      dataset=dataset,)
+    graph = Graph("Batch-Size", "Perfect Predictions")
+    for bs in bsrange:
+        print("BS: ", bs)
+
+        cnt = 0
+        for i in range(n):
+            runname = str(bs)+"_"+str(i)
+            if balanced:
+                target = []
+            else:
+                choice1 = np.random.choice(range(setting.parameter["num_classes"]))
+                choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1))
+                target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
+                target = target[:bs]
+
+            setting.configure(targets=target, batch_size=bs, prediction="v2", run_name=runname)
+            setting.reinit_weights()
+            setting.predict()
+            setting.store_json()
+            if setting.predictor.acc == 1.0:
+                cnt += 1
+
+        graph.add_datapoint("v2", cnt / n, bs)
+
+    graph.plot_line()
+    graph.save(setting.parameter["result_path"], "prefect_pred.png")
+    graph.show()
+
+    return setting, graph
+
+
+
+
 
 
 ######################## old code ###################################
@@ -82,109 +236,8 @@ def simple_attack():
     return setting
 
 
-def prediction_accuracy_vs_batchsize_line(biased=False):
-    setting = Setting(log_interval=1,
-                      use_seed=False,
-                      )
-    graph = Prediction_accuracy_graph(setting, "Batch-Size", "Accuracy")
-    maxbs = 129
-    reinit = False
-    global_id = 0
-    prediction_string = "Strat; #try; #glo;"
-    for i in range(100):
-        prediction_string += "grad_" + str(i) + ";"
-    prediction_string += "Acc;Prediction"
-    for i in range(1, maxbs):
-        prediction_string += ";"
-    prediction_string += "Original\n"
 
-    for dataset in ["MNIST", "CIFAR"]:
-        for bs in range(100, 102):
-            print("\nBS ", bs)
-            if biased:
-                target = (bs // 2) * [4] + (bs // 4) * [2]
-            else:
-                target = []
-
-
-            for strat in ["v2"]:
-
-                for i in range(1):
-
-                    run_name = "{}{:2.0f}{:2.0f}".format(strat, bs, i)
-                    if reinit:
-                        setting = Setting(log_interval=1, use_seed=False, batch_size=bs, prediction=strat,
-                                          targets=list(target), run_name=run_name, dataset=dataset,
-                                          dataloader=setting.dataloader, result_path=result_path)
-                        setting.dataloader.setting = setting
-                    else:
-                        setting.configure(batch_size=bs, prediction=strat, targets=list(target), run_name=run_name,
-                                          dataset=dataset)
-
-                    graph.setting = setting
-                    setting.reset_seeds()
-                    setting.predict()
-                    graph.add_prediction_acc(strat+"_"+dataset, bs)
-                    setting.store_json()
-
-
-                    grads = setting.predictor.gradients_for_prediction
-                    prediction_string += strat + "; " + str(i) + "; " + str(global_id) + "; "
-                    prediction_string += "; ".join(["{0:,.4f}".format(x) for x in grads])
-                    if strat == "random": prediction_string += "; " * (100 - 1)
-                    prediction_string += "; " + "{0:,.2f}".format(setting.predictor.acc) + "; "
-                    prediction_string += "; ".join([str(x) for x in list(setting.predictor.prediction)]) + "; " * (
-                            maxbs - setting.parameter["batch_size"])
-                    origlabels = list(setting.parameter["orig_label"])
-                    origlabels.sort()
-                    prediction_string += "; ".join([str(x.item()) for x in origlabels])
-                    prediction_string += "\n"
-
-                    global_id += 1
-
-    prediction_string = prediction_string.replace(".", ",")
-
-    if not os.path.exists(setting.parameter["result_path"]):
-        os.makedirs(setting.parameter["result_path"])
-
-    with open(setting.parameter["result_path"] + "prediction.csv", "w") as file:
-        file.write(prediction_string)
-
-    graph.plot_line()
-    graph.save("Accuracy_vs_Batchsize")
-    return setting, graph
-
-
-def prediction_accuracy_vs_strategie_bar(biased=False):
-    setting = Setting(log_interval=5,
-                      use_seed=False,
-                      )
-
-    graph = Prediction_accuracy_graph(setting, "Batch-Size", "Accuracy")
-
-    bs = 8
-
-    if biased:
-        target = (bs // 2) * [0] + (bs // 4) * [1]
-    else:
-        target = []
-
-    for strat in ["v1", "random", "idlg"]:
-        for i in range(2):
-            run_name = "{}{:2.0f}".format(strat, i)
-            if strat == "dlg":
-                setting.configure(improved=False, target=target, batch_size=bs, dlg_iterations=30, run_name=run_name)
-            else:
-                setting.configure(improved=True, prediction=strat, target=target, batch_size=bs, run_name=run_name)
-
-            setting.predict(True)
-            graph.add_prediction_acc(strat, bs)
-            setting.store_everything()
-
-    graph.plot_bar()
-    graph.save("Accuracy_vs_Batchsize_Biased")
-    return setting, graph
-
+###################################
 
 def mse_vs_iteration_line(biased=False, bs=1):
     setting = Setting(dlg_iterations=20,
@@ -229,6 +282,7 @@ def mse_vs_iteration_line(biased=False, bs=1):
 
     return setting, graph
 
+###################################
 
 def store_and_load():
     setting, graph = prediction_accuracy_vs_batchsize_line()
@@ -244,34 +298,9 @@ def store_and_load():
     graph.show()
     print("done")
     return setting, graph
+    
+###################################
 
-
-def perfect_prediction_line(biased=False):
-    setting = Setting(use_seed=False)
-    graph = Prediction_accuracy_graph(setting, "Batch-Size", "Perfect Predictions")
-    for bs in range(1, 32):
-
-        if biased:
-            target = (bs // 2) * [0] + (bs // 4) * [1]
-        else:
-            target = []
-
-        n = 10
-        for strat in ["v1", "v2"]:
-            print("bs ", bs, "strat ", strat)
-            cnt = 0
-            for i in range(n):
-                setting.configure(target=target, batch_size=bs, prediction=strat)
-                setting.predict()
-                if setting.predictor.acc == 1.0:
-                    cnt += 1
-
-            graph.add_datapoint(strat, cnt / n, bs)
-
-    graph.plot_line()
-    graph.show()
-
-    return setting, graph
 
 
 def mse_vs_batchsize_line(biased=False, iterations=30):
@@ -312,6 +341,7 @@ def mse_vs_batchsize_line(biased=False, iterations=30):
     return setting, graph
 
 
+###################################
 
 def load_with_styles():
     setting = Setting.load_json(None)
