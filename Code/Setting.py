@@ -192,9 +192,8 @@ class Setting:
         )
         return tmp_setting
 
-    def store_json(self):
-        if not os.path.exists(self.parameter["result_path"]):
-            os.makedirs(self.parameter["result_path"])
+    def get_backup(self):
+
 
         tmp_parameter = self.parameter.copy()
         tmp_parameter.__delitem__("orig_data")
@@ -217,9 +216,7 @@ class Setting:
 
         }
 
-        # dump to json
-        with open(self.parameter["result_path"] + "data{}.json".format(self.parameter["run_name"]), "w") as file:
-            json.dump(data_dic, file)
+
     """
     def load_json(self):
         Tk().withdraw()

@@ -3,6 +3,7 @@ from Setting import Setting
 import datetime
 import os
 import numpy as np
+import json
 
 result_path = "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
 
@@ -10,6 +11,7 @@ result_path = "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%
 #################### Experiment 1: Prediction Accuracy ####################
 
 def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
+    run = {}
     setting = Setting(log_interval=1,
                       use_seed=False,
                       seed=1337,
@@ -40,7 +42,7 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
             # setting.reinit_weights()
             setting.predict()
             graph.add_datapoint("v2", setting.predictor.acc, bs)
-            setting.store_json()
+            run.update({run_name: setting.get_backup()})
 
             prediction_string += "v2;" + str(i) + ";" + str(global_id)
             prediction_string += "; " + "{0:,.2f}".format(setting.predictor.acc) + "; "
@@ -63,14 +65,20 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
 
     graph.plot_line()
     graph.save(setting.parameter["result_path"], "Accuracy_vs_Batchsize.png")
+
+    dump_to_json(run, setting.parameter["result_path"], "pred_acc_vs_bs")
+
     return setting, graph
 
 
 def prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, trainsteps):
+    run = {}
+
     setting = Setting(log_interval=1,
                       use_seed=False,
                       seed=1337,
                       dataset=dataset, )
+
 
     graph = Graph("Train Samples", "Prediction Accuracy")
 
@@ -100,7 +108,7 @@ def prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, trainst
             setting.configure(batch_size=bs, prediction="v2", run_name=run_name, targets=target)
             setting.predict()
             graph.add_datapoint("v2", setting.predictor.acc, trainstep)
-            setting.store_json()
+            run.update({run_name: setting.get_backup()})
 
             prediction_string += str(trainstep) + ";" + str(i) + ";" + str(global_id)
             prediction_string += "; " + "{0:,.2f}".format(setting.predictor.acc) + "; "
@@ -122,6 +130,8 @@ def prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, trainst
 
     graph.plot_line()
     graph.save(setting.parameter["result_path"], "Accuracy_vs_Training.png")
+
+    dump_to_json(run, setting.parameter["result_path"], "pred_acc_vs_training")
     return setting, graph
 
 
@@ -180,6 +190,7 @@ def mse_vs_iteration_line(n, bs, iterations, dataset, balanced):
 #################### Experiment 3: Perfect Prediction vs Batch Size ####################
 
 def perfect_prediction(n, bsrange, dataset, balanced):
+    run = {}
     setting = Setting(log_interval=1,
                       use_seed=False,
                       seed=1337,
@@ -202,7 +213,7 @@ def perfect_prediction(n, bsrange, dataset, balanced):
             setting.configure(targets=target, batch_size=bs, prediction="v2", run_name=runname)
             setting.reinit_weights()
             setting.predict()
-            #setting.store_json()
+            run.update({runname: setting.get_backup()})
             if setting.predictor.acc == 1.0:
                 cnt += 1
 
@@ -211,6 +222,8 @@ def perfect_prediction(n, bsrange, dataset, balanced):
     graph.plot_bar()
     graph.save(setting.parameter["result_path"], "prefect_pred.png")
     graph.show()
+
+    dump_to_json(run,setting.parameter["result_path"], "perf_pred")
 
     return setting, graph
 
@@ -380,3 +393,9 @@ def color_map(label):
         "dlg": 'r',
         "idlg": 'm',
     }[label]
+
+def dump_to_json(run, path, name):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    with open(path + "data{}.json".format(name), "w") as file:
+        json.dump(run, file)
