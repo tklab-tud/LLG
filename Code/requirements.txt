@@ -58,12 +58,12 @@ tensorflow-federated==0.14.0
 tensorflow-model-optimization==0.3.0
 tensorflow-privacy==0.3.0
 termcolor==1.1.0
+tk==0.1.0
 tools==0.1.9
+torch==1.6.0
+torchvision==0.7.0
 typeguard==2.7.1
 urllib3==1.25.9
 Werkzeug==1.0.1
 wrapt==1.12.1
 zipp==3.1.0
-torch
-torchvision
-matplotlib

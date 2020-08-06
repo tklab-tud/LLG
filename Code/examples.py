@@ -1,6 +1,8 @@
 from Graph import *
 from Setting import Setting
 import datetime
+import os
+import numpy as np
 
 result_path = "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
 
@@ -11,9 +13,7 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
     setting = Setting(log_interval=1,
                       use_seed=False,
                       seed=1337,
-                      dataset=dataset,)
-
-
+                      dataset=dataset, )
 
     graph = Graph("Batchsize", "Prediction Accuracy")
 
@@ -37,7 +37,7 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
                 target = target[:bs]
 
             setting.configure(batch_size=bs, prediction="v2", run_name=run_name, targets=target)
-            #setting.reinit_weights()
+            # setting.reinit_weights()
             setting.predict()
             graph.add_datapoint("v2", setting.predictor.acc, bs)
             setting.store_json()
@@ -48,7 +48,7 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
                     max(bsrange) - setting.parameter["batch_size"])
             origlabels = list(setting.parameter["orig_label"])
             origlabels.sort()
-            prediction_string +=";" + "; ".join([str(x.item()) for x in origlabels])
+            prediction_string += ";" + "; ".join([str(x.item()) for x in origlabels])
             prediction_string += "\n"
 
             global_id += 1
@@ -83,7 +83,7 @@ def prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, trainst
     for trainstep in range(trainsteps):
         print("\nTrainstep ", trainstep)
 
-        #training
+        # training
         setting.train(trainsize)
 
         for i in range(n):
@@ -104,7 +104,7 @@ def prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, trainst
 
             prediction_string += str(trainstep) + ";" + str(i) + ";" + str(global_id)
             prediction_string += "; " + "{0:,.2f}".format(setting.predictor.acc) + "; "
-            prediction_string += "; ".join([str(x) for x in list(setting.predictor.prediction)]) + "; " * (bs)
+            prediction_string += "; ".join([str(x) for x in list(setting.predictor.prediction)]) + "; " * bs
             origlabels = list(setting.parameter["orig_label"])
             origlabels.sort()
             prediction_string += ";" + "; ".join([str(x.item()) for x in origlabels])
@@ -126,7 +126,7 @@ def prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, trainst
 
 
 #################### Experiment 2: MSE vs Iterations ####################
-
+"""
 def mse_vs_iteration_line(n, bs, iterations, dataset, balanced):
     setting = Setting(dlg_iterations=20,
                       log_interval=1,
@@ -151,7 +151,7 @@ def mse_vs_iteration_line(n, bs, iterations, dataset, balanced):
     # idlg strats
     n = 0
 
-    ids = np.random.randint(0, len(setting.train_dataset), setting.parameter["batch_size"])
+    ids = np.random.randint(0, len(setting.dataloader.train_dataset), setting.parameter["batch_size"])
     ids = [x.item() for x in ids]
     for strat in [ "v2", "idlg", "dlg"]:
         run_name = "_{}_{:3.0f}".format(strat, n)
@@ -174,6 +174,7 @@ def mse_vs_iteration_line(n, bs, iterations, dataset, balanced):
     graph.save("Mses_vs_Iterations")
 
     return setting, graph
+"""
 
 
 #################### Experiment 3: Perfect Prediction vs Batch Size ####################
@@ -207,14 +208,11 @@ def perfect_prediction(n, bsrange, dataset, balanced):
 
         graph.add_datapoint("v2", cnt / n, bs)
 
-    graph.plot_line()
+    graph.plot_bar()
     graph.save(setting.parameter["result_path"], "prefect_pred.png")
     graph.show()
 
     return setting, graph
-
-
-
 
 
 
@@ -382,4 +380,3 @@ def color_map(label):
         "dlg": 'r',
         "idlg": 'm',
     }[label]
-
