@@ -202,7 +202,7 @@ def perfect_prediction(n, bsrange, dataset, balanced):
             setting.configure(targets=target, batch_size=bs, prediction="v2", run_name=runname)
             setting.reinit_weights()
             setting.predict()
-            setting.store_json()
+            #setting.store_json()
             if setting.predictor.acc == 1.0:
                 cnt += 1
 

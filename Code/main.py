@@ -11,7 +11,10 @@ def main():
 
     # setting, graph = prediction_accuracy_vs_training(1, 64, "MNIST", False, 10, 100)
 
-    setting, graph = perfect_prediction(10, [32], "MNIST", True)
+    setting, graph = perfect_prediction(10, [1, 16, 32, 64, 128, 256], "MNIST", True)
+    setting, graph = perfect_prediction(10, [1, 16, 32, 64, 128, 256], "MNIST", False)
+    setting, graph = perfect_prediction(10, [1, 16, 32, 64, 128, 256], "CIFAR", True)
+    setting, graph = perfect_prediction(10, [1, 16, 32, 64, 128, 256], "CIFAR", False)
 
     # setting, graph = mse_vs_iteration_line(1, 32, 30 ,"MNIST", True)
 
