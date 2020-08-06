@@ -206,7 +206,7 @@ def perfect_prediction(n, bsrange, dataset, balanced):
             if setting.predictor.acc == 1.0:
                 cnt += 1
 
-        graph.add_datapoint("v2", cnt / n, bs)
+        graph.add_datapoint(bs, cnt / n)
 
     graph.plot_bar()
     graph.save(setting.parameter["result_path"], "prefect_pred.png")

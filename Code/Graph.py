@@ -26,7 +26,7 @@ class Graph:
     def plot_bar(self):
         self.take_average()
         for dat in self.data:
-            self.subplot.bar(dat[0], dat[1], 0.5, color="blue")
+            self.subplot.bar(str(dat[0]), dat[1], 0.5, color="blue")
 
     def plot_line(self, style='solid', clear=True, color=None):
         if clear: self.subplot.clear()
