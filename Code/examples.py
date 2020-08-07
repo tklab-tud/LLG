@@ -97,7 +97,7 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
 
     for strat in strats:
         for i in range(n):
-            run_name = "{}_{:3.0f}_{:3.0f}".format(strat, i)
+            run_name = "{}_{:3.0f}".format(strat, i)
 
             if balanced:
                 target = []
