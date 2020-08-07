@@ -216,6 +216,8 @@ class Setting:
 
         }
 
+        return data_dic
+
 
     """
     def load_json(self):

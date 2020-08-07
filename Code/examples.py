@@ -39,7 +39,7 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
                 target = target[:bs]
 
             setting.configure(batch_size=bs, prediction="v2", run_name=run_name, targets=target)
-            # setting.reinit_weights()
+            setting.reinit_weights()
             setting.predict()
             graph.add_datapoint("v2", setting.predictor.acc, bs)
             run.update({run_name: setting.get_backup()})
@@ -136,7 +136,7 @@ def prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, trainst
 
 
 #################### Experiment 2: MSE vs Iterations ####################
-"""
+
 def mse_vs_iteration_line(n, bs, iterations, dataset, balanced):
     setting = Setting(dlg_iterations=20,
                       log_interval=1,
@@ -184,7 +184,7 @@ def mse_vs_iteration_line(n, bs, iterations, dataset, balanced):
     graph.save("Mses_vs_Iterations")
 
     return setting, graph
-"""
+
 
 
 #################### Experiment 3: Perfect Prediction vs Batch Size ####################
