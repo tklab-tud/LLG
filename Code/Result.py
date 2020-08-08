@@ -94,6 +94,7 @@ class Result:
         self.separate_figs.append((fig, batch, snap, original))
 
     def add_composed_image(self, item, original, batch, snap):
+        if isinstance(item, torch.Tensor): item = item.cpu().detach().numpy()
 
         row = batch
         if original:
