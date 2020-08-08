@@ -113,9 +113,10 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
             run.update({run_name: setting.get_backup()})
 
             for step in steps:
-                for mse in setting.result.mses:
-                    if mse < step:
-                        fidelity[strat][step] += 1
+                for snap in setting.result.mses:
+                    for mse in snap:
+                        if mse < step:
+                            fidelity[strat][step] += 1
 
     for strat in fidelity:
         for step in fidelity[strat]:

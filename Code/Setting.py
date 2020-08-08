@@ -146,7 +146,7 @@ class Setting:
             # print("Torch successfully connected to CUDA device: {}".format(torch.cuda.current_device()))
         else:
             print("Error: Torch can't connect to CUDA")
-            exit()
+            self.device = torch.device("cpu")
 
     def reset_seeds(self):
         # Setting Torch and numpy Seed
