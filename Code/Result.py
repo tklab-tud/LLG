@@ -82,6 +82,7 @@ class Result:
         self.realign_snapshops(alignment)
 
     def add_seperate_image(self, item, original, batch, snap):
+        if isinstance(item, torch.Tensor): item = item.cpu().detach().numpy()
         item = np.squeeze(item)
         fig, subplot = plt.subplots(1, 1)
 
