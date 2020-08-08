@@ -36,7 +36,7 @@ class Dlg:
         parameter = self.setting.parameter
         device = self.setting.device
         model = self.setting.model
-        orig_data = parameter["orig_date"]
+        orig_data = parameter["orig_data"]
         orig_label = parameter["orig_label"]
 
         self.victim_side()
