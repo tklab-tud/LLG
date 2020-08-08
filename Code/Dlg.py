@@ -40,7 +40,7 @@ class Dlg:
         self.victim_side()
 
         # optimizer setup
-        if parameter["prediction"] == "DLG":
+        if parameter["prediction"] == "dlg":
             optimizer = torch.optim.LBFGS([self.dummy_data, self.dummy_label], lr=parameter["dlg_lr"])
         else:
             optimizer = torch.optim.LBFGS([self.dummy_data, ], lr=parameter["dlg_lr"])
