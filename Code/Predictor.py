@@ -67,6 +67,8 @@ class Predictor:
         # So in order to save time we take a shortcut and just take the labels from the settings
 
         self.prediction = list(self.setting.parameter["orig_label"])
+        self.prediction = [x.item() for x in self.prediction]
+
 
 
     def random_prediction(self):
