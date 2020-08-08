@@ -1,3 +1,5 @@
+from typing import Type
+
 import torch
 import torch.nn as nn
 
@@ -56,7 +58,7 @@ class Dlg:
             def closure():
                 optimizer.zero_grad()
                 dummy_pred = model(self.dummy_data)
-                if not parameter["improved"]:
+                if parameter["prediction"] == "dlg":
                     dummy_loss = - torch.mean(
                         torch.sum(torch.softmax(self.dummy_label, -1) * torch.log(torch.softmax(dummy_pred, -1)),
                                   dim=-1))
@@ -84,3 +86,4 @@ class Dlg:
 
         res.update_figures()
         self.setting.result = res
+
