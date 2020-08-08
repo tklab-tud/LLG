@@ -63,10 +63,6 @@ class Dlg:
                         torch.sum(torch.softmax(self.dummy_label, -1) * torch.log(torch.softmax(dummy_pred, -1)),
                                   dim=-1))
                     self.setting.predictor.prediction = [torch.argmin(dummy_pred).item()]
-                    s=""
-                    for x in dummy_pred:
-                        s += str(torch.argmax(x).item())+", "
-                    print(s)
                 else:
                     dummy_loss = self.criterion(dummy_pred, torch.Tensor(pred).long().to(device))
 

@@ -37,7 +37,9 @@ class Result:
             self.mses[i_s] = self.mse(self.origin_data, s).sum(1)
 
     def mse(self, a, b):
-        mse = (a.cpu() - b.cpu())
+        if isinstance(a, torch.Tensor): a = a.cpu().detach().numpy()
+        if isinstance(b, torch.Tensor): b = b.cpu().detach().numpy()
+        mse = (a - b.cpu())
         mse = mse ** 2
         mse = mse.sum(-1).sum(-2)  # sum over the last 2 dimension accumulates pixel diff
         mse = mse / (self.parameter["shape_img"][0] * self.parameter["shape_img"][1])
