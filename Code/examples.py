@@ -96,23 +96,21 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
     for i in range(n):
 
         if balanced:
-            target = []
+            target = np.random.randint(0, setting.parameter["num_classes"], bs)
         else:
             choice1 = np.random.choice(range(setting.parameter["num_classes"])).item()
             choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1)).item()
             target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
             target.extend(np.random.randint(0, setting.parameter["num_classes"], bs - len(target)))
-
             target = target[:bs]
 
+        setting.reinit_weights()
         for strat in strats:
 
             run_name = "{}_{:3.0f}".format(strat, i)
 
-
-
             setting.configure(prediction=strat, run_name=run_name, targets=target)
-            setting.reinit_weights()
+
             setting.attack()
             run.update({run_name: setting.get_backup()})
 
@@ -122,7 +120,7 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
                         if mse < step:
                             fidelity[strat][step] += 1
 
-    length = iterations * bs
+    length = iterations * bs * n
 
     for strat in fidelity:
         for step in fidelity[strat]:

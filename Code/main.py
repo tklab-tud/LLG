@@ -11,7 +11,7 @@ def main():
     # setting, graph = prediction_accuracy_vs_batchsize(10, [1, 2, 4, 6, 16, 32, 64, 128, 256], "CIFAR", False)
 
     ### Experiment 2: Good Fidelity ###
-    setting, graph = good_fidelity(1, 4, 60, "MNIST", True)
+    setting, graph = good_fidelity(2, 4, 60, "MNIST", True)
 
     ############################################################
     print("Run finished")
