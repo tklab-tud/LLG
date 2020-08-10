@@ -101,8 +101,9 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
             choice1 = np.random.choice(range(setting.parameter["num_classes"])).item()
             choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1)).item()
             target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
-            target.extend(np.random.randint(0, setting.parameter["num_classes"], bs - len(target)))
-            target = target[:bs].tolist()
+            target.extend(np.random.randint(0, setting.parameter["num_classes"], bs - len(target)).tolist())
+
+            target = target[:bs]
 
 
         for strat in strats:
