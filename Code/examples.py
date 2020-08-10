@@ -104,14 +104,16 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
             target.extend(np.random.randint(0, setting.parameter["num_classes"], bs - len(target)))
             target = target[:bs].tolist()
 
-        setting.reinit_weights()
+
         for strat in strats:
 
             run_name = "{}_{:3.0f}".format(strat, i)
 
             setting.configure(prediction=strat, run_name=run_name, targets=target)
+            setting.reinit_weights()
 
             setting.attack()
+
             setting.result.store_composed_image()
             run.update({run_name: setting.get_backup()})
 
