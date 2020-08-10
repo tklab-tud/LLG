@@ -25,7 +25,7 @@ class Result:
 
 
     def add_snapshot(self, batch):
-        self.snapshots.append(batch)
+        self.snapshots.append(batch.copy())
         self.unprocessed = True
 
     def add_loss(self, loss):
