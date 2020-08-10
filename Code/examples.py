@@ -118,9 +118,11 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
                         if mse < step:
                             fidelity[strat][step] += 1
 
+    length = len(fidelity) / len(strats)
+
     for strat in fidelity:
         for step in fidelity[strat]:
-            graph.add_datapoint(strat, step, fidelity[strat][step])
+            graph.add_datapoint(strat, fidelity[strat][step]/ length, step)
 
     graph.plot_line()
     graph.save(setting.parameter["result_path"], "fidelity.png")
