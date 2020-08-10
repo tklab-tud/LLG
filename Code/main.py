@@ -12,6 +12,9 @@ def main():
 
     ### Experiment 2: Good Fidelity ###
     setting, graph = good_fidelity(10, 4, 60, "MNIST", True)
+    setting, graph = good_fidelity(10, 4, 60, "MNIST", False)
+    setting, graph = good_fidelity(10, 4, 60, "CIFAR", True)
+    setting, graph = good_fidelity(10, 4, 60, "CIFAR", False)
 
     ############################################################
     print("Run finished")
