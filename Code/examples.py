@@ -108,7 +108,7 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
 
         for strat in strats:
 
-            run_name = "{}_{:3.0f}".format(strat, i)
+            run_name = "{:3.0f}_{}".format(i, strat)
 
             setting.configure(prediction=strat, run_name=run_name, targets=target)
             setting.reinit_weights()
