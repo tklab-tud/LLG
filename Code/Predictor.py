@@ -141,7 +141,7 @@ class Predictor:
             tmp_gradients = []
 
             for i in range(parameter["num_classes"]):
-                tmp_setting.configure(targets=[i] * parameter["batch_size"], use_seed=False)
+                tmp_setting.configure(targets=[i] * parameter["batch_size"])
                 tmp_setting.dlg.victim_side()
                 tmp_gradients.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy())
                 impact += torch.sum(tmp_setting.dlg.gradient[-2], dim=-1)[i].item()
@@ -188,7 +188,6 @@ class Predictor:
         # create a new temporary setting for impact and offset calculation
         tmp_setting = self.setting.copy()
         tmp_setting.model = self.setting.model
-        tmp_setting.configure(use_seed=False)
 
         acc_offset = np.zeros(parameter["num_classes"])
         acc_impact = 0

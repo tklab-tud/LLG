@@ -4,6 +4,8 @@ import datetime
 import os
 import numpy as np
 import json
+import time
+import torch
 
 result_path = "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
 
@@ -13,8 +15,6 @@ result_path = "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%
 def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
     run = {}
     setting = Setting(log_interval=1,
-                      use_seed=False,
-                      seed=1337,
                       dataset=dataset, )
 
     graph = Graph("Batchsize", "Prediction Accuracy")
@@ -29,6 +29,7 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
         print("\nBS ", bs)
         for i in range(n):
             run_name = "{}_{:3.0f}_{:3.0f}".format("v2", bs, i)
+
 
             if balanced:
                 target = []
@@ -76,8 +77,6 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
 def good_fidelity(n, bs, iterations, dataset, balanced):
     run = {}
     setting = Setting(log_interval=5,
-                      use_seed=False,
-                      seed=1337,
                       dataset=dataset,
                       dlg_iterations=iterations,
                       batch_size=bs, )
@@ -94,7 +93,8 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
             fidelity[strat].update({step: 0})
 
     for i in range(n):
-
+        # Choosing target should use random seed.
+        set_seeds(-1)
         if balanced:
             target = np.random.randint(0, setting.parameter["num_classes"], bs).tolist()
         else:
@@ -105,13 +105,14 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
 
             target = target[:bs]
 
-        # To make the runs comparable we use the same seed.
+        # To make the runs comparable we use the same seed for each run.
         seed_for_runs = np.random.randint(2 ^ 32)
 
         for strat in strats:
+            set_seeds(seed_for_runs)
             run_name = "{:3.0f}_{}".format(i, strat)
 
-            setting.configure(prediction=strat, run_name=run_name, targets=target, seed=seed_for_runs, use_seed=True)
+            setting.configure(prediction=strat, run_name=run_name, targets=target)
             setting.reinit_weights()
             setting.attack()
 
@@ -145,8 +146,6 @@ def prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, trainst
     run = {}
 
     setting = Setting(log_interval=1,
-                      use_seed=False,
-                      seed=1337,
                       dataset=dataset, )
 
     graph = Graph("Train Samples", "Prediction Accuracy")
@@ -209,8 +208,6 @@ def prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, trainst
 def perfect_prediction(n, bsrange, dataset, balanced):
     run = {}
     setting = Setting(log_interval=1,
-                      use_seed=False,
-                      seed=1337,
                       dataset=dataset, )
     graph = Graph("Batch-Size", "Perfect Predictions")
     for bs in bsrange:
@@ -253,3 +250,13 @@ def dump_to_json(run, path, name):
         os.makedirs(path)
     with open(path + "data{}.json".format(name), "w") as file:
         json.dump(run, file)
+
+
+# set seeds or unset seeds. -1 for random
+def set_seeds(seed):
+    if seed == -1:
+        torch.manual_seed(int(1000 * time.time() % 2 ** 32))
+        np.random.seed(int(1000 * time.time() % 2 ** 32))
+    else:
+        torch.manual_seed(seed)
+        np.random.seed(seed)

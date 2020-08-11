@@ -27,9 +27,6 @@ class Setting:
         self.device = None
         self.check_cuda()
 
-        # Seeds
-        self.reset_seeds()
-
         # Predictor
         self.predictor = Predictor(self)
 
@@ -90,8 +87,6 @@ class Setting:
                     self.dataloader.get_batch(self)
             elif key == "model":
                 self.model = self.load_model()
-            elif key == "use_seed" or key == "seed":
-                self.reset_seeds()
             elif key == "targets" or key == "batch_size":
                 self.parameter["orig_data"], self.parameter["orig_label"] = \
                     self.dataloader.get_batch(self)
@@ -115,8 +110,6 @@ class Setting:
             "batch_size": 2,
             "model": 1,
             "log_interval": 5,
-            "use_seed": False,
-            "seed": 1337,
             "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
             "run_name": "",
 
@@ -148,14 +141,6 @@ class Setting:
             print("Error: Torch can't connect to CUDA")
             self.device = torch.device("cpu")
 
-    def reset_seeds(self):
-        # Setting Torch and numpy Seed
-        if self.parameter["use_seed"]:
-            torch.manual_seed(self.parameter["seed"])
-            np.random.seed(self.parameter["seed"])
-        else:
-            torch.manual_seed(int(1000 * time.time() % 2 ** 32))
-            np.random.seed(int(1000 * time.time() % 2 ** 32))
 
     def load_model(self):
         if self.parameter["model"] == 1:
@@ -185,7 +170,6 @@ class Setting:
         kwargs.__delitem__("orig_data")
         kwargs.__delitem__("orig_label")
         kwargs.__delitem__("targets")
-        kwargs.__delitem__("seed")
         tmp_setting = Setting(
             dataloader=self.dataloader,
             **kwargs
