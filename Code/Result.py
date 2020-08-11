@@ -73,11 +73,11 @@ class Result:
 
             # purge column
             for orig in range(self.parameter["batch_size"]):
-                err[orig][max_reco] = [1]
+                err[orig][max_reco] = [2**32]
 
             # purge row
             for reco in range(self.parameter["batch_size"]):
-                err[max_orig][reco] = [1]
+                err[max_orig][reco] = [2**32]
 
         self.realign_snapshops(alignment)
 
