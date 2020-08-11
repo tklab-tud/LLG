@@ -75,7 +75,7 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
 
 def good_fidelity(n, bs, iterations, dataset, balanced):
     run = {}
-    setting = Setting(log_interval=1,
+    setting = Setting(log_interval=5,
                       use_seed=False,
                       seed=1337,
                       dataset=dataset,
@@ -124,6 +124,8 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
                         if mse < step:
                             fidelity[strat][step] += 1
 
+        setting.result.delete()
+
     length = iterations * bs * n
 
     for strat in fidelity:
@@ -135,6 +137,7 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
     graph.save(setting.parameter["result_path"], "fidelity.png")
 
     dump_to_json(run, setting.parameter["result_path"], "fidelity")
+
 
     return setting, graph
 
