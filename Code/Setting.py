@@ -2,8 +2,8 @@ import datetime
 import json
 import os
 import time
-#from tkinter import Tk
-#from tkinter.filedialog import askopenfilenames
+# from tkinter import Tk
+# from tkinter.filedialog import askopenfilenames
 
 import numpy as np
 import torch
@@ -66,6 +66,14 @@ class Setting:
     def configure(self, **kwargs):
         self.update_parameter(**kwargs)
 
+        # Reset old results
+        self.predictor = Predictor(self)
+        self.dlg = Dlg(self)
+        self.result = Result(self)
+        self.parameter["orig_data"] = []
+        self.parameter["orig_label"] = []
+
+
         for key, value in kwargs.items():
             if key == "dataset":
                 self.dataloader = Dataloader(self, value)
@@ -81,7 +89,7 @@ class Setting:
                     self.parameter["channel"] = 3
                     self.parameter["hidden"] = 768
                     self.parameter["hidden2"] = 12544
-                #changing dataset requires new model and new data
+                # changing dataset requires new model and new data
                 self.model = self.load_model()
                 self.parameter["orig_data"], self.parameter["orig_label"] = \
                     self.dataloader.get_batch(self)
@@ -141,7 +149,6 @@ class Setting:
             print("Error: Torch can't connect to CUDA")
             self.device = torch.device("cpu")
 
-
     def load_model(self):
         if self.parameter["model"] == 1:
             model = Net1(self.parameter)
@@ -178,10 +185,9 @@ class Setting:
 
     def get_backup(self):
 
-
         tmp_parameter = self.parameter.copy()
         tmp_parameter.__delitem__("orig_data")
-        #tmp_parameter.__delitem__("orig_label")
+        # tmp_parameter.__delitem__("orig_label")
         tmp_parameter["orig_label"] = self.parameter["orig_label"].cpu().detach().numpy().tolist()
 
         data_dic = {
@@ -201,7 +207,6 @@ class Setting:
         }
 
         return data_dic
-
 
     """
     def load_json(self):
@@ -232,6 +237,3 @@ class Setting:
         train(self, train_size)
         self.parameter["test_loss"] = test(self)
         print("Training finished, loss = {}".format(self.parameter["test_loss"]))
-
-
-
