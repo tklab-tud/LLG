@@ -84,12 +84,12 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
 
     graph = Graph("Fidelity score", "Percentage of samples")
 
-    #Prepare empty fidelity dictionary
+    # Prepare empty fidelity dictionary
     steps = [0.01, 0.005, 0.001, 0.0005, 0.0001]
     strats = ["dlg", "v2", "idlg"]
     fidelity = {}
     for strat in strats:
-        fidelity.update({strat : {}})
+        fidelity.update({strat: {}})
         for step in steps:
             fidelity[strat].update({step: 0})
 
@@ -105,24 +105,23 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
 
             target = target[:bs]
 
+        # To make the runs comparable we use the same seed.
+        seed_for_runs = np.random.randint(2 ^ 32)
 
         for strat in strats:
-
             run_name = "{:3.0f}_{}".format(i, strat)
 
-            setting.configure(prediction=strat, run_name=run_name, targets=target)
+            setting.configure(prediction=strat, run_name=run_name, targets=target, seed=seed_for_runs, use_seed=True)
             setting.reinit_weights()
-
             setting.attack()
 
             setting.result.store_composed_image()
             run.update({run_name: setting.get_backup()})
 
             for step in steps:
-                for snap in setting.result.mses:
-                    for mse in snap:
-                        if mse < step:
-                            fidelity[strat][step] += 1
+                for mse in setting.result.mses[-1]:
+                    if mse < step:
+                        fidelity[strat][step] += 1
 
         setting.result.delete()
 
@@ -130,14 +129,12 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
 
     for strat in fidelity:
         for step in fidelity[strat]:
-            graph.add_datapoint(strat, fidelity[strat][step]/ length, str(step))
-
+            graph.add_datapoint(strat, fidelity[strat][step] / length, str(step))
 
     graph.plot_line()
     graph.save(setting.parameter["result_path"], "fidelity.png")
 
     dump_to_json(run, setting.parameter["result_path"], "fidelity")
-
 
     return setting, graph
 
