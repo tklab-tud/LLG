@@ -120,7 +120,7 @@ class Result:
 
     def update_figures(self):
         if self.unprocessed:
-            #self.fix_snapshot_order()
+            self.fix_snapshot_order()
             self.calc_mse()
 
             # initialise composed fig

@@ -84,7 +84,7 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
     graph = Graph("Fidelity score", "Percentage of samples")
 
     # Prepare empty fidelity dictionary
-    steps = [0.01, 0.005, 0.001, 0.0005, 0.0001]
+    steps = [0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001]
     strats = ["dlg", "v2", "idlg"]
     fidelity = {}
     for strat in strats:
