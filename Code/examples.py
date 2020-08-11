@@ -126,7 +126,7 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
 
         setting.result.delete()
 
-    length = iterations * bs * n
+    length = bs * n
 
     for strat in fidelity:
         for step in fidelity[strat]:
