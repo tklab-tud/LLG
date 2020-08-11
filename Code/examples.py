@@ -132,7 +132,7 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
         for step in fidelity[strat]:
             graph.add_datapoint(strat, fidelity[strat][step] / length, str(step))
 
-    graph.plot_line()
+    graph.plot_line(style="--")
     graph.save(setting.parameter["result_path"], "fidelity.png")
 
     dump_to_json(run, setting.parameter["result_path"], "fidelity")
