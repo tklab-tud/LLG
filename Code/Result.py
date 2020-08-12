@@ -109,6 +109,7 @@ class Result:
             subplot.imshow(np.squeeze(item), cmap="Greys_r")
         elif self.parameter["channel"] == 3:
             rgb_img = cv2.merge([item[0], item[1], item[2]])
+            rgb_img = cv2.normalize(rgb_img, None, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
             subplot.imshow(rgb_img)
 
         subplot.axis('off')

@@ -12,7 +12,7 @@ from Dataloader import Dataloader
 from Dlg import Dlg
 from Predictor import Predictor
 from Result import Result
-from net import Net1, Net2, weights_init
+from net import Net1, weights_init
 from train import train, test
 
 
@@ -29,20 +29,6 @@ class Setting:
 
         # Predictor
         self.predictor = Predictor(self)
-
-        # Dataloader
-        if self.parameter["dataset"] == "MNIST":
-            self.parameter["shape_img"] = (28, 28)
-            self.parameter["num_classes"] = 10
-            self.parameter["channel"] = 1
-            self.parameter["hidden"] = 588
-            self.parameter["hidden2"] = 9216
-        elif kwargs["dataset"] == 'CIFAR':
-            self.parameter["shape_img"] = (32, 32)
-            self.parameter["num_classes"] = 100
-            self.parameter["channel"] = 3
-            self.parameter["hidden"] = 768
-            self.parameter["hidden2"] = 12544
 
         if dataloader is None:
             self.dataloader = Dataloader(self, self.parameter["dataset"])
@@ -153,8 +139,6 @@ class Setting:
         if self.parameter["model"] == 1:
             model = Net1(self.parameter)
             model.apply(weights_init)
-        elif self.parameter["model"] == 2:
-            model = Net2(self.parameter)
 
         return model.to(self.device)
 
@@ -195,7 +179,7 @@ class Setting:
             "attack_results": {
                 "losses": self.result.losses,
                 "mses": self.result.mses.tolist(),
-                "snapshots": list(map(lambda x: x.tolist(), self.result.snapshots))
+                #"snapshots": list(map(lambda x: x.tolist(), self.result.snapshots))
             },
             "prediction_results": {
                 "correct": self.predictor.correct,

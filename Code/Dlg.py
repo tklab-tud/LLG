@@ -1,9 +1,5 @@
-from typing import Type
-
 import torch
 import torch.nn as nn
-
-from Predictor import Predictor
 from Result import Result
 
 
@@ -21,16 +17,10 @@ class Dlg:
             setting.device).requires_grad_(True)
 
     def victim_side(self):
-        # abbreviations
-        parameter = self.setting.parameter
-        model = self.setting.model
-
-
-        # calculate orig gradients
-
-        orig_out = model(self.setting.parameter["orig_data"])
+         # calculate orig gradients
+        orig_out = self.setting.model(self.setting.parameter["orig_data"])
         y = self.criterion(orig_out, self.setting.parameter["orig_label"])
-        grad = torch.autograd.grad(y, model.parameters())
+        grad = torch.autograd.grad(y, self.setting.model.parameters())
         self.gradient = list((_.detach().clone() for _ in grad))
 
     def attack(self):
@@ -47,7 +37,8 @@ class Dlg:
         else:
             optimizer = torch.optim.LBFGS([self.dummy_data, ], lr=parameter["dlg_lr"])
             # predict label of dummy gradient
-            pred = self.setting.predict()
+            pred = torch.Tensor(self.setting.predict()).long().to(device).reshape(
+                    (parameter["batch_size"],)).requires_grad_(False)
 
         # Prepare Result Object
         res = Result(self.setting)
@@ -64,7 +55,7 @@ class Dlg:
                                   dim=-1))
                     self.setting.predictor.prediction = [torch.argmin(dummy_pred).item()]
                 else:
-                    dummy_loss = self.criterion(dummy_pred, torch.Tensor(pred).long().to(device))
+                    dummy_loss = self.criterion(dummy_pred, pred)
 
                 dummy_gradient = torch.autograd.grad(dummy_loss, model.parameters(), create_graph=True)
 

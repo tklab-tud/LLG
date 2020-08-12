@@ -75,6 +75,7 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
 #################### Experiment 2: good fidelity ####################
 
 def good_fidelity(n, bs, iterations, dataset, balanced):
+    #set_seeds(0)
     run = {}
     setting = Setting(log_interval=5,
                       dataset=dataset,
