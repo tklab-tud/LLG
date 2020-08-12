@@ -114,7 +114,6 @@ class Predictor:
 
 
     def v2_prediction(self):
-        # Version 2 includes Gradient-Substraction
         parameter = self.setting.parameter
 
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
@@ -125,16 +124,13 @@ class Predictor:
             if class_gradient < 0:
                 candidates.append((i_cg, class_gradient))
 
-        # create a new setting
+        # create a new setting for impact / offset calculation
         tmp_setting = self.setting.copy()
         tmp_setting.model = self.setting.model
-
         impact = 0
-
-        n = 10
-
         acc_impact = 0
         acc_offset = np.zeros(parameter["num_classes"])
+        n = 10
 
         # calculate bias and impact
         for _ in range(n):
@@ -150,7 +146,7 @@ class Predictor:
             impact /= (parameter["num_classes"] * parameter["batch_size"])
             acc_impact += impact
 
-        impact = (acc_impact / n) * (1 + 1/parameter["num_classes"])
+        impact = (acc_impact / n) * 1.05#(1 + 1/parameter["num_classes"])
         acc_offset = np.divide(acc_offset, n)
         offset = torch.Tensor(acc_offset).to(self.setting.device)
 
