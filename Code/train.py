@@ -1,5 +1,6 @@
 import torch
 
+
 def test(setting):
     # some abbreviations
     parameter = setting.parameter
@@ -24,11 +25,14 @@ def test(setting):
 
     test_loss /= parameter["test_size"]
 
-    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-        test_loss, correct, parameter["test_size"] * parameter["batch_size"],
-                            100. * correct / (parameter["test_size"] * parameter["batch_size"])))
+    test_acc = 100. * correct / (parameter["test_size"] * parameter["batch_size"])
 
-    return test_loss
+    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+        test_loss, correct, parameter["test_size"] * parameter["batch_size"], test_acc))
+
+
+    return test_loss, test_acc
+
 
 def train(setting, train_size):
     # some abbreviations
@@ -42,7 +46,6 @@ def train(setting, train_size):
 
     optimizer = torch.optim.SGD(model.parameters(), lr=parameter["train_lr"])
     criterion = torch.nn.CrossEntropyLoss().to(device)
-
 
     for i in range(train_size):
 
@@ -58,4 +61,3 @@ def train(setting, train_size):
 
         if i % 100 == 0:
             print('Sample [{}/{}]\tLoss: {}'.format(i, train_size, loss.item()))
-

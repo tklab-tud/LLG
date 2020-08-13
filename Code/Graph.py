@@ -1,15 +1,23 @@
 import os
+from tkinter.filedialog import asksaveasfile
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
 class Graph:
-    def __init__(self, xlabel, ylabel):
+    def __init__(self, xlabel, ylabel, ylabel2=None):
         self.data = []
         self.fig, self.subplot = plt.subplots(1, 1)
         self.subplot.set_xlabel(xlabel)
         self.subplot.set_ylabel(ylabel)
+        if ylabel2 is not None:
+            self.subplot2 = self.subplot.twinx()
+            self.subplot2.set_ylabel(ylabel2)
+            self.fig.tight_layout()
+        else:
+            self.subplot2 = None
+
         self.subplot.use_sticky_edges = True
 
     def add_datapoint(self, line, y, x=0):
@@ -23,21 +31,30 @@ class Graph:
     def show(self):
         self.fig.show()
 
-    def plot_bar(self):
+    def plot_bar(self, color=None, alt_ax=False):
+        if alt_ax:
+            plt = self.subplot2
+        else:
+            plt = self.subplot
+
         self.take_average()
         for dat in self.data:
-            self.subplot.bar(str(dat[0]), dat[1], 0.5, color="blue")
+            plt.bar(str(dat[0]), dat[1], 0.5, color=color)
 
-    def plot_line(self, style='solid', clear=True, color=None):
-        if clear: self.subplot.clear()
+    def plot_line(self, style='solid', color=None, alt_ax=False):
+        if alt_ax:
+            plt = self.subplot2
+        else:
+            plt = self.subplot
+
         self.take_average()
         # For every line
         for label in dict.fromkeys([label for (label, _, _) in self.data]):
             l_x = [x for (l, y, x) in self.data if l == label]
             l_y = [y for (l, y, x) in self.data if l == label]
-            self.subplot.plot(l_x, l_y, label=label, linestyle=style, color=color)
+            plt.plot(l_x, l_y, label=label, linestyle=style, color=color)
 
-        self.subplot.legend()
+        plt.legend()
 
     def take_average(self):
         # Repaces data with the averages for every label,y combination
@@ -68,5 +85,10 @@ class Graph:
     def save(self, path, name):
         if not os.path.exists(path):
             os.makedirs(path)
-        self.fig.savefig(path+name)
+        self.fig.savefig(path + name)
 
+    def save_dialog(self, initialdir="", initialname=""):
+        f = asksaveasfile(mode='w', defaultextension=".png", initialfile=initialname, initialdir=initialdir)
+        if f is None:
+            return
+        self.fig.savefig(f.name)

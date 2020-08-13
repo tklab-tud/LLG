@@ -2,8 +2,7 @@ import datetime
 import json
 import os
 import time
-# from tkinter import Tk
-# from tkinter.filedialog import askopenfilenames
+
 
 import numpy as np
 import torch
@@ -17,7 +16,7 @@ from train import train, test
 
 
 class Setting:
-    def __init__(self, dataloader=None, **kwargs):
+    def __init__(self, dataloader="new", **kwargs):
         # Parameter
         self.parameter = {}
         self.restore_default_parameter()
@@ -30,13 +29,14 @@ class Setting:
         # Predictor
         self.predictor = Predictor(self)
 
-        if dataloader is None:
+        if dataloader == "new":
             self.dataloader = Dataloader(self, self.parameter["dataset"])
         else:
             self.dataloader = dataloader
 
         # Data
-        self.load_data()
+        if self.dataloader is not None:
+            self.load_data()
 
         # Model
         self.model = self.load_model()
@@ -123,16 +123,15 @@ class Setting:
             "test_size": 1000,
             "train_size": 1000,
             "train_lr": 0.1,
-            "test_loss": -1
+            "test_loss": -1,
+            "test_acc": 0
         }
 
     def check_cuda(self):
         # Check CUDA
         if torch.cuda.is_available():
             self.device = torch.device("cuda")
-            # print("Torch successfully connected to CUDA device: {}".format(torch.cuda.current_device()))
         else:
-            print("Error: Torch can't connect to CUDA")
             self.device = torch.device("cpu")
 
     def load_model(self):
@@ -192,26 +191,7 @@ class Setting:
 
         return data_dic
 
-    """
-    def load_json(self):
-        Tk().withdraw()
-        filenames = askopenfilenames(initialdir="./results", defaultextension='.json',
-                                     filetypes=[('Json', '*.json')])
-        setting = []
-        for f_name in filenames:
-            with open(f_name) as f:
-                dump = json.load(f)
-                setting.append(Setting(**dump["attack_results"]["parameter"]))
-                setting[-1].result.losses = dump["attack_results"]["losses"]
-                setting[-1].result.mses = np.array(dump["attack_results"]["mses"])
-                setting[-1].result.snapshots = dump["attack_results"]["snapshots"]
-                setting[-1].predictor.correct = dump["prediction_results"]["correct"]
-                setting[-1].predictor.false = dump["prediction_results"]["false"]
-                setting[-1].predictor.acc = dump["prediction_prediction"]["accuracy"]
-                setting[-1].predictor.prediction = dump["prediction_prediction"]["prediction"]
 
-        return setting
-    """
 
     def reinit_weights(self):
         weights_init(self.model)
@@ -219,5 +199,5 @@ class Setting:
     def train(self, train_size):
         print("Training started")
         train(self, train_size)
-        self.parameter["test_loss"] = test(self)
+        self.parameter["test_loss"],self.parameter["test_acc"]  = test(self)
         print("Training finished, loss = {}".format(self.parameter["test_loss"]))
