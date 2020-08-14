@@ -25,8 +25,10 @@ def visualize_prediction_accuracy_vs_batchsize(run=None):
     graph.plot_line(style="solid", color="Blue")
 
     graph.show()
-    graph.save_dialog(initialdir=run.popitem()[1]["parameter"]["result_path"],
-                      initialname="prediction_accuracy_vs_batchsize.png")
+    graph.save_f(asksaveasfile(mode='w',
+                                    defaultextension=".png",
+                                    initialfile="prediction_accuracy_vs_batchsize.png",
+                                    initialdir=run.popitem()[1]["parameter"]["result_path"]))
 
 
 # Experiment 2 Visualisation
@@ -64,8 +66,10 @@ def visualize_good_fidelity(run=None):
         graph.data = []
 
     graph.show()
-    graph.save_dialog(initialdir=run.popitem()[1]["parameter"]["result_path"],
-                      initialname="prediction_accuracy_vs_batchsize.png")
+    graph.save_f(asksaveasfile(mode='w',
+                                    defaultextension=".png",
+                                    initialfile="good_fidelity.png",
+                                    initialdir=run.popitem()[1]["parameter"]["result_path"]))
 
 
 # Bonus 1
@@ -95,8 +99,10 @@ def visualize_perfect_prediction(run=None):
     graph.plot_bar(color="Blue", alt_ax=False)
 
     graph.show()
-    graph.save_dialog(initialdir=run.popitem()[1]["parameter"]["result_path"],
-                      initialname="prediction_accuracy_vs_training.png")
+    graph.save_f(asksaveasfile(mode='w',
+                                    defaultextension=".png",
+                                    initialfile="prediction_accuracy_vs_training.png",
+                                    initialdir=run.popitem()[1]["parameter"]["result_path"]))
 
 # Bonus 2
 def visualize_prediction_accuracy_vs_training(run=None):
@@ -126,8 +132,11 @@ def visualize_prediction_accuracy_vs_training(run=None):
     graph.plot_line(style="solid", color="Red", alt_ax=True)
 
     graph.show()
-    graph.save_dialog(initialdir=run.popitem()[1]["parameter"]["result_path"],
-                      initialname="prediction_accuracy_vs_training.png")
+    graph.save_f(asksaveasfile(mode='w',
+                                    defaultextension=".png",
+                                    initialfile="prediction_accuracy_vs_training.png",
+                                    initialdir=run.popitem()[1]["parameter"]["result_path"]))
+
 
 
 def load_json():

@@ -1,5 +1,4 @@
 import os
-from tkinter.filedialog import asksaveasfile
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -87,8 +86,7 @@ class Graph:
             os.makedirs(path)
         self.fig.savefig(path + name)
 
-    def save_dialog(self, initialdir="", initialname=""):
-        f = asksaveasfile(mode='w', defaultextension=".png", initialfile=initialname, initialdir=initialdir)
+    def save_f(self, f):
         if f is None:
             return
         self.fig.savefig(f.name)
