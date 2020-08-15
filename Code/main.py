@@ -6,15 +6,15 @@ def main():
     ############## Build your attack here ######################
 
     ### Experiment 1: Class Prediction Accuracy ###
-    setting = class_prediction_accuracy_vs_batchsize(1000, [1, 2, 4, 8, 16, 32, 64, 128, 256], "MNIST", True)
-    setting = class_prediction_accuracy_vs_batchsize(1000, [1, 2, 4, 8, 16, 32, 64, 128, 256], "MNIST", False)
-    setting = class_prediction_accuracy_vs_batchsize(1000, [1, 2, 4, 8, 16, 32, 64, 128, 256], "CIFAR", True)
-    setting = class_prediction_accuracy_vs_batchsize(1000, [1, 2, 4, 8, 16, 32, 64, 128, 256], "CIFAR", False)
+    setting = class_prediction_accuracy_vs_batchsize(1000, [1, 2, 4, 8, 16, 32, 64, 128, 256], "MNIST", True, "v2")
+    setting = class_prediction_accuracy_vs_batchsize(1000, [1, 2, 4, 8, 16, 32, 64, 128, 256], "MNIST", False, "v2")
+    setting = class_prediction_accuracy_vs_batchsize(1000, [1, 2, 4, 8, 16, 32, 64, 128, 256], "CIFAR", True, "v2")
+    setting = class_prediction_accuracy_vs_batchsize(1000, [1, 2, 4, 8, 16, 32, 64, 128, 256], "CIFAR", False, "v2")
     # visualize_prediction_accuracy_vs_batchsize()
     # visualize_perfect_prediction()
 
     ### Experiment 2: Class Prediction Accuracy vs Training ###
-    # setting = class_prediction_accuracy_vs_training(1, 8, "MNIST", True, 1000, 10)
+    # setting = class_prediction_accuracy_vs_training(1, 8, "MNIST", True, 1000, 10, "v2")
     # visualize_prediction_accuracy_vs_training()
 
     ### Experiment 3: Good Fidelity ###
