@@ -21,7 +21,8 @@ def class_prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced, versio
         "n": n,
         "bsrange": bsrange,
         "dataset": dataset,
-        "balanced": balanced
+        "balanced": balanced,
+        "version": version
     }}
     setting = Setting(log_interval=1,
                       dataset=dataset, )
@@ -85,7 +86,8 @@ def class_prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, t
         "dataset": dataset,
         "balanced": balanced,
         "trainsize": trainsize,
-        "trainsteps": trainsteps
+        "trainsteps": trainsteps,
+        "version": version
     }}
 
     setting = Setting(log_interval=1,
