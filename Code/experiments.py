@@ -10,9 +10,13 @@ import torch
 result_path = "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
 
 
-#################### Experiment 1: Prediction Accuracy ####################
+#################### Experiment 1: Class Prediction Accuracy ####################
+# This will run the class prediction for a range of batch sizes each n times.
+# The result can be visualized by:
+# visualise_flawless_class_prediction
+# visualize_class_prediction_accuracy_vs_batchsize(
 
-def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
+def class_prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced, version):
     run = {"meta": {
         "n": n,
         "bsrange": bsrange,
@@ -31,7 +35,7 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
     for bs in bsrange:
         print("\nBS ", bs)
         for i in range(n):
-            run_name = "{}_{:3.0f}_{:3.0f}".format("v2", bs, i)
+            run_name = "{}_{:3.0f}_{:3.0f}".format(version, bs, i)
 
             if balanced:
                 target = []
@@ -41,12 +45,12 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
                 target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
                 target = target[:bs]
 
-            setting.configure(batch_size=bs, prediction="v2", run_name=run_name, targets=target)
+            setting.configure(batch_size=bs, prediction=version, run_name=run_name, targets=target)
             setting.reinit_weights()
             setting.predict()
             run.update({run_name: setting.get_backup()})
 
-            prediction_string += "v2;" + str(i) + ";" + str(global_id)
+            prediction_string += version+";" + str(i) + ";" + str(global_id)
             prediction_string += "; " + "{0:,.2f}".format(setting.predictor.acc) + "; "
             prediction_string += "; ".join([str(x) for x in list(setting.predictor.prediction)]) + "; " * (
                     max(bsrange) - setting.parameter["batch_size"])
@@ -71,11 +75,51 @@ def prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced):
     return setting
 
 
-#################### Experiment 2: good fidelity ####################
+
+#################### Experiment 2: Training ####################
+
+def class_prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, trainsteps, version):
+    run = {"meta": {
+        "n": n,
+        "bs": bs,
+        "dataset": dataset,
+        "balanced": balanced,
+        "trainsize": trainsize,
+        "trainsteps": trainsteps
+    }}
+
+    setting = Setting(log_interval=1,
+                      dataset=dataset, )
+
+    for trainstep in range(trainsteps):
+        # 1: Evaluate
+        for i in range(n):
+            run_name = "{}_{:3.0f}_{:3.0f}".format(version, trainstep, i)
+
+            if balanced:
+                target = []
+            else:
+                choice1 = np.random.choice(range(setting.parameter["num_classes"])).item()
+                choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1)).item()
+                target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
+                target = target[:bs]
+
+            setting.configure(batch_size=bs, prediction=version, run_name=run_name, targets=target)
+            setting.predict()
+            run.update({run_name: setting.get_backup()})
+
+        # 2: Train
+        print("\nTrainstep ", trainstep)
+        setting.train(trainsize)
+
+    dump_to_json(run, setting.parameter["result_path"], "pred_acc_vs_training")
+    return setting
+
+#################### Experiment 3: good fidelity ####################
 
 def good_fidelity(n, bs, iterations, dataset, balanced):
     steps = [0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001]
-    strats = ["dlg", "v2", "idlg"]
+    strats = ["dlg", "v1", "v2", "idlg"]
 
     run = {"meta": {
         "n": n,
@@ -133,86 +177,6 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
 
     dump_to_json(run, setting.parameter["result_path"], "fidelity")
 
-    return setting
-
-
-#################### Bonus 1: Perfect Prediction ####################
-
-def perfect_prediction(n, bsrange, dataset, balanced):
-    run = {"meta": {
-        "n": n,
-        "bsrange": bsrange,
-        "dataset": dataset,
-        "balanced": balanced
-    }}
-
-    setting = Setting(log_interval=1,
-                      dataset=dataset, )
-
-    for bs in bsrange:
-        print("BS: ", bs)
-
-        cnt = 0
-        for i in range(n):
-            runname = str(bs) + "_" + str(i)
-            if balanced:
-                target = []
-            else:
-                choice1 = np.random.choice(range(setting.parameter["num_classes"])).item()
-                choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1)).item()
-                target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
-                target = target[:bs]
-
-            setting.configure(targets=target, batch_size=bs, prediction="v2", run_name=runname)
-            setting.reinit_weights()
-            setting.predict()
-            run.update({runname: setting.get_backup()})
-            if setting.predictor.acc == 1.0:
-                cnt += 1
-
-
-    dump_to_json(run, setting.parameter["result_path"], "perf_pred")
-
-    return setting
-
-
-#################### Bonus 2: Training ####################
-
-def prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, trainsteps):
-    run = {"meta": {
-        "n": n,
-        "bs": bs,
-        "dataset": dataset,
-        "balanced": balanced,
-        "trainsize": trainsize,
-        "trainsteps": trainsteps
-    }}
-
-    setting = Setting(log_interval=1,
-                      dataset=dataset, )
-
-    for trainstep in range(trainsteps):
-        # 1: Evaluate
-        for i in range(n):
-            run_name = "{}_{:3.0f}_{:3.0f}".format("v2", trainstep, i)
-
-            if balanced:
-                target = []
-            else:
-                choice1 = np.random.choice(range(setting.parameter["num_classes"])).item()
-                choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1)).item()
-                target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
-                target = target[:bs]
-
-            setting.configure(batch_size=bs, prediction="v2", run_name=run_name, targets=target)
-            setting.predict()
-            run.update({run_name: setting.get_backup()})
-
-        # 2: Train
-        print("\nTrainstep ", trainstep)
-        setting.train(trainsize)
-
-    dump_to_json(run, setting.parameter["result_path"], "pred_acc_vs_training")
     return setting
 
 
