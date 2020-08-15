@@ -27,11 +27,6 @@ def class_prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced, versio
     setting = Setting(log_interval=1,
                       dataset=dataset, )
 
-    global_id = 0
-    prediction_string = "Strat; #try; #glo; Acc; Prediction"
-    for _ in range(max(bsrange)):
-        prediction_string += ";"
-    prediction_string += "Original\n"
 
     for bs in bsrange:
         print("\nBS ", bs)
@@ -50,28 +45,6 @@ def class_prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced, versio
             setting.reinit_weights()
             setting.predict()
             run.update({run_name: setting.get_backup()})
-
-            prediction_string += version+";" + str(i) + ";" + str(global_id)
-            prediction_string += "; " + "{0:,.4f}".format(setting.predictor.acc) + "; "
-
-
-
-            prediction_string += "; ".join([str(x) for x in list(setting.predictor.prediction)]) + "; " * (
-                    max(bsrange) - setting.parameter["batch_size"])
-            origlabels = list(setting.parameter["orig_label"])
-            origlabels.sort()
-            prediction_string += ";" + "; ".join([str(x.item()) for x in origlabels])
-            prediction_string += "\n"
-
-            global_id += 1
-
-    prediction_string = prediction_string.replace(".", ",")
-
-    if not os.path.exists(setting.parameter["result_path"]):
-        os.makedirs(setting.parameter["result_path"])
-
-    with open(setting.parameter["result_path"] + "prediction.csv", "w") as file:
-        file.write(prediction_string)
 
 
     dump_to_json(run, setting.parameter["result_path"], "pred_acc_vs_bs")

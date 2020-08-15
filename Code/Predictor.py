@@ -10,6 +10,8 @@ class Predictor:
         self.false = 0
         self.acc = 0
         self.gradients_for_prediction = []
+        self.impact = None
+        self.offset = None
 
     def predict(self):
         # abbreviaton
@@ -94,7 +96,7 @@ class Predictor:
                 mean += class_gradient
 
         # mean value
-        mean /= parameter["batch_size"]
+        self.impact = mean / parameter["batch_size"]
 
         # save predictions
         for (i_c, _) in candidates:
@@ -107,7 +109,7 @@ class Predictor:
             self.prediction.append(min_id)
 
             # add the mean value of one occurrence to the candidate
-            self.gradients_for_prediction[min_id] = self.gradients_for_prediction[min_id].add(-mean)
+            self.gradients_for_prediction[min_id] = self.gradients_for_prediction[min_id].add(-self.impact)
 
         self.prediction.sort()
 
@@ -146,16 +148,16 @@ class Predictor:
             impact /= (parameter["num_classes"] * parameter["batch_size"])
             acc_impact += impact
 
-        impact = (acc_impact / n) * 1.05#(1 + 1/parameter["num_classes"])
+        self.impact = (acc_impact / n) * 1.05#(1 + 1/parameter["num_classes"])
         acc_offset = np.divide(acc_offset, n)
-        offset = torch.Tensor(acc_offset).to(self.setting.device)
+        self.offset = torch.Tensor(acc_offset).to(self.setting.device)
 
-        self.gradients_for_prediction -= offset
+        self.gradients_for_prediction -= self.offset
 
         # save predictions
         for (i_c, _) in candidates:
             self.prediction.append(i_c)
-            self.gradients_for_prediction[i_c] = self.gradients_for_prediction[i_c].add(-impact)
+            self.gradients_for_prediction[i_c] = self.gradients_for_prediction[i_c].add(-self.impact)
 
         # predict the rest
         for _ in range(parameter["batch_size"] - len(self.prediction)):
@@ -164,7 +166,7 @@ class Predictor:
             self.prediction.append(min_id)
 
             # add the mean value of one accurance to the candidate
-            self.gradients_for_prediction[min_id] = self.gradients_for_prediction[min_id].add(-impact)
+            self.gradients_for_prediction[min_id] = self.gradients_for_prediction[min_id].add(-self.impact)
 
 
 

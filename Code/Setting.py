@@ -186,7 +186,11 @@ class Setting:
                 "accuracy": self.predictor.acc,
                 "prediction": self.predictor.prediction,
             },
-
+            "gradients":{
+                "original":self.dlg.gradient,
+                "adjusted":self.predictor.gradients_for_prediction.cpu().detach().numpy().tolist(),
+                "impact": self.predictor.impact,
+                "offset": self.predictor.offset}
         }
 
         return data_dic
