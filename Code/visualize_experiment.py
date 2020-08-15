@@ -27,7 +27,7 @@ def visualize_class_prediction_accuracy_vs_batchsize(run=None):
     graph.show()
     f = asksaveasfile(mode='w',
                       defaultextension=".png",
-                      initialfile="prediction_accuracy_vs_batchsize.png",
+                      initialfile="class_prediction_accuracy_vs_batchsize.png",
                       initialdir=run.popitem()[1]["parameter"]["result_path"])
     graph.save_f(f)
 
@@ -60,7 +60,7 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run=None):
     graph.show()
     graph.save_f(asksaveasfile(mode='w',
                                defaultextension=".png",
-                               initialfile="prediction_accuracy_vs_training.png",
+                               initialfile="flawles_class_prediction_accuracy_vs_batchsize.png",
                                initialdir=run.popitem()[1]["parameter"]["result_path"]))
 
 
@@ -95,7 +95,7 @@ def visualize_class_prediction_accuracy_vs_training(run=None):
     graph.show()
     graph.save_f(asksaveasfile(mode='w',
                                defaultextension=".png",
-                               initialfile="prediction_accuracy_vs_training.png",
+                               initialfile="class_prediction_accuracy_vs_training.png",
                                initialdir=run.popitem()[1]["parameter"]["result_path"]))
 
 # Experiment 3: Good Fidelity

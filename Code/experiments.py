@@ -52,7 +52,10 @@ def class_prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced, versio
             run.update({run_name: setting.get_backup()})
 
             prediction_string += version+";" + str(i) + ";" + str(global_id)
-            prediction_string += "; " + "{0:,.2f}".format(setting.predictor.acc) + "; "
+            prediction_string += "; " + "{0:,.4f}".format(setting.predictor.acc) + "; "
+
+
+
             prediction_string += "; ".join([str(x) for x in list(setting.predictor.prediction)]) + "; " * (
                     max(bsrange) - setting.parameter["batch_size"])
             origlabels = list(setting.parameter["orig_label"])
