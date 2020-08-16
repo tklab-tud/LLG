@@ -173,8 +173,8 @@ class Setting:
         # tmp_parameter.__delitem__("orig_label")
         tmp_parameter["orig_label"] = self.parameter["orig_label"].cpu().detach().numpy().tolist()
 
-        original_gradients = self.dlg.gradient[-2].sum(-1).cpu().detach().numpy().tolist()
-        adjusted_gradients = self.predictor.gradients_for_prediction.cpu().detach().numpy().tolist()
+        adjusted_gradients = self.dlg.gradient[-2].sum(-1) - self.predictor.offset
+        adjusted_gradients = adjusted_gradients.cpu().detach().numpy().tolist()
 
 
         data_dic = {
@@ -191,7 +191,7 @@ class Setting:
                 "prediction": self.predictor.prediction,
                 "impact": self.predictor.impact,
                 "offset": self.predictor.offset.cpu().detach().numpy().tolist(),
-                "origianal_gradients": original_gradients,
+                "original_gradients": self.dlg.gradient[-2].sum(-1).cpu().detach().numpy().tolist(),
                 "adjusted_gradients": adjusted_gradients}
         }
 

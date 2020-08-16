@@ -55,6 +55,16 @@ class Graph:
 
         plt.legend()
 
+    def plot_scatter(self):
+        plt = self.subplot
+        max_x = max([dat[1] for dat in self.data])
+        plt.set_xticks(range(max_x))
+
+        for dat in self.data:
+            plt.scatter(dat[1], dat[2], c=colors[hash(str(dat[0])) % len(colors)], alpha=0.2)
+
+        #plt.legend()
+
     def take_average(self):
         # Repaces data with the averages for every label,y combination
         labels = [str(x[0]) for x in self.data]
@@ -81,6 +91,9 @@ class Graph:
             for x in dict[label]:
                 self.data.append((label, dict[label][x]["value"] / dict[label][x]["count"], x))
 
+    def sort(self):
+        self.data.sort()
+
     def save(self, path, name):
         if not os.path.exists(path):
             os.makedirs(path)
@@ -90,3 +103,8 @@ class Graph:
         if f is None:
             return
         self.fig.savefig(f.name)
+
+
+# Just some good contrast colors
+# https://gist.github.com/ollieglass/f6ddd781eeae1d24e391265432297538
+colors = ['#F2F3F4', '#222222', '#F3C300', '#875692', '#F38400', '#A1CAF1', '#BE0032', '#C2B280', '#848482', '#008856', '#E68FAC', '#0067A5', '#F99379', '#604E97', '#F6A600', '#B3446C', '#DCD300', '#882D17', '#8DB600', '#654522', '#E25822', '#2B3D26']

@@ -6,13 +6,14 @@ def main():
     ############## Build your attack here ######################
 
     ### Experiment 1: Class Prediction Accuracy ###
-    #setting = class_prediction_accuracy_vs_batchsize(1000, [1, 2, 4, 8, 16, 32, 64, 128, 256], "MNIST", True, "v1")
+    #setting = class_prediction_accuracy_vs_batchsize(10, [1, 2, 4, 8, 16, 32, 64, 128, 256], "MNIST", True, "v2")
     #setting = class_prediction_accuracy_vs_batchsize(1000, [1, 2, 4, 8, 16, 32, 64, 128, 256], "MNIST", False, "v2")
     #setting = class_prediction_accuracy_vs_batchsize(1000, [1, 2, 4, 8, 16, 32, 64, 128, 256], "CIFAR", True, "v2")
     #setting = class_prediction_accuracy_vs_batchsize(1000, [1, 2, 4, 8, 16, 32, 64, 128, 256], "CIFAR", False, "v2")
-    visualize_class_prediction_accuracy_vs_batchsize()
-    visualize_flawles_class_prediction_accuracy_vs_batchsize()
+    #visualize_class_prediction_accuracy_vs_batchsize()
+    #visualize_flawles_class_prediction_accuracy_vs_batchsize()
     negativ_value_check()
+    #magnitude_check(adjusted=True)
 
     ### Experiment 2: Class Prediction Accuracy vs Training ###
     # setting = class_prediction_accuracy_vs_training(1, 8, "MNIST", True, 1000, 10, "v2")

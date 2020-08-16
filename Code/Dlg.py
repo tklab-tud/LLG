@@ -21,7 +21,7 @@ class Dlg:
         y = self.criterion(orig_out, self.setting.parameter["orig_label"])
         grad = torch.autograd.grad(y, self.setting.model.parameters())
         self.gradient = list((_.detach().clone() for _ in grad))
-        print("a")
+
 
     def attack(self):
         # abbreviations

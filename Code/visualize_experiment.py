@@ -7,11 +7,9 @@ from tkinter.filedialog import askopenfilename, asksaveasfile
 
 
 # Hypothesis 1
-def negativ_value_check(run=None):
-    if run is None:
-        run = load_json()
-    else:
-        run = run.copy()
+def negativ_value_check():
+    run, path = load_json()
+
 
     gradient_analysis = {
         "negative":
@@ -26,8 +24,7 @@ def negativ_value_check(run=None):
     run.__delitem__("meta")
 
     for setting in run:
-
-        for label, gradient in enumerate(run[setting]["prediction_results"]["origianal_gradients"]):
+        for label, gradient in enumerate(run[setting]["prediction_results"]["original_gradients"]):
             sign = "positive" if gradient > 0 else "negative"
             present = "present" if label in run[setting]["parameter"]["orig_label"] else "nonpresent"
             gradient_analysis[sign][present] += 1
@@ -39,39 +36,69 @@ def negativ_value_check(run=None):
         ))
 
 
-# Experiment 1.1
-def visualize_class_prediction_accuracy_vs_batchsize(run=None):
-    if run is None:
-        run = load_json()
-    else:
-        run = run.copy()
-    graph = Graph("Batch Size", "Prediction Accuracy")
+# Hypothesis 2
+def magnitude_check(adjusted=True):
+    run, path = load_json()
+
+
+    gradienttype = "adjusted_gradients" if adjusted else "original_gradients"
+
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
+    graphs = []
+    for _ in meta["bsrange"]:
+        graphs.append(Graph("Occurrences", "Mean gradient value"))
+
+    composed_graph = Graph("Occurrences", "Mean gradient value")
+
+    for setting in run:
+        bs = run[setting]["parameter"]["batch_size"]
+        for label, gradient in enumerate(run[setting]["prediction_results"][gradienttype]):
+            g = graphs[meta["bsrange"].index(bs)]
+            g.add_datapoint(bs, run[setting]["parameter"]["orig_label"].count(label), gradient)
+            composed_graph.add_datapoint(bs, run[setting]["parameter"]["orig_label"].count(label), gradient)
+
+    graphs.append(composed_graph)
+
+
+    filesuffix = meta["bsrange"]
+    filesuffix.append("composed")
+
+    for id, graph in enumerate(graphs):
+        graph.sort()
+        graph.plot_scatter()
+        graph.show()
+        name = "Magnitude_BS_{}_{}.png".format(filesuffix[id], gradienttype)
+        graph.save(path, name)
+
+
+# Experiment 1.1
+def visualize_class_prediction_accuracy_vs_batchsize():
+    run, path = load_json()
+
+    graph = Graph("Batch Size", "Prediction Accuracy")
+    meta = run["meta"].copy()
+    run.__delitem__("meta")
 
     # Prediction Acc
     for id, run_name in enumerate(run):
         i = id % meta["n"]
         step = id // meta["n"]
-        graph.add_datapoint(meta["version"], run[run_name]["prediction_results"]["accuracy"], str(meta["bsrange"][step]))
+        graph.add_datapoint(meta["version"], run[run_name]["prediction_results"]["accuracy"],
+                            str(meta["bsrange"][step]))
 
     graph.plot_line(style="solid", color="Blue")
 
     graph.show()
-    f = asksaveasfile(mode='w',
-                      defaultextension=".png",
-                      initialfile="class_prediction_accuracy_vs_batchsize.png",
-                      initialdir=run.popitem()[1]["parameter"]["result_path"])
-    graph.save_f(f)
+
+    graph.save(path, "class_prediction_accuracy_vs_batchsize")
 
 
 # Experiment 1.2
-def visualize_flawles_class_prediction_accuracy_vs_batchsize(run=None):
-    if run is None:
-        run = load_json()
-    else:
-        run = run.copy()
+def visualize_flawles_class_prediction_accuracy_vs_batchsize():
+    run, path = load_json()
+
     graph = Graph("Batch Size", "Perfect predictions")
     meta = run["meta"].copy()
     run.__delitem__("meta")
@@ -93,18 +120,13 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run=None):
     graph.plot_bar(color="Blue", alt_ax=False)
 
     graph.show()
-    graph.save_f(asksaveasfile(mode='w',
-                               defaultextension=".png",
-                               initialfile="flawles_class_prediction_accuracy_vs_batchsize.png",
-                               initialdir=run.popitem()[1]["parameter"]["result_path"]))
+    graph.save(path, "flawles_class_prediction_accuracy_vs_batchsize.png")
 
 
 # Experiment 2
-def visualize_class_prediction_accuracy_vs_training(run=None):
-    if run is None:
-        run = load_json()
-    else:
-        run = run.copy()
+def visualize_class_prediction_accuracy_vs_training():
+    run, path = load_json()
+
     graph = Graph("Train Samples", "Prediction Accuracy", "Test Acc")
     meta = run["meta"].copy()
     run.__delitem__("meta")
@@ -127,10 +149,7 @@ def visualize_class_prediction_accuracy_vs_training(run=None):
     graph.plot_line(style="solid", color="Red", alt_ax=True)
 
     graph.show()
-    graph.save_f(asksaveasfile(mode='w',
-                               defaultextension=".png",
-                               initialfile="class_prediction_accuracy_vs_training.png",
-                               initialdir=run.popitem()[1]["parameter"]["result_path"]))
+    graph.save_f(path, "class_prediction_accuracy_vs_training.png")
 
 
 # Experiment 3: Good Fidelity
@@ -138,11 +157,9 @@ def visualize_class_prediction_accuracy_vs_training(run=None):
 # It will evaluate the image similarity by plotting the percentage of samples that reach a mse below a threshold.
 # The threshold is plotted to the x axis.
 
-def visualize_good_fidelity(run=None):
-    if run is None:
-        run = load_json()
-    else:
-        run = run.copy()
+def visualize_good_fidelity():
+    run, path = load_json()
+
     graph = Graph("Fidelity Score", "Percentage of Samples")
     meta = run["meta"].copy()
     run.__delitem__("meta")
@@ -172,10 +189,7 @@ def visualize_good_fidelity(run=None):
         graph.data = []
 
     graph.show()
-    graph.save_f(asksaveasfile(mode='w',
-                               defaultextension=".png",
-                               initialfile="good_fidelity.png",
-                               initialdir=run.popitem()[1]["parameter"]["result_path"]))
+    graph.save(path, "good_fidelity.png")
 
 
 def load_json():
@@ -186,4 +200,6 @@ def load_json():
     with open(filename) as f:
         dump = OrderedDict(json.load(f))
 
-    return dump
+    path = os.path.split(f.name)[0]
+
+    return dump, path+"/"

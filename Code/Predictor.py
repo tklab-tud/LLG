@@ -11,7 +11,7 @@ class Predictor:
         self.acc = 0
         self.gradients_for_prediction = []
         self.impact = 0
-        self.offset = torch.Tensor(setting.parameter["num_classes"])
+        self.offset = torch.zeros(setting.parameter["num_classes"])
 
     def predict(self):
         # abbreviaton
