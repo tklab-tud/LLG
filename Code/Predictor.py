@@ -10,8 +10,8 @@ class Predictor:
         self.false = 0
         self.acc = 0
         self.gradients_for_prediction = []
-        self.impact = None
-        self.offset = None
+        self.impact = 0
+        self.offset = torch.Tensor(setting.parameter["num_classes"])
 
     def predict(self):
         # abbreviaton
@@ -93,7 +93,7 @@ class Predictor:
         for i_cg, class_gradient in enumerate(self.gradients_for_prediction):
             if class_gradient < 0:
                 candidates.append((i_cg, class_gradient))
-                mean += class_gradient
+                mean += class_gradient.item()
 
         # mean value
         self.impact = mean / parameter["batch_size"]
@@ -148,11 +148,13 @@ class Predictor:
             impact /= (parameter["num_classes"] * parameter["batch_size"])
             acc_impact += impact
 
-        self.impact = (acc_impact / n) * 1.05#(1 + 1/parameter["num_classes"])
+        self.impact = (acc_impact / n) * (1 + 1/parameter["num_classes"])
+
         acc_offset = np.divide(acc_offset, n)
         self.offset = torch.Tensor(acc_offset).to(self.setting.device)
 
         self.gradients_for_prediction -= self.offset
+
 
         # save predictions
         for (i_c, _) in candidates:
@@ -171,82 +173,6 @@ class Predictor:
 
 
 
-    def v3_prediction(self):
-        parameter = self.setting.parameter
-
-        # Get the gradients from the second last layer
-        self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
-
-        # backup negative values, but dont add them yet to our predictions
-        candidates = []
-        for i_cg, class_gradient in enumerate(self.gradients_for_prediction):
-            if class_gradient < 0:
-                candidates.append((i_cg, class_gradient))
-
-        # create a new temporary setting for impact and offset calculation
-        tmp_setting = self.setting.copy()
-        tmp_setting.model = self.setting.model
-
-        acc_offset = np.zeros(parameter["num_classes"])
-        acc_impact = 0
-
-        n = 10
-        for _ in range(n):
-            tmp_gradients = []
-            impact = []
-
-            # for each class create a batch full of that classes samples
-            for i in range(parameter["num_classes"]):
-                tmp_setting.configure(targets=[i] * parameter["batch_size"])
-
-                # calculate gradients for this batch
-                tmp_setting.dlg.victim_side()
-
-                # gather gradients from the second last layer and the value of the current classes gradient
-                tmp_gradients.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy())
-                impact.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1)[i].item())
-
-            # Take mean value as offset
-            offset = []
-            for i_class in range(parameter["num_classes"]):
-                uneffected_grads = list(tmp_gradients)
-                uneffected_grads.__delitem__(i_class)
-                offset.append(np.mean(uneffected_grads, 0)[i_class])
-
-            # get the mean impact by adding up the difference from the expected value
-            mean_impact = 0
-            for i_imp, imp in enumerate(impact):
-                mean_impact += imp - offset[i_imp]
-
-            mean_impact /= (parameter["num_classes"] * parameter["batch_size"])
-
-            acc_impact += mean_impact
-            acc_offset += offset
-
-        mean_impact = acc_impact / n
-        offset = np.divide(acc_offset, n)
-
-        # fine scaling
-        offset = np.multiply(offset, 1)
-        mean_impact = mean_impact * 1
-
-
-        # Subtract offset
-        self.gradients_for_prediction -= torch.Tensor(offset).to(self.setting.device)
-
-        # save predictions
-        for (i_c, _) in candidates:
-            self.prediction.append(i_c)
-            self.gradients_for_prediction[i_c] = self.gradients_for_prediction[i_c].add(-mean_impact)
-
-        # predict the rest
-        for _ in range(parameter["batch_size"] - len(self.prediction)):
-            # choose smallest gradient and add it to the prediction
-            min_id = torch.argmin(self.gradients_for_prediction).item()
-            self.prediction.append(min_id)
-
-            # add the mean value the corresponding gradient
-            self.gradients_for_prediction[min_id] = self.gradients_for_prediction[min_id].add(-mean_impact)
 
 
 

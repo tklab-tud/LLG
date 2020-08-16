@@ -49,7 +49,7 @@ def class_prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced, versio
 
     dump_to_json(run, setting.parameter["result_path"], "pred_acc_vs_bs")
 
-    return setting
+    return run
 
 
 
@@ -91,7 +91,7 @@ def class_prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, t
         setting.train(trainsize)
 
     dump_to_json(run, setting.parameter["result_path"], "pred_acc_vs_training")
-    return setting
+    return run
 
 #################### Experiment 3: good fidelity ####################
 
@@ -152,10 +152,10 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
 
         setting.result.delete()
 
-
+    print()
     dump_to_json(run, setting.parameter["result_path"], "fidelity")
 
-    return setting
+    return run
 
 
 ################### Help functions ######################

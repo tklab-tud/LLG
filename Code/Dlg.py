@@ -6,9 +6,8 @@ from Result import Result
 class Dlg:
     def __init__(self, setting):
         self.setting = setting
-        self.gradient = None
         self.criterion = nn.CrossEntropyLoss().to(setting.device)
-
+        self.gradient = None
         self.dummy_data = torch.randn(
             (setting.parameter["batch_size"], setting.parameter["channel"], setting.parameter["shape_img"][0],
              setting.parameter["shape_img"][1])).to(
@@ -22,6 +21,7 @@ class Dlg:
         y = self.criterion(orig_out, self.setting.parameter["orig_label"])
         grad = torch.autograd.grad(y, self.setting.model.parameters())
         self.gradient = list((_.detach().clone() for _ in grad))
+        print("a")
 
     def attack(self):
         # abbreviations
@@ -30,6 +30,7 @@ class Dlg:
         model = self.setting.model
 
         self.victim_side()
+
 
         # optimizer setup
         if parameter["prediction"] == "dlg":

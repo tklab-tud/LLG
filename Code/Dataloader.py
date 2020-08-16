@@ -75,9 +75,9 @@ class Dataloader():
         for i_target, target in enumerate(targets):
             rnd = np.random.randint(len(self.samples[target]))
             data[i_target] = self.samples[target][rnd][0].float().to(device)
-            data[i_target] = data[i_target]
+            data[i_target] = data[i_target].view(1, *data[i_target].size())
             labels[i_target] = torch.Tensor([self.samples[target][rnd][1]]).long().to(device)
-            labels[i_target] = labels[i_target]
+            labels[i_target] = labels[i_target].view(1, )
 
 
         return data, labels

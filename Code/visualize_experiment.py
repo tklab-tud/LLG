@@ -6,6 +6,39 @@ from tkinter import Tk
 from tkinter.filedialog import askopenfilename, asksaveasfile
 
 
+# Hypothesis 1
+def negativ_value_check(run=None):
+    if run is None:
+        run = load_json()
+    else:
+        run = run.copy()
+
+    gradient_analysis = {
+        "negative":
+            {"present": 0,
+             "nonpresent": 0},
+        "positive":
+            {"present": 0,
+             "nonpresent": 0},
+    }
+
+    meta = run["meta"].copy()
+    run.__delitem__("meta")
+
+    for setting in run:
+
+        for label, gradient in enumerate(run[setting]["prediction_results"]["origianal_gradients"]):
+            sign = "positive" if gradient > 0 else "negative"
+            present = "present" if label in run[setting]["parameter"]["orig_label"] else "nonpresent"
+            gradient_analysis[sign][present] += 1
+
+    print(
+        "Negative + present: {}\tNegative + nonpresent: {}\nPositive + present: {}\tPositive + nonpresent: {} ".format(
+            gradient_analysis["negative"]["present"], gradient_analysis["negative"]["nonpresent"],
+            gradient_analysis["positive"]["present"], gradient_analysis["positive"]["nonpresent"],
+        ))
+
+
 # Experiment 1.1
 def visualize_class_prediction_accuracy_vs_batchsize(run=None):
     if run is None:
@@ -16,11 +49,12 @@ def visualize_class_prediction_accuracy_vs_batchsize(run=None):
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
+
     # Prediction Acc
     for id, run_name in enumerate(run):
         i = id % meta["n"]
         step = id // meta["n"]
-        graph.add_datapoint("v2", run[run_name]["prediction_results"]["accuracy"], str(meta["bsrange"][step]))
+        graph.add_datapoint(meta["version"], run[run_name]["prediction_results"]["accuracy"], str(meta["bsrange"][step]))
 
     graph.plot_line(style="solid", color="Blue")
 
@@ -30,6 +64,7 @@ def visualize_class_prediction_accuracy_vs_batchsize(run=None):
                       initialfile="class_prediction_accuracy_vs_batchsize.png",
                       initialdir=run.popitem()[1]["parameter"]["result_path"])
     graph.save_f(f)
+
 
 # Experiment 1.2
 def visualize_flawles_class_prediction_accuracy_vs_batchsize(run=None):
@@ -64,7 +99,6 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run=None):
                                initialdir=run.popitem()[1]["parameter"]["result_path"]))
 
 
-
 # Experiment 2
 def visualize_class_prediction_accuracy_vs_training(run=None):
     if run is None:
@@ -79,7 +113,7 @@ def visualize_class_prediction_accuracy_vs_training(run=None):
     for id, run_name in enumerate(run):
         i = id % meta["n"]
         trainstep = id // meta["n"]
-        graph.add_datapoint("v2", run[run_name]["prediction_results"]["accuracy"], trainstep)
+        graph.add_datapoint(meta["version"], run[run_name]["prediction_results"]["accuracy"], trainstep)
 
     graph.plot_line(style="solid", color="Blue", alt_ax=False)
     graph.data = []
@@ -97,6 +131,7 @@ def visualize_class_prediction_accuracy_vs_training(run=None):
                                defaultextension=".png",
                                initialfile="class_prediction_accuracy_vs_training.png",
                                initialdir=run.popitem()[1]["parameter"]["result_path"]))
+
 
 # Experiment 3: Good Fidelity
 # Instead of evaluating class prediction accuracy this experiment performs full recreation attacks.
@@ -141,8 +176,6 @@ def visualize_good_fidelity(run=None):
                                defaultextension=".png",
                                initialfile="good_fidelity.png",
                                initialdir=run.popitem()[1]["parameter"]["result_path"]))
-
-
 
 
 def load_json():

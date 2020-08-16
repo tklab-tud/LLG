@@ -3,7 +3,6 @@ import json
 import os
 import time
 
-
 import numpy as np
 import torch
 
@@ -58,7 +57,6 @@ class Setting:
         self.result = Result(self)
         self.parameter["orig_data"] = []
         self.parameter["orig_label"] = []
-
 
         for key, value in kwargs.items():
             if key == "dataset":
@@ -118,6 +116,8 @@ class Setting:
             "channel": 1,
             "hidden": 588,
             "hidden2": 9216,
+            "orig_gradient": None,
+            "adjusted_gradient": None,
 
             # Train settings
             "test_size": 1000,
@@ -173,29 +173,29 @@ class Setting:
         # tmp_parameter.__delitem__("orig_label")
         tmp_parameter["orig_label"] = self.parameter["orig_label"].cpu().detach().numpy().tolist()
 
+        original_gradients = self.dlg.gradient[-2].sum(-1).cpu().detach().numpy().tolist()
+        adjusted_gradients = self.predictor.gradients_for_prediction.cpu().detach().numpy().tolist()
+
+
         data_dic = {
             "parameter": tmp_parameter,
             "attack_results": {
                 "losses": self.result.losses,
                 "mses": self.result.mses.tolist(),
-                #"snapshots": list(map(lambda x: x.tolist(), self.result.snapshots))
+                # "snapshots": list(map(lambda x: x.tolist(), self.result.snapshots))
             },
             "prediction_results": {
                 "correct": self.predictor.correct,
                 "false": self.predictor.false,
                 "accuracy": self.predictor.acc,
                 "prediction": self.predictor.prediction,
-            },
-            "gradients":{
-                "original":self.dlg.gradient,
-                "adjusted":self.predictor.gradients_for_prediction.cpu().detach().numpy().tolist(),
                 "impact": self.predictor.impact,
-                "offset": self.predictor.offset}
+                "offset": self.predictor.offset.cpu().detach().numpy().tolist(),
+                "origianal_gradients": original_gradients,
+                "adjusted_gradients": adjusted_gradients}
         }
 
         return data_dic
-
-
 
     def reinit_weights(self):
         weights_init(self.model)
@@ -203,5 +203,5 @@ class Setting:
     def train(self, train_size):
         print("Training started")
         train(self, train_size)
-        self.parameter["test_loss"],self.parameter["test_acc"]  = test(self)
+        self.parameter["test_loss"], self.parameter["test_acc"] = test(self)
         print("Training finished, loss = {}".format(self.parameter["test_loss"]))
