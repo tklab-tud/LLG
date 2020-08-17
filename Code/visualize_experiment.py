@@ -7,9 +7,10 @@ from tkinter.filedialog import askopenfilename, asksaveasfile
 
 
 # Hypothesis 1
-def negativ_value_check():
-    run, path = load_json()
+def negativ_value_check(run, path):
 
+
+    run = run.copy()
 
     gradient_analysis = {
         "negative":
@@ -29,17 +30,21 @@ def negativ_value_check():
             present = "present" if label in run[setting]["parameter"]["orig_label"] else "nonpresent"
             gradient_analysis[sign][present] += 1
 
-    print(
-        "Negative + present: {}\tNegative + nonpresent: {}\nPositive + present: {}\tPositive + nonpresent: {} ".format(
-            gradient_analysis["negative"]["present"], gradient_analysis["negative"]["nonpresent"],
-            gradient_analysis["positive"]["present"], gradient_analysis["positive"]["nonpresent"],
-        ))
+    result = "Negative + present: {}\tNegative + nonpresent: {}\nPositive + present: {}\tPositive + nonpresent: {} ".format(
+        gradient_analysis["negative"]["present"], gradient_analysis["negative"]["nonpresent"],
+        gradient_analysis["positive"]["present"], gradient_analysis["positive"]["nonpresent"])
+
+    text_file=open(path +"negative_value_check.txt", "w")
+    text_file.write(result)
+    text_file.close()
+
+    # Hypothesis 2
 
 
-# Hypothesis 2
-def magnitude_check(adjusted=True):
-    run, path = load_json()
+def magnitude_check(run, path, adjusted=True):
 
+
+    run = run.copy()
 
     gradienttype = "adjusted_gradients" if adjusted else "original_gradients"
 
@@ -61,7 +66,6 @@ def magnitude_check(adjusted=True):
 
     graphs.append(composed_graph)
 
-
     filesuffix = meta["bsrange"]
     filesuffix.append("composed")
 
@@ -74,8 +78,10 @@ def magnitude_check(adjusted=True):
 
 
 # Experiment 1.1
-def visualize_class_prediction_accuracy_vs_batchsize():
-    run, path = load_json()
+def visualize_class_prediction_accuracy_vs_batchsize(run, path):
+
+
+    run = run.copy()
 
     graph = Graph("Batch Size", "Prediction Accuracy")
     meta = run["meta"].copy()
@@ -96,8 +102,10 @@ def visualize_class_prediction_accuracy_vs_batchsize():
 
 
 # Experiment 1.2
-def visualize_flawles_class_prediction_accuracy_vs_batchsize():
-    run, path = load_json()
+def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path):
+
+
+    run = run.copy()
 
     graph = Graph("Batch Size", "Perfect predictions")
     meta = run["meta"].copy()
@@ -124,8 +132,10 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize():
 
 
 # Experiment 2
-def visualize_class_prediction_accuracy_vs_training():
-    run, path = load_json()
+def visualize_class_prediction_accuracy_vs_training(run, path):
+
+
+    run = run.copy()
 
     graph = Graph("Train Samples", "Prediction Accuracy", "Test Acc")
     meta = run["meta"].copy()
@@ -157,8 +167,9 @@ def visualize_class_prediction_accuracy_vs_training():
 # It will evaluate the image similarity by plotting the percentage of samples that reach a mse below a threshold.
 # The threshold is plotted to the x axis.
 
-def visualize_good_fidelity():
-    run, path = load_json()
+def visualize_good_fidelity(run, path):
+
+    run = run.copy()
 
     graph = Graph("Fidelity Score", "Percentage of Samples")
     meta = run["meta"].copy()
@@ -192,14 +203,4 @@ def visualize_good_fidelity():
     graph.save(path, "good_fidelity.png")
 
 
-def load_json():
-    Tk().withdraw()
-    filename = askopenfilename(initialdir="./results", defaultextension='.json',
-                               filetypes=[('Json', '*.json')])
 
-    with open(filename) as f:
-        dump = OrderedDict(json.load(f))
-
-    path = os.path.split(f.name)[0]
-
-    return dump, path+"/"
