@@ -39,8 +39,6 @@ def negativ_value_check(run, path):
     text_file.close()
 
     # Hypothesis 2
-
-
 def magnitude_check(run, path, adjusted=True):
 
 
