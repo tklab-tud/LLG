@@ -8,8 +8,6 @@ from tkinter.filedialog import askopenfilename, asksaveasfile
 
 # Hypothesis 1
 def negativ_value_check(run, path):
-
-
     run = run.copy()
 
     gradient_analysis = {
@@ -40,8 +38,6 @@ def negativ_value_check(run, path):
 
     # Hypothesis 2
 def magnitude_check(run, path, adjusted=True):
-
-
     run = run.copy()
 
     gradienttype = "adjusted_gradients" if adjusted else "original_gradients"
@@ -49,30 +45,35 @@ def magnitude_check(run, path, adjusted=True):
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
+
     graphs = []
     for _ in meta["bsrange"]:
         graphs.append(Graph("Occurrences", "Mean gradient value"))
 
     composed_graph = Graph("Occurrences", "Mean gradient value")
 
-    for setting in run:
+    print("loading {} from json".format(gradienttype))
+    for i, setting in enumerate(run):
         bs = run[setting]["parameter"]["batch_size"]
         for label, gradient in enumerate(run[setting]["prediction_results"][gradienttype]):
             g = graphs[meta["bsrange"].index(bs)]
             g.add_datapoint(bs, run[setting]["parameter"]["orig_label"].count(label), gradient)
             composed_graph.add_datapoint(bs, run[setting]["parameter"]["orig_label"].count(label), gradient)
 
+
     graphs.append(composed_graph)
 
-    filesuffix = meta["bsrange"]
+    filesuffix = meta["bsrange"].copy()
     filesuffix.append("composed")
 
     for id, graph in enumerate(graphs):
+        print("Creating graph: "+ str(filesuffix[id]))
         graph.sort()
         graph.plot_scatter()
-        graph.show()
+        #graph.show()
         name = "Magnitude_BS_{}_{}.png".format(filesuffix[id], gradienttype)
         graph.save(path, name)
+        graph.fig.clf()
 
 
 # Experiment 1.1
@@ -201,4 +202,14 @@ def visualize_good_fidelity(run, path):
     graph.save(path, "good_fidelity.png")
 
 
+def load_json():
+    Tk().withdraw()
+    filename = askopenfilename(initialdir="./results", defaultextension='.json',
+                               filetypes=[('Json', '*.json')])
 
+    with open(filename) as f:
+        dump = OrderedDict(json.load(f))
+
+    path = os.path.split(f.name)[0]
+
+    return dump, path+"/"
