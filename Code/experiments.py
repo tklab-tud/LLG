@@ -97,7 +97,7 @@ def class_prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, t
 
 def good_fidelity(n, bs, iterations, dataset, balanced):
     steps = [0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001]
-    strats = ["dlg", "v1", "v2", "idlg"]
+    strats = ["v2", "v1", "dlg", "idlg"]
 
     run = {"meta": {
         "n": n,

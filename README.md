@@ -20,27 +20,32 @@ This framework tries to fill this gap with the exploration of different label pr
 It adds additional features:
     [x] Batch_Size configurable
     [x] Different Prediction strategies
-    [x] Different Models
+    [x] Interchangable Models
     [x] Data dump as json
     [x] Image visualisation and storage
     [x] Pretrain model
-    [x] Specific targets
-    [x] Make attack iterable
-    [x] Make attack configurable
-    [x] Make prediction use Settings in order to allow better configuration, e.g. call accuracy
+    [x] Specific targets, balanced/unbalanced Data
+    [x] Loop your attack and create a run
+    [x] Configure details of your attack
     [x] Visualization
     [x] Dump loader
     [x] Image creaetion from dump
 
 Todo:
     [ ] Clean up code & doc
-    [ ] Improve performance of Dataloading
+	[ ] Finish report
+	[ ] Clearify full run / fast run selection
 
 
 Optional:
     [ ] Poison Model to increase accuracy
     [ ] Further prediction strategie ML
+	[ ] Analyse gradients of second last layer before they are added together as identifying values
 
 
 
-Attacks can be build in main.py. For example see examples.py.
+Attacks can be build in main.py by creating a Setting, configuring it, starting the attack and storing it as json.
+
+You can do a fast run, which will only do the prediction or a full run which does the prediction and recreates images using idlg/dlg afterwards.
+
+Or you can just load up the experiments from experiments.py and visualise their result. 
