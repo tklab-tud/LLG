@@ -7,7 +7,6 @@ class Net1(nn.Module):
     def __init__(self, parameter):
         super(Net1, self).__init__()
         act = nn.Sigmoid
-        self.parameter = parameter
 
         self.body = nn.Sequential(
             nn.Conv2d(parameter["channel"], 12, kernel_size=5, padding=5 // 2, stride=2),

@@ -8,53 +8,58 @@ from torchvision import datasets, transforms
 class Dataloader():
     def __init__(self, setting, dataset):
         self.setting = setting
+        self.train_dataset = None
+        self.currently_loaded = None
+        self.samples = None
         self.load_dataset(dataset)
 
     def load_dataset(self, dataset):
-        print("Loading dataset " + dataset + ". This may take some seconds.")
+        if dataset != self.currently_loaded:
+            print("Loading dataset " + dataset + ". This may take some seconds.")
 
-        tt = torchvision.transforms.ToTensor()
-        tt_grey = transforms.Compose([torchvision.transforms.Grayscale(), tt])
+            tt = torchvision.transforms.ToTensor()
+            tt_grey = transforms.Compose([torchvision.transforms.Grayscale(), tt])
 
-        parameter = self.setting.parameter
+            parameter = self.setting.parameter
 
-        if dataset == "MNIST":
-            parameter["shape_img"] = (28, 28)
-            parameter["num_classes"] = 10
-            parameter["channel"] = 1
-            parameter["hidden"] = 588
-            self.train_dataset = datasets.MNIST('./datasets', train=True, download=True, transform=tt)
-        elif dataset == 'CIFAR':
-            parameter["shape_img"] = (32, 32)
-            parameter["num_classes"] = 100
-            parameter["channel"] = 3
-            parameter["hidden"] = 768
-            self.train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt)
-        elif dataset == 'CIFAR-grey':
-            parameter["shape_img"] = (32, 32)
-            parameter["num_classes"] = 100
-            parameter["channel"] = 1
-            parameter["hidden"] = 768
-            self.train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt_grey)
-        else:
-            print("Unsupported dataset '" + dataset + "'")
-            exit()
+            if dataset == "MNIST":
+                parameter["shape_img"] = (28, 28)
+                parameter["num_classes"] = 10
+                parameter["channel"] = 1
+                parameter["hidden"] = 588
+                self.train_dataset = datasets.MNIST('./datasets', train=True, download=True, transform=tt)
 
-        self.currently_loaded = dataset
-        # indexing
-        self.samples = [[] for _ in range(parameter["num_classes"])]
+            elif dataset == 'CIFAR':
+                parameter["shape_img"] = (32, 32)
+                parameter["num_classes"] = 100
+                parameter["channel"] = 3
+                parameter["hidden"] = 768
+                self.train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt)
+            elif dataset == 'CIFAR-grey':
+                parameter["shape_img"] = (32, 32)
+                parameter["num_classes"] = 100
+                parameter["channel"] = 1
+                parameter["hidden"] = 768
+                self.train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt_grey)
+            else:
+                print("Unsupported dataset '" + dataset + "'")
+                exit()
 
-        for sample in self.train_dataset:
-            self.samples[sample[1]].append(sample)
+            parameter["set_size"] = len(self.train_dataset)
+            self.currently_loaded = dataset
+            # indexing
+            self.samples = [[] for _ in range(parameter["num_classes"])]
 
-        print("Finished loading dataset")
+            for sample in self.train_dataset:
+                self.samples[sample[1]].append(list(sample))
+
+            print("Finished loading dataset")
 
     # returns label and data of batch size. Will take targeted classes and fills it with random classes.
     def get_batch(self, setting):
         self.setting = setting
-        parameter = self.setting.parameter
+        parameter = setting.parameter
         device = setting.device
-        tt = transforms.ToTensor()
 
         # update dataset if necessary
         if parameter["dataset"] != self.currently_loaded:
@@ -78,6 +83,5 @@ class Dataloader():
             data[i_target] = data[i_target].view(1, *data[i_target].size())
             labels[i_target] = torch.Tensor([self.samples[target][rnd][1]]).long().to(device)
             labels[i_target] = labels[i_target].view(1, )
-
 
         return data, labels

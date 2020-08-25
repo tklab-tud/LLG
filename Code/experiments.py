@@ -10,152 +10,63 @@ import torch
 result_path = "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
 
 
-#################### Experiment 1: Class Prediction Accuracy ####################
-# This will run the class prediction for a range of batch sizes each n times.
-# The result can be visualized by:
-# visualise_flawless_class_prediction
-# visualize_class_prediction_accuracy_vs_batchsize(
-
-def class_prediction_accuracy_vs_batchsize(n, bsrange, dataset, balanced, version):
+################## Completely Configurable ###################
+def experiment(list_datasets, list_bs, list_balanced, list_versions, extent, n, trainsize=100, trainsteps=0, path=None):
     run = {"meta": {
-        "n": n,
-        "bsrange": bsrange,
-        "dataset": dataset,
-        "balanced": balanced,
-        "version": version
-    }}
-    setting = Setting(log_interval=1,
-                      dataset=dataset, )
-
-
-    for bs in bsrange:
-        print("\nBS ", bs)
-        for i in range(n):
-            run_name = "{}_{:3.0f}_{:3.0f}".format(version, bs, i)
-
-            if balanced:
-                target = []
-            else:
-                choice1 = np.random.choice(range(setting.parameter["num_classes"])).item()
-                choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1)).item()
-                target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
-                target = target[:bs]
-
-            setting.configure(batch_size=bs, prediction=version, run_name=run_name, targets=target)
-            setting.reinit_weights()
-            setting.predict()
-            run.update({run_name: setting.get_backup()})
-
-
-    dump_to_json(run, setting.parameter["result_path"], "pred_acc_vs_bs")
-
-    return run
-
-
-
-#################### Experiment 2: Training ####################
-
-def class_prediction_accuracy_vs_training(n, bs, dataset, balanced, trainsize, trainsteps, version):
-    run = {"meta": {
-        "n": n,
-        "bs": bs,
-        "dataset": dataset,
-        "balanced": balanced,
+        "list_datasets": list_datasets,
         "trainsize": trainsize,
         "trainsteps": trainsteps,
-        "version": version
-    }}
-
-    setting = Setting(log_interval=1,
-                      dataset=dataset, )
-
-    for trainstep in range(trainsteps):
-        # 1: Evaluate
-        for i in range(n):
-            run_name = "{}_{:3.0f}_{:3.0f}".format(version, trainstep, i)
-
-            if balanced:
-                target = []
-            else:
-                choice1 = np.random.choice(range(setting.parameter["num_classes"])).item()
-                choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1)).item()
-                target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
-                target = target[:bs]
-
-            setting.configure(batch_size=bs, prediction=version, run_name=run_name, targets=target)
-            setting.predict()
-            run.update({run_name: setting.get_backup()})
-
-        # 2: Train
-        print("\nTrainstep ", trainstep)
-        setting.train(trainsize)
-
-    dump_to_json(run, setting.parameter["result_path"], "pred_acc_vs_training")
-    return run
-
-#################### Experiment 3: good fidelity ####################
-
-def good_fidelity(n, bs, iterations, dataset, balanced):
-    steps = [0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001]
-    strats = ["v2", "v1", "dlg", "idlg"]
-
-    run = {"meta": {
+        "list_bs": list_bs,
+        "list_balanced": list_balanced,
+        "list_versions": list_versions,
+        "extent": extent,
         "n": n,
-        "bs": bs,
-        "iterations": iterations,
-        "dataset": dataset,
-        "balanced": balanced,
-        "strats": strats,
-        "steps": steps
     }}
 
-    # set_seeds(0)
-    setting = Setting(log_interval=5,
-                      dataset=dataset,
-                      dlg_iterations=iterations,
-                      batch_size=bs, )
+    setting = Setting(dataset=list_datasets[0], result_path=path)
 
-    # Prepare empty fidelity dictionary
+    for dataset in list_datasets:
+        for trainstep in range(trainsteps+1):
+            for bs in list_bs:
+                for balanced in list_balanced:
+                    for version in list_versions:
+                        for i in range(n):
 
-    fidelity = {}
-    for strat in strats:
-        fidelity.update({strat: {}})
-        for step in steps:
-            fidelity[strat].update({step: 0})
+                            # The name of the run for later identification and file naming
+                            run_name = "{}_{:03.0f}_{}_{}_{}_{:05.0f}".format(
+                                dataset, bs, balanced, version, extent, i)
 
-    for i in range(n):
-        # Choosing target should use random seed.
-        set_seeds(-1)
-        if balanced:
-            target = np.random.randint(0, setting.parameter["num_classes"], bs).tolist()
-        else:
-            choice1 = np.random.choice(range(setting.parameter["num_classes"])).item()
-            choice2 = np.random.choice(np.setdiff1d(range(setting.parameter["num_classes"]), choice1)).item()
-            target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
-            target.extend(np.random.randint(0, setting.parameter["num_classes"], bs - len(target)).tolist())
+                            # defining attacked batch. Later it will be filled with random samples if len(target) < bs
+                            if balanced:
+                                target = []
+                            else:
+                                # we define unbalanced as 50% class a, 25% class b, 25% random
+                                choice1 = np.random.choice(range(setting.parameter["num_classes"])).item()
+                                choice2 = np.random.choice(
+                                    np.setdiff1d(range(setting.parameter["num_classes"]), choice1)).item()
+                                target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
+                                target = target[:bs]
 
-            target = target[:bs]
+                            # configure the setting
+                            setting.configure(dataset=dataset, batch_size=bs, version=version,
+                                              run_name=run_name, targets=target, result_path=path)
 
-        # To make the runs comparable we use the same seed for each run.
-        seed_for_runs = np.random.randint(2 ^ 32)
+                            # run the attack
+                            setting.attack(extent)
 
-        for strat in strats:
-            set_seeds(seed_for_runs)
-            run_name = "{:3.0f}_{}".format(i, strat)
+                            # dump the current state of the attack
+                            run.update({run_name: setting.get_backup()})
 
-            setting.configure(prediction=strat, run_name=run_name, targets=target)
-            setting.reinit_weights()
-            setting.attack()
+            # train the model for trainsize batches (last time needs no training afterwards)
+            if trainstep < trainsteps:
+                print("\nTrainstep ", trainstep)
+                setting.train(trainsize)
 
-            setting.result.store_composed_image()
-            run.update({run_name: setting.get_backup()})
-
-        setting.result.delete()
-
-    print()
-    dump_to_json(run, setting.parameter["result_path"], "fidelity")
-
+    # write the stored results
+    print("dumping results to: " + setting.parameter["result_path"] + "dump.json")
+    dump_to_json(run, setting.parameter["result_path"], "dump.json")
     return run
+
 
 
 ################### Help functions ######################
@@ -164,7 +75,7 @@ def good_fidelity(n, bs, iterations, dataset, balanced):
 def dump_to_json(run, path, name):
     if not os.path.exists(path):
         os.makedirs(path)
-    with open(path + "data{}.json".format(name), "w") as file:
+    with open(path + name, "w") as file:
         json.dump(run, file)
 
 

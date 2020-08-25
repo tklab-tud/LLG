@@ -25,18 +25,18 @@ class Predictor:
 
 
         # Run prediction strategie
-        if parameter["prediction"] == "random":
+        if parameter["version"] == "random":
             self.random_prediction()
-        elif parameter["prediction"] == "idlg":
+        elif parameter["version"] == "idlg":
             self.simplified_prediction()
-        elif parameter["prediction"] == "v1":
+        elif parameter["version"] == "v1":
             self.v1_prediction()
-        elif parameter["prediction"] == "v2":
+        elif parameter["version"] == "v2":
             self.v2_prediction()
-        elif parameter["prediction"] == "v3":
+        elif parameter["version"] == "v3":
             self.v3_prediction()
         else:
-            exit("Unknown prediction strategy {}".format(parameter["prediction"]))
+            exit("Unknown prediction strategy {}".format(parameter["version"]))
 
         self.prediction.sort()
 
@@ -53,7 +53,7 @@ class Predictor:
                 self.false += 1
 
         self.acc = self.correct / (self.correct + self.false)
-        print(self.setting.parameter["prediction"], ": ACC: ", self.acc)
+        print(self.setting.parameter["version"], ": ACC: ", self.acc)
 
     def print_prediction(self):
         orig_label = self.setting.parameter["orig_label"].tolist()

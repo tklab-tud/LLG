@@ -8,6 +8,27 @@ class Dlg:
         self.setting = setting
         self.criterion = nn.CrossEntropyLoss().to(setting.device)
         self.gradient = None
+        self.dummy_data = None
+        self.dummy_label = None
+
+    def victim_side(self):
+         # calculate orig gradients
+        self.setting.parameter["orig_data"], self.setting.parameter["orig_label"] = \
+            self.setting.dataloader.get_batch(self.setting)
+
+        orig_out = self.setting.model(self.setting.parameter["orig_data"])
+        y = self.criterion(orig_out, self.setting.parameter["orig_label"])
+        grad = torch.autograd.grad(y, self.setting.model.parameters())
+        self.gradient = list((_.detach().clone() for _ in grad))
+
+
+    def reconstruct(self):
+        # abbreviations
+        parameter = self.setting.parameter
+        device = self.setting.device
+        model = self.setting.model
+        setting = self.setting
+
         self.dummy_data = torch.randn(
             (setting.parameter["batch_size"], setting.parameter["channel"], setting.parameter["shape_img"][0],
              setting.parameter["shape_img"][1])).to(
@@ -15,30 +36,14 @@ class Dlg:
         self.dummy_label = torch.randn((setting.parameter["batch_size"], setting.parameter["num_classes"])).to(
             setting.device).requires_grad_(True)
 
-    def victim_side(self):
-         # calculate orig gradients
-        orig_out = self.setting.model(self.setting.parameter["orig_data"])
-        y = self.criterion(orig_out, self.setting.parameter["orig_label"])
-        grad = torch.autograd.grad(y, self.setting.model.parameters())
-        self.gradient = list((_.detach().clone() for _ in grad))
-
-
-    def attack(self):
-        # abbreviations
-        parameter = self.setting.parameter
-        device = self.setting.device
-        model = self.setting.model
-
-        self.victim_side()
-
 
         # optimizer setup
-        if parameter["prediction"] == "dlg":
+        if parameter["version"] == "dlg":
             optimizer = torch.optim.LBFGS([self.dummy_data, self.dummy_label], lr=parameter["dlg_lr"])
         else:
             optimizer = torch.optim.LBFGS([self.dummy_data, ], lr=parameter["dlg_lr"])
             # predict label of dummy gradient
-            pred = torch.Tensor(self.setting.predict()).long().to(device).reshape(
+            pred = torch.Tensor(self.setting.predictor.prediction).long().to(device).reshape(
                     (parameter["batch_size"],)).requires_grad_(False)
 
         # Prepare Result Object
@@ -50,7 +55,7 @@ class Dlg:
             def closure():
                 optimizer.zero_grad()
                 dummy_pred = model(self.dummy_data)
-                if parameter["prediction"] == "dlg":
+                if parameter["version"] == "dlg":
                     dummy_loss = - torch.mean(
                         torch.sum(torch.softmax(self.dummy_label, -1) * torch.log(torch.softmax(dummy_pred, -1)),
                                   dim=-1))
