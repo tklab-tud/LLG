@@ -101,6 +101,8 @@ class Predictor:
         # save predictions
         for (i_c, _) in candidates:
             self.prediction.append(i_c)
+            self.gradients_for_prediction[i_c] = self.gradients_for_prediction[i_c].add(-self.impact)
+
 
         # predict the rest
         for _ in range(parameter["batch_size"] - len(self.prediction)):
