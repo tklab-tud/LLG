@@ -86,20 +86,20 @@ class Predictor:
 
         # Version 1 improvement suggestion
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
-        candidates = []
-        mean = 0
+        h1_extraction = []
+        impact_acc = 0
 
         # filter negative values
         for i_cg, class_gradient in enumerate(self.gradients_for_prediction):
             if class_gradient < 0:
-                candidates.append((i_cg, class_gradient))
-                mean += class_gradient.item()
+                h1_extraction.append((i_cg, class_gradient))
+                impact_acc += class_gradient.item()
 
         # mean value
-        self.impact = mean / parameter["batch_size"]
+        self.impact = (impact_acc / parameter["batch_size"]) * (1 + 1 / parameter["num_classes"])
 
         # save predictions
-        for (i_c, _) in candidates:
+        for (i_c, _) in h1_extraction:
             self.prediction.append(i_c)
             self.gradients_for_prediction[i_c] = self.gradients_for_prediction[i_c].add(-self.impact)
 
@@ -121,12 +121,12 @@ class Predictor:
         parameter = self.setting.parameter
 
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
-        candidates = []
+        h1_extraction = []
 
-        # backup negative values
+        # do h1 extraction
         for i_cg, class_gradient in enumerate(self.gradients_for_prediction):
             if class_gradient < 0:
-                candidates.append((i_cg, class_gradient))
+                h1_extraction.append((i_cg, class_gradient))
 
         # create a new setting for impact / offset calculation
         tmp_setting = self.setting.copy()
@@ -158,8 +158,8 @@ class Predictor:
         self.gradients_for_prediction -= self.offset
 
 
-        # save predictions
-        for (i_c, _) in candidates:
+        # compensate h1 extraction
+        for (i_c, _) in h1_extraction:
             self.prediction.append(i_c)
             self.gradients_for_prediction[i_c] = self.gradients_for_prediction[i_c].add(-self.impact)
 
