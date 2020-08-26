@@ -1,42 +1,43 @@
 from experiments import *
-from visualize_experiment import *
+#from visualize_experiment import *
+from Dataloader import Dataloader
 
 
 def main():
     ############## Build your attack here ######################
-    setting = experiment(list_datasets=["MNIST"],
-                         list_bs=[1],
-                         list_balanced=[True],
-                         list_versions=["v2"],
-                         extent="extract",
-                         n=3,
+    ### Identifying value analysis ###
+
+    dataloader = Dataloader()
+    setting = experiment(dataloader=dataloader,
+                         list_datasets=["MNIST", "CIFAR"],
+                         list_bs=[1, 2, 4, 8, 16, 32, 64, 128],
+                         list_balanced=[True, False],
+                         list_versions=["random", "v1", "v2"],
+                         extent="predict",
+                         n=100,
                          trainsize=100,
                          trainsteps=0,
-                         path=None,
+                         path=None
                          )
 
 
-    ### Experiment 1: Class Prediction Accuracy ###
-    # setting = class_prediction_accuracy_vs_batchsize(10, [1, 2, 4, 8, 16, 32, 64, 128, 256], "MNIST", True, "v1")
-    # setting = class_prediction_accuracy_vs_batchsize(1000, [1, 2, 4, 8, 16, 32, 64, 128, 256], "MNIST", False, "v2")
-    # setting = class_prediction_accuracy_vs_batchsize(10, [1, 2, 4, 8, 16, 32, 64, 128, 256], "CIFAR", True, "v2")
-    # setting = class_prediction_accuracy_vs_batchsize(1000, [1, 2, 4, 8, 16, 32, 64, 128, 256], "CIFAR", False, "v2")
     #run, path = load_json()
-    # visualize_class_prediction_accuracy_vs_batchsize(run, path )
+
+    # extent = "prepare" visualisation
+    #negativ_value_check(run, path)
+
+
+    # extent = "prediction" visualisation
+    #magnitude_check(run, path, adjusted=True, balanced=True, dataset="MNIST", version="v2")
+    #magnitude_check(run, path, adjusted=True, balanced=False, dataset="MNIST", version="v2")
+    #visualize_class_prediction_accuracy_vs_batchsize(run, path)
     # visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path )
-    # negativ_value_check(run, path )
-    # magnitude_check(run, path, adjusted=True)
-    # magnitude_check(run, path, adjusted=False)
-
-    ### Experiment 2: Class Prediction Accuracy vs Training ###
-    # setting = class_prediction_accuracy_vs_training(1, 8, "MNIST", True, 200, 10, "v2")
     # visualize_prediction_accuracy_vs_training()
+    #magnitude_check(run, path, adjusted=True, balanced=True)
+    #magnitude_check(run, path, adjusted=False, balanced=True)
 
-    ### Experiment 3: Good Fidelity ###
-    # setting = good_fidelity(1, 1, 300, "MNIST", True)
-    # setting = good_fidelity(10, 8, 3000, "MNIST", False)
-    # setting = good_fidelity(10, 8, 3000, "CIFAR", True)
-    # setting = good_fidelity(10, 8, 3000, "CIFAR", False)
+
+    # extent = "full" visualisation
     # visualize_good_fidelity()
 
     ############################################################

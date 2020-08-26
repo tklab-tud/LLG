@@ -4,84 +4,64 @@ import torchvision
 from torchvision import datasets, transforms
 
 
-
 class Dataloader():
-    def __init__(self, setting, dataset):
-        self.setting = setting
+    def __init__(self):
         self.train_dataset = None
         self.currently_loaded = None
         self.samples = None
-        self.load_dataset(dataset)
+        self.num_classes = None
 
     def load_dataset(self, dataset):
-        if dataset != self.currently_loaded:
-            print("Loading dataset " + dataset + ". This may take some seconds.")
+        print("Loading dataset " + dataset + ". This may take some seconds.")
 
-            tt = torchvision.transforms.ToTensor()
-            tt_grey = transforms.Compose([torchvision.transforms.Grayscale(), tt])
+        tt = torchvision.transforms.ToTensor()
+        tt_grey = transforms.Compose([torchvision.transforms.Grayscale(), tt])
 
-            parameter = self.setting.parameter
+        if dataset == "MNIST":
+            self.train_dataset = datasets.MNIST('./datasets', train=True, download=True, transform=tt)
+            self.num_classes = 10
+        elif dataset == 'CIFAR':
+            self.train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt)
+            self.num_classes = 100
+        elif dataset == 'CIFAR-grey':
+            self.train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt_grey)
+            self.num_classes = 100
+        else:
+            print("Unsupported dataset '" + dataset + "'")
+            exit()
 
-            if dataset == "MNIST":
-                parameter["shape_img"] = (28, 28)
-                parameter["num_classes"] = 10
-                parameter["channel"] = 1
-                parameter["hidden"] = 588
-                self.train_dataset = datasets.MNIST('./datasets', train=True, download=True, transform=tt)
+        self.currently_loaded = dataset
 
-            elif dataset == 'CIFAR':
-                parameter["shape_img"] = (32, 32)
-                parameter["num_classes"] = 100
-                parameter["channel"] = 3
-                parameter["hidden"] = 768
-                self.train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt)
-            elif dataset == 'CIFAR-grey':
-                parameter["shape_img"] = (32, 32)
-                parameter["num_classes"] = 100
-                parameter["channel"] = 1
-                parameter["hidden"] = 768
-                self.train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt_grey)
-            else:
-                print("Unsupported dataset '" + dataset + "'")
-                exit()
+        # indexing
+        self.samples = [[] for _ in range(len(self.train_dataset.targets))]
 
-            parameter["set_size"] = len(self.train_dataset)
-            self.currently_loaded = dataset
-            # indexing
-            self.samples = [[] for _ in range(parameter["num_classes"])]
+        for sample in self.train_dataset:
+            self.samples[sample[1]].append(list(sample))
 
-            for sample in self.train_dataset:
-                self.samples[sample[1]].append(list(sample))
-
-            print("Finished loading dataset")
+        print("Finished loading dataset")
 
     # returns label and data of batch size. Will take targeted classes and fills it with random classes.
-    def get_batch(self, setting):
-        self.setting = setting
-        parameter = setting.parameter
-        device = setting.device
-
+    def get_batch(self, dataset, targets, bs):
         # update dataset if necessary
-        if parameter["dataset"] != self.currently_loaded:
-            self.load_dataset(parameter["dataset"])
+        if self.currently_loaded != dataset:
+            self.load_dataset(dataset)
 
         # remove additional targets or fill up
-        targets = parameter["targets"][:parameter["batch_size"]]
-        while len(targets) < parameter["batch_size"]:
-            targets.append(np.random.randint(self.setting.parameter["num_classes"]))
+        targets = targets[:bs]
+        while len(targets) < bs:
+            targets.append(np.random.randint(self.num_classes))
 
         # prepare data and label tensor
-        data = torch.Tensor(parameter["batch_size"], parameter["channel"],
-                            parameter["shape_img"][0], parameter["shape_img"][1]).to(self.setting.device)
-        labels = torch.Tensor(parameter["batch_size"]).long().to(self.setting.device).view(
-            parameter["batch_size"])
+        data = torch.Tensor(bs, self.train_dataset[0][0].shape[0], self.train_dataset[0][0].shape[1],
+                            self.train_dataset[0][0].shape[2])
+        labels = torch.Tensor(bs).long()
 
         # fill data and labels
         for i_target, target in enumerate(targets):
             rnd = np.random.randint(len(self.samples[target]))
-            data[i_target] = self.samples[target][rnd][0].float().to(device)
+            data[i_target] = self.samples[target][rnd][0].float().unsqueeze(0)
             data[i_target] = data[i_target].view(1, *data[i_target].size())
-            labels[i_target] = torch.Tensor([self.samples[target][rnd][1]]).long().to(device)
+            labels[i_target] = torch.Tensor([self.samples[target][rnd][1]]).long()
             labels[i_target] = labels[i_target].view(1, )
 
         return data, labels

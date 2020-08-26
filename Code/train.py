@@ -16,7 +16,9 @@ def test(setting):
 
     with torch.no_grad():
         for i in range(parameter["test_size"]):
-            data, target = dataloader.get_batch(setting)
+            data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"], setting.parameter["batch_size"])
+
+
             data, target = data.to(device), target.to(device)
             output = model(data)
             test_loss += criterion(output, target).item()
@@ -49,7 +51,9 @@ def train(setting, train_size):
 
     for i in range(train_size):
 
-        data, target = dataloader.get_batch(setting)
+        data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"], setting.parameter["batch_size"])
+
+
         data, target = data.to(device), target.to(device)
 
         optimizer.zero_grad()

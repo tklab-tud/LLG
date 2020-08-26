@@ -14,7 +14,8 @@ class Dlg:
     def victim_side(self):
          # calculate orig gradients
         self.setting.parameter["orig_data"], self.setting.parameter["orig_label"] = \
-            self.setting.dataloader.get_batch(self.setting)
+            self.setting.dataloader.get_batch(self.setting.parameter["dataset"], self.setting.parameter["targets"], self.setting.parameter["batch_size"])
+
 
         orig_out = self.setting.model(self.setting.parameter["orig_data"])
         y = self.criterion(orig_out, self.setting.parameter["orig_label"])

@@ -32,12 +32,18 @@ def negativ_value_check(run, path):
         gradient_analysis["negative"]["present"], gradient_analysis["negative"]["nonpresent"],
         gradient_analysis["positive"]["present"], gradient_analysis["positive"]["nonpresent"])
 
-    text_file=open(path +"negative_value_check.txt", "w")
+    text_file = open(path + "negative_value_check.txt", "w")
     text_file.write(result)
     text_file.close()
 
     # Hypothesis 2
-def magnitude_check(run, path, adjusted=True):
+
+
+def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, version=None):
+    if adjusted and run["meta"] == "victim_side":
+        print("Adjustment can only be made for a run with extent of prediction/full")
+        return
+
     run = run.copy()
 
     gradienttype = "adjusted_gradients" if adjusted else "original_gradients"
@@ -45,41 +51,43 @@ def magnitude_check(run, path, adjusted=True):
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
-
     graphs = []
-    for _ in meta["bsrange"]:
-        graphs.append(Graph("Occurrences", "Mean gradient value"))
+    for _ in meta["list_bs"]:
+        graphs.append(Graph("Occurrences", "Identifying value"))
 
-    composed_graph = Graph("Occurrences", "Mean gradient value")
+    composed_graph = Graph("Occurrences", "Identifying value")
 
     print("loading {} from json".format(gradienttype))
     for i, setting in enumerate(run):
         bs = run[setting]["parameter"]["batch_size"]
-        for label, gradient in enumerate(run[setting]["prediction_results"][gradienttype]):
-            g = graphs[meta["bsrange"].index(bs)]
-            g.add_datapoint(bs, run[setting]["parameter"]["orig_label"].count(label), gradient)
-            composed_graph.add_datapoint(bs, run[setting]["parameter"]["orig_label"].count(label), gradient)
-
+        current_meta = setting.split("_")
+        if (balanced is None or current_meta[2] == str(balanced)) and (
+                dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
+            for label, gradient in enumerate(run[setting]["prediction_results"][gradienttype]):
+                g = graphs[meta["list_bs"].index(bs)]
+                g.add_datapoint(bs, run[setting]["parameter"]["orig_label"].count(label), gradient)
+                composed_graph.add_datapoint(bs, run[setting]["parameter"]["orig_label"].count(label), gradient)
 
     graphs.append(composed_graph)
 
-    filesuffix = meta["bsrange"].copy()
+    filesuffix = meta["list_bs"].copy()
     filesuffix.append("composed")
 
     for id, graph in enumerate(graphs):
-        print("Creating graph: "+ str(filesuffix[id]))
+        print("Creating graph: " + str(filesuffix[id]))
         graph.sort()
         graph.plot_scatter()
-        #graph.show()
-        name = "Magnitude_BS_{}_{}.png".format(filesuffix[id], gradienttype)
+        # graph.show()
+        name = "Magnitude_BS_{}_{}_".format(filesuffix[id], gradienttype)
+        if balanced is not None:
+            name += "balanced" if balanced else "unbalanced"
+        name += ".pdf"
         graph.save(path, name)
         graph.fig.clf()
 
 
 # Experiment 1.1
-def visualize_class_prediction_accuracy_vs_batchsize(run, path):
-
-
+def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None):
     run = run.copy()
 
     graph = Graph("Batch Size", "Prediction Accuracy")
@@ -88,10 +96,12 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path):
 
     # Prediction Acc
     for id, run_name in enumerate(run):
-        i = id % meta["n"]
-        step = id // meta["n"]
-        graph.add_datapoint(meta["version"], run[run_name]["prediction_results"]["accuracy"],
-                            str(meta["bsrange"][step]))
+        current_meta = run_name.split("_")
+        if (balanced is None or current_meta[2] == str(balanced)) and (
+                dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
+
+            label = "{}_{}_{}".format(current_meta[3], current_meta[2], current_meta[0])
+            graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"],str(current_meta[1]))
 
     graph.plot_line(style="solid", color="Blue")
 
@@ -102,8 +112,6 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path):
 
 # Experiment 1.2
 def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path):
-
-
     run = run.copy()
 
     graph = Graph("Batch Size", "Perfect predictions")
@@ -132,8 +140,6 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path):
 
 # Experiment 2
 def visualize_class_prediction_accuracy_vs_training(run, path):
-
-
     run = run.copy()
 
     graph = Graph("Train Samples", "Prediction Accuracy", "Test Acc")
@@ -167,7 +173,6 @@ def visualize_class_prediction_accuracy_vs_training(run, path):
 # The threshold is plotted to the x axis.
 
 def visualize_good_fidelity(run, path):
-
     run = run.copy()
 
     graph = Graph("Fidelity Score", "Percentage of Samples")
@@ -212,4 +217,4 @@ def load_json():
 
     path = os.path.split(f.name)[0]
 
-    return dump, path+"/"
+    return dump, path + "/"

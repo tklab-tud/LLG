@@ -6,12 +6,13 @@ import numpy as np
 import json
 import time
 import torch
+import sys
 
 result_path = "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
 
 
 ################## Completely Configurable ###################
-def experiment(list_datasets, list_bs, list_balanced, list_versions, extent, n, trainsize=100, trainsteps=0, path=None):
+def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions, extent, n, trainsize=100, trainsteps=0, path=None):
     run = {"meta": {
         "list_datasets": list_datasets,
         "trainsize": trainsize,
@@ -23,17 +24,21 @@ def experiment(list_datasets, list_bs, list_balanced, list_versions, extent, n, 
         "n": n,
     }}
 
-    setting = Setting(dataset=list_datasets[0], result_path=path)
+    setting = Setting(dataloader, result_path=path)
 
+    progress = 0
+    todo = len(list_datasets)* len(list_bs)* len(list_balanced)*len(list_versions)*n
     for dataset in list_datasets:
         for trainstep in range(trainsteps+1):
             for bs in list_bs:
                 for balanced in list_balanced:
                     for version in list_versions:
                         for i in range(n):
+                            print("\ti: {:07.0f} / {:07.0f} ".format(progress, todo))
+                            progress += 1
 
                             # The name of the run for later identification and file naming
-                            run_name = "{}_{:03.0f}_{}_{}_{}_{:05.0f}".format(
+                            run_name = "{}_{:03.0f}_{}_{}_{}_{:07.0f}".format(
                                 dataset, bs, balanced, version, extent, i)
 
                             # defining attacked batch. Later it will be filled with random samples if len(target) < bs
