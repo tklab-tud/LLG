@@ -1,7 +1,6 @@
 import os
 
 import matplotlib.pyplot as plt
-import numpy as np
 
 
 class Graph:
@@ -30,7 +29,7 @@ class Graph:
     def show(self):
         self.fig.show()
 
-    def plot_bar(self, color=None, alt_ax=False):
+    def plot_bar(self, alt_ax=False):
         if alt_ax:
             plt = self.subplot2
         else:
@@ -38,9 +37,9 @@ class Graph:
 
         self.take_average()
         for dat in self.data:
-            plt.bar(str(dat[0]), dat[1], 0.5, color=color)
+            plt.bar(str(dat[0]), dat[1], 0.5, color=self.color(str(dat[0])))
 
-    def plot_line(self, style='solid', color=None, alt_ax=False):
+    def plot_line(self, alt_ax=False):
         if alt_ax:
             plt = self.subplot2
         else:
@@ -51,6 +50,7 @@ class Graph:
         for label in dict.fromkeys([label for (label, _, _) in self.data]):
             l_x = [x for (l, y, x) in self.data if l == label]
             l_y = [y for (l, y, x) in self.data if l == label]
+            color, style = self.color(label)
             plt.plot(l_x, l_y, label=label, linestyle=style, color=color)
 
         plt.legend()
@@ -112,10 +112,26 @@ class Graph:
             return
         self.fig.savefig(f.name)
 
-
     def color(self, s):
         color = {
             "1": "#FF2222", "2": '#332211', "4": '#F3A200', "8": '#876543', "16": '#F000FF',
             "32": '#11ACAC', "64": '#DE1995', "128": '#C3773C', "256": '#00EE00',
+
+            "Balanced-Random": "#44FF00",
+            "Balanced-LLG": '#332211',
+            "Balanced-LLG+": '#F3A200',
+            "Unbalanced-Random": '#0000FF',
+            "Unbalanced-LLG": '#11ACAC',
+            "Unbalanced-LLG+": '#DE1995',
+
         }
-        return color[s]
+        symbol = {
+            "Balanced-Random": "--",
+            "Balanced-LLG": (0,(3,5,1,5,1,5)),
+            "Balanced-LLG+": '-.',
+            "Unbalanced-Random": ':',
+            "Unbalanced-LLG": (0, (3,1,1,1)),
+            "Unbalanced-LLG+": '-',
+        }
+
+        return color[s], symbol[s]

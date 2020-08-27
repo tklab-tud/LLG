@@ -53,7 +53,7 @@ class Predictor:
                 self.false += 1
 
         self.acc = self.correct / (self.correct + self.false)
-        #print(self.setting.parameter["version"], ": ACC: ", self.acc)
+        print(self.setting.parameter["version"], ": ACC: ", self.acc)
 
     def print_prediction(self):
         orig_label = self.setting.parameter["orig_label"].tolist()

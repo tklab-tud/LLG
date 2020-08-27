@@ -90,7 +90,7 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
 def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None):
     run = run.copy()
 
-    graph = Graph("Batch Size", "Prediction Accuracy")
+    graph = Graph("Batch Size", "Label extraction accuracy")
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
@@ -99,50 +99,57 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
         current_meta = run_name.split("_")
         if (balanced is None or current_meta[2] == str(balanced)) and (
                 dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
+            label = "Balanced" if current_meta[2] == "True" else "Unbalanced" if current_meta[2] == "False" else "?"
+            label += "-"
+            label += "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
+                current_meta[3] == "random" else "?"
 
-            label = "{}_{}_{}".format(current_meta[3], current_meta[2], current_meta[0])
-            graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"],str(current_meta[1]))
+            graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"], str(current_meta[1]))
 
-    graph.plot_line(style="solid", color="Blue")
+    graph.plot_line()
 
     graph.show()
 
-    graph.save(path, "class_prediction_accuracy_vs_batchsize")
+    graph.save(path, "class_prediction_accuracy_vs_batchsize.pdf")
 
 
 # Experiment 1.2
-def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path):
+def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None):
     run = run.copy()
 
-    graph = Graph("Batch Size", "Perfect predictions")
+    graph = Graph("Batch Size", "Flawless label extraction share")
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
-    # Pefect Prediction
-    cnt = {}
-    for bs in meta["bsrange"]:
-        cnt.update({bs: 0})
+    points = {}
 
     for id, run_name in enumerate(run):
-        i = id % meta["n"]
-        trainstep = id // meta["n"]
-        if run[run_name]["prediction_results"]["accuracy"] == 1.0:
-            cnt[run[run_name]["parameter"]["batch_size"]] += 1
+        current_meta = run_name.split("_")
+        label = "Balanced" if current_meta[2] == "True" else "Unbalanced" if current_meta[2] == "False" else "?"
+        label += "-"
+        label += "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
+            current_meta[3] == "random" else "?"
 
-    for c in cnt.items():
-        graph.add_datapoint(c[0], c[1] / meta["n"])
+        if (balanced is None or current_meta[2] == str(balanced)) and (
+                dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
 
-    graph.plot_bar(color="Blue", alt_ax=False)
+            if run[run_name]["prediction_results"]["accuracy"] == 1.0:
+                graph.add_datapoint(label, 1, current_meta[1])
+            else:
+                graph.add_datapoint(label, 0, current_meta[1])
 
+    graph.plot_line()
     graph.show()
-    graph.save(path, "flawles_class_prediction_accuracy_vs_batchsize.png")
+    graph.save(path, "flawles_class_prediction_accuracy_vs_batchsize.pdf")
+
+    return graph
 
 
 # Experiment 2
 def visualize_class_prediction_accuracy_vs_training(run, path):
     run = run.copy()
 
-    graph = Graph("Train Samples", "Prediction Accuracy", "Test Acc")
+    graph = Graph("Train Samples", "Label extraction Accuracy", "Test Acc")
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
@@ -152,7 +159,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path):
         trainstep = id // meta["n"]
         graph.add_datapoint(meta["version"], run[run_name]["prediction_results"]["accuracy"], trainstep)
 
-    graph.plot_line(style="solid", color="Blue", alt_ax=False)
+    graph.plot_line(style="solid", alt_ax=False)
     graph.data = []
 
     # Test Acc
@@ -161,10 +168,10 @@ def visualize_class_prediction_accuracy_vs_training(run, path):
         trainstep = id // meta["n"]
         graph.add_datapoint("test_acc", run[run_name]["parameter"]["test_acc"], trainstep)
 
-    graph.plot_line(style="solid", color="Red", alt_ax=True)
+    graph.plot_line(style="solid", alt_ax=True)
 
     graph.show()
-    graph.save_f(path, "class_prediction_accuracy_vs_training.png")
+    graph.save(path, "class_prediction_accuracy_vs_training.pdf")
 
 
 # Experiment 3: Good Fidelity
@@ -204,7 +211,7 @@ def visualize_good_fidelity(run, path):
         graph.data = []
 
     graph.show()
-    graph.save(path, "good_fidelity.png")
+    graph.save(path, "good_fidelity.pdf")
 
 
 def load_json():

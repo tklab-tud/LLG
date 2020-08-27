@@ -16,6 +16,8 @@ class Dlg:
         self.setting.parameter["orig_data"], self.setting.parameter["orig_label"] = \
             self.setting.dataloader.get_batch(self.setting.parameter["dataset"], self.setting.parameter["targets"], self.setting.parameter["batch_size"])
 
+        self.setting.parameter["orig_data"] = self.setting.parameter["orig_data"].to(self.setting.device)
+        self.setting.parameter["orig_label"] = self.setting.parameter["orig_label"].to(self.setting.device)
 
         orig_out = self.setting.model(self.setting.parameter["orig_data"])
         y = self.criterion(orig_out, self.setting.parameter["orig_label"])
