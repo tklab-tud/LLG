@@ -57,21 +57,18 @@ class Graph:
 
     def plot_scatter(self):
         plt = self.subplot
+        max_x = 0
 
-        list_x = []
-        list_y = []
-        list_c = []
+        for label in dict.fromkeys([label for (label, _, _) in self.data]):
+            l_x = [x for (l, y, x) in self.data if l == label]
+            l_y = [y for (l, y, x) in self.data if l == label]
+            max_x = max( max_x, max(l_x))
+            color, style = self.color(str(label))
+            plt.scatter(l_x, l_y, label="Batch Size: "+str(label), marker=style, c=color)
 
-        for dat in self.data:
-            list_x.append(dat[1])
-            list_y.append(dat[2])
-            list_c.append(self.color(str(dat[0])))
+        plt.set_xticks(range(0, max_x+1, max(1, max_x//10)))
 
-        plt.set_xticks(range(max(list_x)))
-
-        plt.scatter(list_x, list_y, c=list_c)
-
-        # plt.legend()
+        plt.legend(loc="lower right")
 
     def take_average(self):
         # Repaces data with the averages for every label,y combination
@@ -126,12 +123,16 @@ class Graph:
 
         }
         symbol = {
+            "1": "*", "2": '.', "4": 'v', "8": '8', "16": 's',
+            "32": 'x', "64": 'D', "128": '1', "256": 'P',
+
             "Balanced-Random": "--",
-            "Balanced-LLG": (0,(3,5,1,5,1,5)),
+            "Balanced-LLG": (0, (3, 5, 1, 5, 1, 5)),
             "Balanced-LLG+": '-.',
             "Unbalanced-Random": ':',
-            "Unbalanced-LLG": (0, (3,1,1,1)),
+            "Unbalanced-LLG": (0, (3, 1, 1, 1)),
             "Unbalanced-LLG+": '-',
+
         }
 
         return color[s], symbol[s]

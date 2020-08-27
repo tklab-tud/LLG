@@ -53,20 +53,21 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
 
     graphs = []
     for _ in meta["list_bs"]:
-        graphs.append(Graph("Occurrences", "Identifying value"))
+        graphs.append(Graph("Occurrences", "Gradient Magnitude"))
 
-    composed_graph = Graph("Occurrences", "Identifying value")
+    composed_graph = Graph("Occurrences", "Gradient Magnitude")
 
     print("loading {} from json".format(gradienttype))
     for i, setting in enumerate(run):
         bs = run[setting]["parameter"]["batch_size"]
         current_meta = setting.split("_")
         if (balanced is None or current_meta[2] == str(balanced)) and (
-                dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
+                dataset is None or current_meta[0] == dataset) and (
+                version is None or version == current_meta[3]):
             for label, gradient in enumerate(run[setting]["prediction_results"][gradienttype]):
                 g = graphs[meta["list_bs"].index(bs)]
-                g.add_datapoint(bs, run[setting]["parameter"]["orig_label"].count(label), gradient)
-                composed_graph.add_datapoint(bs, run[setting]["parameter"]["orig_label"].count(label), gradient)
+                g.add_datapoint(bs, gradient, run[setting]["parameter"]["orig_label"].count(label))
+                composed_graph.add_datapoint(bs, gradient, run[setting]["parameter"]["orig_label"].count(label))
 
     graphs.append(composed_graph)
 
