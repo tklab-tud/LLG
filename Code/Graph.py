@@ -48,12 +48,21 @@ class Graph:
         self.take_average()
         # For every line
         for label in dict.fromkeys([label for (label, _, _) in self.data]):
-            l_x = [x for (l, y, x) in self.data if l == label]
+            l_x = [x.lstrip("0") for (l, y, x) in self.data if l == label]
             l_y = [y for (l, y, x) in self.data if l == label]
-            color, style = self.color(label)
+            color, style, _ = self.color(label)
             plt.plot(l_x, l_y, label=label, linestyle=style, color=color)
 
-        plt.legend()
+
+        handles, labels = plt.get_legend_handles_labels()
+
+        order = []
+        for label in labels:
+            order.append(self.color(label)[2])
+        labels, handles, order = zip(*sorted(zip(labels, handles, order), key=lambda t: t[2]))
+
+        plt.legend(handles, labels, prop={'size': 11})
+
 
     def plot_scatter(self):
         plt = self.subplot
@@ -63,12 +72,17 @@ class Graph:
             l_x = [x for (l, y, x) in self.data if l == label]
             l_y = [y for (l, y, x) in self.data if l == label]
             max_x = max( max_x, max(l_x))
-            color, style = self.color(str(label))
-            plt.scatter(l_x, l_y, label="Batch Size: "+str(label), marker=style, c=color)
+            color, style, _ = self.color(str(label))
+            plt.scatter(l_x, l_y, label="Batch Size: "+str(label), marker=style, edgecolors=color, facecolors="none")
 
         plt.set_xticks(range(0, max_x+1, max(1, max_x//10)))
 
         plt.legend(loc="lower right")
+
+    def plot_heatmap(self):
+        return
+
+
 
     def take_average(self):
         # Repaces data with the averages for every label,y combination
@@ -111,28 +125,40 @@ class Graph:
 
     def color(self, s):
         color = {
-            "1": "#FF2222", "2": '#332211', "4": '#F3A200', "8": '#876543', "16": '#F000FF',
-            "32": '#11ACAC', "64": '#DE1995', "128": '#C3773C', "256": '#00EE00',
+            "1": "#e6194B", "2": '#800000', "4": '#f58231', "8": '#3cb44b', "16": '#4363d8',
+            "32": '#000075', "64": '#911eb4', "128": '#000000', "256": '#f032e6',
 
-            "Balanced-Random": "#44FF00",
-            "Balanced-LLG": '#332211',
-            "Balanced-LLG+": '#F3A200',
-            "Unbalanced-Random": '#0000FF',
-            "Unbalanced-LLG": '#11ACAC',
-            "Unbalanced-LLG+": '#DE1995',
+            "Random (IID)": "#e6194B",
+            "LLG (IID)": '#3cb44b',
+            "LLG+ (IID)": '#4363d8',
+            "Random (non-IID)": '#f58231',
+            "LLG (non-IID)": '#42d4f4',
+            "LLG+ (non-IID)": '#f032e6',
 
         }
         symbol = {
-            "1": "*", "2": '.', "4": 'v', "8": '8', "16": 's',
-            "32": 'x', "64": 'D', "128": '1', "256": 'P',
+            "1": ".", "2": '*', "4": '8', "8": 'v', "16": 's',
+            "32": 'p', "64": 'D', "128": 'P', "256": '^',
 
-            "Balanced-Random": "--",
-            "Balanced-LLG": (0, (3, 5, 1, 5, 1, 5)),
-            "Balanced-LLG+": '-.',
-            "Unbalanced-Random": ':',
-            "Unbalanced-LLG": (0, (3, 1, 1, 1)),
-            "Unbalanced-LLG+": '-',
+            "Random (IID)": "--",
+            "LLG (IID)": (0, (3, 5, 1, 5, 1, 5)),
+            "LLG+ (IID)": '-',
+            "Random (non-IID)": ':',
+            "LLG (non-IID)": (0, (3, 1, 1, 1)),
+            "LLG+ (non-IID)": '-.',
+
+        }
+        order = {
+            "1": 1, "2": 2, "4": 3, "8": 4, "16": 5,
+            "32": 6, "64": 7, "128": 8, "256": 9,
+
+            "Random (IID)": 4,
+            "LLG (IID)": 2,
+            "LLG+ (IID)": 0,
+            "Random (non-IID)": 5,
+            "LLG (non-IID)": 3,
+            "LLG+ (non-IID)": 1,
 
         }
 
-        return color[s], symbol[s]
+        return color[s], symbol[s], order[s]

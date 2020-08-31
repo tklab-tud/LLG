@@ -39,10 +39,13 @@ def negativ_value_check(run, path):
     # Hypothesis 2
 
 
-def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, version=None):
+def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, version=None, list_bs=None):
     if adjusted and run["meta"] == "victim_side":
         print("Adjustment can only be made for a run with extent of prediction/full")
         return
+
+    if list_bs is None:
+        list_bs = run["meta"]["list_bs"]
 
     run = run.copy()
 
@@ -53,9 +56,9 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
 
     graphs = []
     for _ in meta["list_bs"]:
-        graphs.append(Graph("Occurrences", "Gradient Magnitude"))
+        graphs.append(Graph("Occurrences", "Gradient value"))
 
-    composed_graph = Graph("Occurrences", "Gradient Magnitude")
+    composed_graph = Graph("Occurrences", "Gradient value")
 
     print("loading {} from json".format(gradienttype))
     for i, setting in enumerate(run):
@@ -66,8 +69,11 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
                 version is None or version == current_meta[3]):
             for label, gradient in enumerate(run[setting]["prediction_results"][gradienttype]):
                 g = graphs[meta["list_bs"].index(bs)]
-                g.add_datapoint(bs, gradient, run[setting]["parameter"]["orig_label"].count(label))
-                composed_graph.add_datapoint(bs, gradient, run[setting]["parameter"]["orig_label"].count(label))
+                if bs in list_bs:
+                    g.add_datapoint(bs, gradient, run[setting]["parameter"]["orig_label"].count(label))
+                    composed_graph.add_datapoint(bs, gradient, run[setting]["parameter"]["orig_label"].count(label))
+
+
 
     graphs.append(composed_graph)
 
@@ -84,7 +90,50 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
             name += "balanced" if balanced else "unbalanced"
         name += ".pdf"
         graph.save(path, name)
+        graph.show()
         graph.fig.clf()
+
+
+def heatmap(run, path, adjusted=True, balanced=None, dataset=None, version=None, list_bs=None):
+    if adjusted and run["meta"] == "victim_side":
+        print("Adjustment can only be made for a run with extent of prediction/full")
+        return
+
+    if list_bs is None:
+        list_bs = run["meta"]["list_bs"]
+
+    run = run.copy()
+
+    gradienttype = "adjusted_gradients" if adjusted else "original_gradients"
+
+    meta = run["meta"].copy()
+    run.__delitem__("meta")
+
+    graph = Graph("Occurrences", "Gradient value")
+
+    print("loading {} from json".format(gradienttype))
+    for i, setting in enumerate(run):
+        bs = run[setting]["parameter"]["batch_size"]
+        current_meta = setting.split("_")
+        if (balanced is None or current_meta[2] == str(balanced)) and (
+                dataset is None or current_meta[0] == dataset) and (
+                version is None or version == current_meta[3]) and (
+                bs in list_bs):
+            for label, gradient in enumerate(run[setting]["prediction_results"][gradienttype]):
+                graph.add_datapoint(bs, gradient, run[setting]["parameter"]["orig_label"].count(label))
+
+
+
+    print("Creating graph")
+    graph.sort()
+    graph.plot_heatmap()
+    graph.show()
+    name = "Heatmap_"
+    if balanced is not None:
+        name += "balanced" if balanced else "unbalanced"
+    name += ".pdf"
+    graph.save(path, name)
+    graph.fig.clf()
 
 
 # Experiment 1.1
@@ -100,10 +149,10 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
         current_meta = run_name.split("_")
         if (balanced is None or current_meta[2] == str(balanced)) and (
                 dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
-            label = "Balanced" if current_meta[2] == "True" else "Unbalanced" if current_meta[2] == "False" else "?"
-            label += "-"
-            label += "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
+            label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
                 current_meta[3] == "random" else "?"
+            label += " "
+            label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
             graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"], str(current_meta[1]))
 
@@ -126,10 +175,10 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
 
     for id, run_name in enumerate(run):
         current_meta = run_name.split("_")
-        label = "Balanced" if current_meta[2] == "True" else "Unbalanced" if current_meta[2] == "False" else "?"
-        label += "-"
-        label += "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
+        label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
             current_meta[3] == "random" else "?"
+        label += " "
+        label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
         if (balanced is None or current_meta[2] == str(balanced)) and (
                 dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
@@ -160,7 +209,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path):
         trainstep = id // meta["n"]
         graph.add_datapoint(meta["version"], run[run_name]["prediction_results"]["accuracy"], trainstep)
 
-    graph.plot_line(style="solid", alt_ax=False)
+    graph.plot_line( alt_ax=False)
     graph.data = []
 
     # Test Acc
@@ -169,7 +218,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path):
         trainstep = id // meta["n"]
         graph.add_datapoint("test_acc", run[run_name]["parameter"]["test_acc"], trainstep)
 
-    graph.plot_line(style="solid", alt_ax=True)
+    graph.plot_line( alt_ax=True)
 
     graph.show()
     graph.save(path, "class_prediction_accuracy_vs_training.pdf")
