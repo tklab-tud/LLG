@@ -131,6 +131,8 @@ def heatmap(run, path, adjusted=True, balanced=None, dataset=None, version=None,
     name = "Heatmap_"
     if balanced is not None:
         name += "balanced" if balanced else "unbalanced"
+    if adjusted is not None:
+        name += "adjusted" if adjusted else "original"
     name += ".pdf"
     graph.save(path, name)
     graph.fig.clf()

@@ -26,7 +26,8 @@ def main():
     #magnitude_check(run, path, adjusted=False, balanced=True, version="v2", dataset="CIFAR", list_bs=[2, 8, 32, 128])
     #magnitude_check(run, path, adjusted=True, balanced=True, version="v2", dataset="CIFAR", list_bs=[2, 8, 32, 128])
 
-    heatmap(run, path, adjusted=True, balanced=True, version="v2", dataset="CIFAR", list_bs=[2, 8, 32, 128])
+    heatmap(run, path, adjusted=True, balanced=True, version="v2", dataset="MNIST")
+    heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST")
 
     # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="CIFAR")
     # visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, dataset="CIFAR")

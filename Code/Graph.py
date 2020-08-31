@@ -1,6 +1,7 @@
 import os
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 class Graph:
@@ -53,7 +54,6 @@ class Graph:
             color, style, _ = self.color(label)
             plt.plot(l_x, l_y, label=label, linestyle=style, color=color)
 
-
         handles, labels = plt.get_legend_handles_labels()
 
         order = []
@@ -63,7 +63,6 @@ class Graph:
 
         plt.legend(handles, labels, prop={'size': 11})
 
-
     def plot_scatter(self):
         plt = self.subplot
         max_x = 0
@@ -71,18 +70,34 @@ class Graph:
         for label in dict.fromkeys([label for (label, _, _) in self.data]):
             l_x = [x for (l, y, x) in self.data if l == label]
             l_y = [y for (l, y, x) in self.data if l == label]
-            max_x = max( max_x, max(l_x))
+            max_x = max(max_x, max(l_x))
             color, style, _ = self.color(str(label))
-            plt.scatter(l_x, l_y, label="Batch Size: "+str(label), marker=style, edgecolors=color, facecolors="none")
+            plt.scatter(l_x, l_y, label="Batch Size: " + str(label), marker=style, edgecolors=color, facecolors="none")
 
-        plt.set_xticks(range(0, max_x+1, max(1, max_x//10)))
+        plt.set_xticks(range(0, max_x + 1, max(1, max_x // 10)))
 
         plt.legend(loc="lower right")
 
     def plot_heatmap(self):
-        return
 
 
+
+        x_max = max([x for _, _, x in self.data])
+        x_min = min([x for _, _, x in self.data])
+        y_max = max([y for _, y, _ in self.data])
+        y_min = min([y for _, y, _ in self.data])
+        y_span = y_max - y_min
+        x_span = x_max - x_min
+
+        heat = np.zeros((x_max+1, 101 ))
+
+        for _, y, x in self.data:
+            heat_y = 100 - (int((y - y_min) // (y_span / 100)))
+            heat[x][heat_y] = min(heat[x][heat_y]+1, 1000)
+
+        heat = np.transpose(heat)
+
+        plt.imshow(heat, cmap='hot', interpolation='bilinear', extent=[0,x_max,y_min,y_max], aspect=0.05)
 
     def take_average(self):
         # Repaces data with the averages for every label,y combination
