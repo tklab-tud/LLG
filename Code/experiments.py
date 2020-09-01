@@ -12,7 +12,7 @@ result_path = "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%
 
 
 ################## Completely Configurable ###################
-def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions, extent, n, trainsize=100, trainsteps=0, path=None):
+def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions, extent, n, trainsize=100, trainsteps=0, path=None, reconstruction_steps=0):
     run = {"meta": {
         "list_datasets": list_datasets,
         "trainsize": trainsize,
@@ -22,6 +22,7 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
         "list_versions": list_versions,
         "extent": extent,
         "n": n,
+        "reconstruction_steps": reconstruction_steps
     }}
 
     setting = Setting(dataloader, result_path=path)
@@ -54,7 +55,8 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
 
                             # configure the setting
                             setting.configure(dataset=dataset, batch_size=bs, version=version,
-                                              run_name=run_name, targets=target, result_path=path)
+                                              run_name=run_name, targets=target, result_path=path,
+                                              dlg_iterations=reconstruction_steps)
 
                             # run the attack
                             setting.attack(extent)

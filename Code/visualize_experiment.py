@@ -73,8 +73,6 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
                     g.add_datapoint(bs, gradient, run[setting]["parameter"]["orig_label"].count(label))
                     composed_graph.add_datapoint(bs, gradient, run[setting]["parameter"]["orig_label"].count(label))
 
-
-
     graphs.append(composed_graph)
 
     filesuffix = meta["list_bs"].copy()
@@ -121,8 +119,6 @@ def heatmap(run, path, adjusted=True, balanced=None, dataset=None, version=None,
                 bs in list_bs):
             for label, gradient in enumerate(run[setting]["prediction_results"][gradienttype]):
                 graph.add_datapoint(bs, gradient, run[setting]["parameter"]["orig_label"].count(label))
-
-
 
     print("Creating graph")
     graph.sort()
@@ -211,7 +207,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path):
         trainstep = id // meta["n"]
         graph.add_datapoint(meta["version"], run[run_name]["prediction_results"]["accuracy"], trainstep)
 
-    graph.plot_line( alt_ax=False)
+    graph.plot_line(alt_ax=False)
     graph.data = []
 
     # Test Acc
@@ -220,7 +216,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path):
         trainstep = id // meta["n"]
         graph.add_datapoint("test_acc", run[run_name]["parameter"]["test_acc"], trainstep)
 
-    graph.plot_line( alt_ax=True)
+    graph.plot_line(alt_ax=True)
 
     graph.show()
     graph.save(path, "class_prediction_accuracy_vs_training.pdf")
@@ -231,7 +227,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path):
 # It will evaluate the image similarity by plotting the percentage of samples that reach a mse below a threshold.
 # The threshold is plotted to the x axis.
 
-def visualize_good_fidelity(run, path):
+def visualize_good_fidelity(run, path, fidelitysteps, bs, balanced):
     run = run.copy()
 
     graph = Graph("Fidelity Score", "Percentage of Samples")
@@ -239,29 +235,37 @@ def visualize_good_fidelity(run, path):
     run.__delitem__("meta")
 
     # prepare fidelity
-    fidelity = {}
-    for strat in meta["strats"]:
-        fidelity.update({strat: {}})
-        for step in meta["steps"]:
-            fidelity[strat].update({step: 0})
+    fidelity = np.zeros((len(fidelitysteps), len(meta["list_versions"])))
 
     # go through run
+
     for id, run_name in enumerate(run):
+        current_meta = run_name.split("_")
 
-        for step in meta["steps"]:
-            for mse in run[run_name]["attack_results"]["mses"][-1]:
-                if mse < step:
-                    fidelity[run[run_name]["parameter"]["prediction"]][step] += 1
+        if int(current_meta[1]) == bs and current_meta[2] == str(balanced):
+            for i_step, step in enumerate(fidelitysteps):
+                for mse in run[run_name]["attack_results"]["mses"][-1]:
+                    if mse < step:
+                        fidelity[i_step][meta["list_versions"].index(current_meta[3])] += 1
 
-    length = meta["bs"] * meta["n"]
+    length = bs * meta["n"]
 
-    for i, strat in enumerate(fidelity):
-        for step in fidelity[strat]:
-            graph.add_datapoint(strat, fidelity[strat][step] / length, str(step))
-        style = "solid" if i == 1 else "--"
-        graph.plot_line(style=style)
-        graph.data = []
+    for step, row in enumerate(fidelity):
+        for version, value in enumerate(row):
 
+            # Name in the graph
+            label = meta["list_versions"][version]
+            label = "LLG" if label == "v1" else "LLG+" if label == "v2" else "Random" if label == "random" \
+                else "iDLG" if label =="idlg" else "DLG" if label=="dlg" else "?"
+            label += " "
+            label += "(IID)" if balanced else "(non-IID)"
+
+            y = fidelity[step][version] / length
+            x = str(fidelitysteps[step])
+
+            graph.add_datapoint(label, y, x)
+
+    graph.plot_line()
     graph.show()
     graph.save(path, "good_fidelity.pdf")
 

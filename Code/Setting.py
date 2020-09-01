@@ -151,7 +151,9 @@ class Setting:
         if extent == "victim_side":
             return
 
-        self.predictor.predict()
+        if not self.parameter["version"] == "dlg":
+            self.predictor.predict()
+
         if extent == "predict":
             return
 
