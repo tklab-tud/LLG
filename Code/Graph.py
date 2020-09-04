@@ -2,6 +2,7 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.stats
 
 
 class Graph:
@@ -75,11 +76,17 @@ class Graph:
             max_x = max(max_x, max(l_x))
             color = self.color((str(label)))
             style = self.style(str(label))
-            plt.scatter(l_x, l_y, label="Batch Size: " + str(label), marker=style, edgecolors=color, facecolors="none")
+            pearson_r = scipy.stats.pearsonr(l_x, l_y)
+            visible_label = "Batch Size: " + str(label) + ", $\\rho = {:.5f}$".format(pearson_r[0])
+            plt.scatter(l_x, l_y, label=visible_label, marker=style, edgecolors=color, facecolors="none")
+
 
         plt.set_xticks(range(0, max_x + 1, max(1, max_x // 10)))
 
         plt.legend(loc="lower right")
+
+
+
 
     def plot_heatmap(self):
 
