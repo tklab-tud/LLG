@@ -134,6 +134,51 @@ def heatmap(run, path, adjusted=True, balanced=None, dataset=None, version=None,
     graph.fig.clf()
 
 
+def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=None):
+    if list_bs is None:
+        list_bs = run["meta"]["list_bs"]
+
+    run = run.copy()
+
+    meta = run["meta"].copy()
+    run.__delitem__("meta")
+
+    graph = Graph("Occurrences", "Gradient value")
+    result_string = ""
+    result_list_original=[]
+    result_list_adjusted=[]
+
+    for i, setting in enumerate(run):
+        bs = run[setting]["parameter"]["batch_size"]
+        current_meta = setting.split("_")
+        if (balanced is None or current_meta[2] == str(balanced)) and (
+                dataset is None or current_meta[0] == dataset) and (
+                version is None or version == current_meta[3]) and (
+                bs in list_bs):
+            l_x = []
+            l_y_original = []
+            l_y_adjusted = []
+            for label in range(run[setting]["parameter"]["num_classes"]):
+                l_x.append(run[setting]["parameter"]["orig_label"].count(label))
+                l_y_original.append(run[setting]["prediction_results"]["original_gradients"][label])
+                l_y_adjusted.append(run[setting]["prediction_results"]["adjusted_gradients"][label])
+
+            pearson_r_original = scipy.stats.pearsonr(l_x, l_y_original)
+            pearson_r_adjusted = scipy.stats.pearsonr(l_x, l_y_adjusted)
+
+            result_string += "{}: pearson_r_original = {:.5f}\t pearson_r_adjusted = {:.5f}\n". \
+                format(current_meta, pearson_r_original[0], pearson_r_adjusted[0])
+            result_list_original.append(pearson_r_original[0])
+            result_list_adjusted.append(pearson_r_adjusted[0])
+
+    result_string = "MEAN: pearson_r_original = {:.5f}\t pearson_r_adjusted = {:.5f}\n\n".format(
+        np.mean(result_list_original), np.mean(result_list_adjusted)) + result_string
+
+    text_file = open(path + "pearson_check.txt", "w")
+    text_file.write(result_string)
+    text_file.close()
+
+
 # Experiment 1.1
 def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None):
     run = run.copy()
@@ -252,11 +297,10 @@ def visualize_good_fidelity(run, path, fidelitysteps, bs, balanced):
 
     for step, row in enumerate(fidelity):
         for version, value in enumerate(row):
-
             # Name in the graph
             label = meta["list_versions"][version]
             label = "LLG" if label == "v1" else "LLG+" if label == "v2" else "Random" if label == "random" \
-                else "iDLG" if label =="idlg" else "DLG" if label=="dlg" else "?"
+                else "iDLG" if label == "idlg" else "DLG" if label == "dlg" else "?"
             label += " "
             label += "(IID)" if balanced else "(non-IID)"
 
