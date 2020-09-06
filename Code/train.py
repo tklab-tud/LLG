@@ -16,8 +16,8 @@ def test(setting):
 
     with torch.no_grad():
         for i in range(parameter["test_size"]):
-            data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"], setting.parameter["batch_size"])
-
+            data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"],
+                                                setting.parameter["batch_size"])
 
             data, target = data.to(device), target.to(device)
             output = model(data)
@@ -32,8 +32,7 @@ def test(setting):
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, parameter["test_size"] * parameter["batch_size"], test_acc))
 
-
-    return test_loss, test_acc
+    setting.parameter["test_loss"], setting.parameter["test_acc"] = test_loss, test_acc
 
 
 def train(setting, train_size):
@@ -51,8 +50,8 @@ def train(setting, train_size):
 
     for i in range(train_size):
 
-        data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"], setting.parameter["batch_size"])
-
+        data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"],
+                                            setting.parameter["batch_size"])
 
         data, target = data.to(device), target.to(device)
 
@@ -65,3 +64,5 @@ def train(setting, train_size):
 
         if i % 100 == 0:
             print('Sample [{}/{}]\tLoss: {}'.format(i, train_size, loss.item()))
+
+    test(setting)

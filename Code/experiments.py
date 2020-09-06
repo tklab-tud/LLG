@@ -1,5 +1,6 @@
 from Graph import *
 from Setting import Setting
+from train import test
 import datetime
 import os
 import numpy as np
@@ -28,9 +29,12 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
     setting = Setting(dataloader, result_path=path)
 
     progress = 0
-    todo = len(list_datasets)* len(list_bs)* len(list_balanced)*len(list_versions)*n
+    todo = len(list_datasets)* len(list_bs)* len(list_balanced)*len(list_versions)*n*trainsteps
     for dataset in list_datasets:
         for trainstep in range(trainsteps+1):
+            if not trainsteps == 0:
+                test(setting)
+
             for bs in list_bs:
                 for balanced in list_balanced:
                     for version in list_versions:
@@ -39,8 +43,8 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
                             progress += 1
 
                             # The name of the run for later identification and file naming
-                            run_name = "{}_{:03.0f}_{}_{}_{}_{:07.0f}".format(
-                                dataset, bs, balanced, version, extent, i)
+                            run_name = "{}_{:03.0f}_{}_{}_{}_{}_{:07.0f}".format(
+                                dataset, bs, balanced, version, extent, trainstep, i)
 
                             # defining attacked batch. Later it will be filled with random samples if len(target) < bs
                             if balanced:

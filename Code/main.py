@@ -1,27 +1,27 @@
 from experiments import *
-from visualize_experiment import *
+#from visualize_experiment import *
 from Dataloader import Dataloader
 
 
 def main():
     ############## Build your attack here ######################
     ### Identifying value analysis ###
-    """
+    #"""
     dataloader = Dataloader()
     experiment(dataloader=dataloader,
                list_datasets=["MNIST"],
-               list_bs=[2, 8, 32, 128],
+               list_bs=[32],
                list_balanced=[True],
-               list_versions=["v2", "idlg", "dlg"],
-               n=1,
+               list_versions=["v2"],
+               n=100,
                extent="predict",
                trainsize=100,
-               trainsteps=0,
+               trainsteps=100,
                path=None,
                reconstruction_steps=100
                )
-    """
-    run, path = load_json()
+    #"""
+    #run, path = load_json()
     # negativ_value_check(run, path)
 
     #magnitude_check(run, path, adjusted=True, balanced=True, version="v2", dataset="MNIST", list_bs=[2, 8, 32, 128])
@@ -38,6 +38,7 @@ def main():
 
     #visualize_good_fidelity(run, path, [0.1, 0.05, 0.01, 0.005, 0.001], 4, True)
 
+    #visualize_class_prediction_accuracy_vs_training(run, path, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
     ############################################################
     print("Run finished")
 

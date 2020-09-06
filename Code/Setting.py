@@ -203,5 +203,4 @@ class Setting:
 
     def train(self, train_size):
         train(self, train_size)
-        self.parameter["test_loss"], self.parameter["test_acc"] = test(self)
         print("Training finished, loss = {}, acc = {}".format(self.parameter["test_loss"], self.parameter["test_acc"]))

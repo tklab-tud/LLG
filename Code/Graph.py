@@ -160,7 +160,9 @@ class Graph:
             "LLG (non-IID)": '#42d4f4',
             "LLG+ (non-IID)": '#f032e6',
             "iDLG (non-IID)": "#000075",
-            "DLG (non-IID)": "#808000"
+            "DLG (non-IID)": "#808000",
+
+            "model accuracy": "#FF0F0F"
 
         }
         return color[s]
@@ -179,7 +181,9 @@ class Graph:
             "LLG (non-IID)": (0, (3, 1, 1, 1)),
             "LLG+ (non-IID)": '-.',
             "iDLG (non-IID)": (0, (1, 4, 10, 1)),
-            "DLG (non-IID)": (0, (1, 1, 1, 3))
+            "DLG (non-IID)": (0, (1, 1, 1, 3)),
+
+            "model accuracy": "solid"
 
         }
         return style[s]
@@ -199,7 +203,9 @@ class Graph:
             "LLG (non-IID)": 3,
             "LLG+ (non-IID)": 1,
             "iDLG (non-IID)": 9,
-            "DLG (non-IID)": 7
+            "DLG (non-IID)": 7,
+
+            "model accuracy": 100
 
         }
 

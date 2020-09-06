@@ -239,31 +239,36 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
 
 
 # Experiment 2
-def visualize_class_prediction_accuracy_vs_training(run, path):
+def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, dataset=None, version=None, list_bs=None):
     run = run.copy()
 
-    graph = Graph("Train Samples", "Label extraction Accuracy", "Test Acc")
+    if list_bs is None:
+        list_bs = run["meta"]["list_bs"]
+
+    graph = Graph("Batch Size", "Label extraction accuracy", "Model accuracy")
     meta = run["meta"].copy()
     run.__delitem__("meta")
+    data2=[]
 
     # Prediction Acc
     for id, run_name in enumerate(run):
-        i = id % meta["n"]
-        trainstep = id // meta["n"]
-        graph.add_datapoint(meta["version"], run[run_name]["prediction_results"]["accuracy"], trainstep)
+        current_meta = run_name.split("_")
+        if (balanced is None or current_meta[2] == str(balanced)) and (
+                dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
+            label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
+                current_meta[3] == "random" else "?"
+            label += " "
+            label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
-    graph.plot_line(alt_ax=False)
-    graph.data = []
+            graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"], str(current_meta[5]))
+            data2.append(["model accuracy", run[run_name]["parameter"]["test_acc"], str(current_meta[5])])
 
-    # Test Acc
-    for id, run_name in enumerate(run):
-        i = id % meta["n"]
-        trainstep = id // meta["n"]
-        graph.add_datapoint("test_acc", run[run_name]["parameter"]["test_acc"], trainstep)
-
-    graph.plot_line(alt_ax=True)
+    graph.plot_line()
+    graph.data = data2
+    graph.plot_line(True)
 
     graph.show()
+
     graph.save(path, "class_prediction_accuracy_vs_training.pdf")
 
 
