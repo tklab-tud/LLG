@@ -245,7 +245,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
     if list_bs is None:
         list_bs = run["meta"]["list_bs"]
 
-    graph = Graph("Training Process", "Label extraction accuracy", "Model accuracy")
+    graph = Graph("Training Process", "Label extraction accuracy", "Model accuracy (%)")
     meta = run["meta"].copy()
     run.__delitem__("meta")
     data2=[]
@@ -263,9 +263,10 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
             graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"], str(current_meta[5]))
             data2.append(["model accuracy", run[run_name]["parameter"]["test_acc"], str(current_meta[5])])
 
+    graph.data.append(["model accuracy", 0,str(0)])
     graph.plot_line(location="center right", move=(1,0.3))
     graph.data = data2
-    graph.plot_line(True, location="center right", move=(1,0.4))
+    graph.plot_line(True, legend=False)
 
     graph.show()
 
