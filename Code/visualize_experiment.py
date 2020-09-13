@@ -7,7 +7,7 @@ from tkinter.filedialog import askopenfilename, asksaveasfile
 
 
 # Hypothesis 1
-def negativ_value_check(run, path):
+def negativ_value_check(run, path, dataset=None, balanced=None, version="v2"):
     run = run.copy()
 
     gradient_analysis = {
@@ -23,16 +23,27 @@ def negativ_value_check(run, path):
     run.__delitem__("meta")
 
     for setting in run:
-        for label, gradient in enumerate(run[setting]["prediction_results"]["original_gradients"]):
-            sign = "positive" if gradient > 0 else "negative"
-            present = "present" if label in run[setting]["parameter"]["orig_label"] else "nonpresent"
-            gradient_analysis[sign][present] += 1
+        current_meta = setting.split("_")
+        if (balanced is None or current_meta[2] == str(balanced)) and (
+                dataset is None or current_meta[0] == dataset) and (
+                version is None or version == current_meta[3]):
+
+            for label, gradient in enumerate(run[setting]["prediction_results"]["original_gradients"]):
+                sign = "positive" if gradient > 0 else "negative"
+                present = "present" if label in run[setting]["parameter"]["orig_label"] else "nonpresent"
+                gradient_analysis[sign][present] += 1
 
     result = "Negative + present: {}\tNegative + nonpresent: {}\nPositive + present: {}\tPositive + nonpresent: {} ".format(
         gradient_analysis["negative"]["present"], gradient_analysis["negative"]["nonpresent"],
         gradient_analysis["positive"]["present"], gradient_analysis["positive"]["nonpresent"])
 
-    text_file = open(path + "negative_value_check.txt", "w")
+    name = "negative_value_check"
+    if dataset is not None:
+        name+= "_" + dataset
+    if balanced is not None:
+        name+= "_" + str(balanced)
+
+    text_file = open(path + name +".txt", "w")
     text_file.write(result)
     text_file.close()
 
