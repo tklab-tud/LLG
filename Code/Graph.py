@@ -42,7 +42,7 @@ class Graph:
         for dat in self.data:
             plt.bar(str(dat[0]), dat[1], 0.5, color=self.color(str(dat[0])))
 
-    def plot_line(self, alt_ax=False, location="best", move=None, legend=True):
+    def plot_line(self, alt_ax=False, location="best", move=None, legend=True, skip_x_ticks=False):
         if alt_ax:
             plt = self.subplot2
         else:
@@ -68,8 +68,8 @@ class Graph:
                 order.append(self.order(label))
             labels, handles, order = zip(*sorted(zip(labels, handles, order), key=lambda t: t[2]))
             plt.legend(handles, labels, prop={'size': 11}, loc=location, bbox_to_anchor=move)
-
-        plt.set_xticks(range(0, len(self.data), max(1, len(self.data) // 10)))
+        if skip_x_ticks:
+            plt.set_xticks(range(0, len(self.data), max(1, len(self.data) // 10)))
 
     def plot_scatter(self):
         plt = self.subplot
@@ -106,7 +106,7 @@ class Graph:
 
         heat = np.transpose(heat)
 
-        plt.imshow(heat, cmap='Greens', interpolation='spline16', extent=[0, x_max, y_min, y_max], aspect=0.05)
+        plt.imshow(heat, cmap='hot', interpolation='spline16', extent=[0, x_max, y_min, y_max], aspect=0.05)
 
     def take_average(self):
         # Repaces data with the averages for every label,y combination
@@ -140,12 +140,12 @@ class Graph:
     def save(self, path, name):
         if not os.path.exists(path):
             os.makedirs(path)
-        self.fig.savefig(path + name)
+        self.fig.savefig(path + name, dpi=600)
 
     def save_f(self, f):
         if f is None:
             return
-        self.fig.savefig(f.name)
+        self.fig.savefig(f.name, dpi=600)
 
     def color(self, s):
         color = {

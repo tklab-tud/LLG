@@ -97,7 +97,9 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
         name = "Magnitude_BS_{}_{}_".format(filesuffix[id], gradienttype)
         if balanced is not None:
             name += "balanced" if balanced else "unbalanced"
-        name += ".pdf"
+        if dataset is not None:
+            name += dataset
+        name += ".png"
         graph.save(path, name)
         graph.show()
         graph.fig.clf()
@@ -140,7 +142,7 @@ def heatmap(run, path, adjusted=True, balanced=None, dataset=None, version=None,
         name += "balanced" if balanced else "unbalanced"
     if adjusted is not None:
         name += "adjusted" if adjusted else "original"
-    name += ".pdf"
+    name += ".png"
     graph.save(path, name)
     graph.fig.clf()
 
@@ -214,7 +216,7 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
 
     graph.show()
 
-    graph.save(path, "class_prediction_accuracy_vs_batchsize.pdf")
+    graph.save(path, "class_prediction_accuracy_vs_batchsize.png")
 
 
 # Experiment 1.2
@@ -244,13 +246,13 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
 
     graph.plot_line()
     graph.show()
-    graph.save(path, "flawles_class_prediction_accuracy_vs_batchsize.pdf")
+    graph.save(path, "flawles_class_prediction_accuracy_vs_batchsize.png")
 
     return graph
 
 
 # Experiment 2
-def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, dataset=None, version=None, list_bs=None):
+def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, dataset=None, version=None, list_bs=None, train_step_stop=None):
     run = run.copy()
 
     if list_bs is None:
@@ -265,7 +267,9 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
     for id, run_name in enumerate(run):
         current_meta = run_name.split("_")
         if (balanced is None or current_meta[2] == str(balanced)) and (
-                dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
+                dataset is None or current_meta[0] == dataset) and (
+                version is None or version == current_meta[3]) and (
+                train_step_stop is None or train_step_stop >= int(current_meta[5])):
             label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
                 current_meta[3] == "random" else "?"
             label += " "
@@ -275,13 +279,13 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
             data2.append(["model accuracy", run[run_name]["parameter"]["test_acc"], str(current_meta[5])])
 
     graph.data.append(["model accuracy", 0,str(0)])
-    graph.plot_line(location="center right", move=(1,0.3))
+    graph.plot_line(location="center right", move=(1,0.4), skip_x_ticks=True)
     graph.data = data2
-    graph.plot_line(True, legend=False)
+    graph.plot_line(True, legend=False, skip_x_ticks=True)
 
     graph.show()
 
-    graph.save(path, "class_prediction_accuracy_vs_training.pdf")
+    graph.save(path, "class_prediction_accuracy_vs_training.png")
 
 
 # Experiment 3: Good Fidelity
@@ -328,7 +332,7 @@ def visualize_good_fidelity(run, path, fidelitysteps, bs, balanced):
 
     graph.plot_line()
     graph.show()
-    graph.save(path, "good_fidelity.pdf")
+    graph.save(path, "good_fidelity.png")
 
 
 def load_json():
