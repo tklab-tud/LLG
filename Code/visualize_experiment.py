@@ -1,3 +1,4 @@
+import math
 from collections import OrderedDict
 
 from Setting import *
@@ -219,6 +220,50 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
     graph.save(path, "class_prediction_accuracy_vs_batchsize.png")
 
 
+
+def visualize_hellinger_vs_batchsize(run, path, balanced=None, dataset=None, version=None):
+    run = run.copy()
+
+    graph = Graph("Batch Size", "Hellinger distance")
+    meta = run["meta"].copy()
+    run.__delitem__("meta")
+
+    # Prediction Acc
+    for id, run_name in enumerate(run):
+        current_meta = run_name.split("_")
+        if (balanced is None or current_meta[2] == str(balanced)) and (
+                dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
+            label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
+                current_meta[3] == "random" else "?"
+            label += " "
+            label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
+
+            # calculate hellinger distance between extraction and ground truth
+            list_of_squares = []
+            p = probability_distribution(run[run_name]["prediction_results"]["prediction"], run[run_name]["parameter"]["num_classes"])
+            g = probability_distribution(run[run_name]["parameter"]["orig_label"], run[run_name]["parameter"]["num_classes"])
+            for p_i, g_i in zip(p, g):
+                # caluclate the square of the difference of ith distr elements
+                s = (math.sqrt(p_i) - math.sqrt(g_i)) ** 2
+
+                # append
+                list_of_squares.append(s)
+
+            # calculate sum of squares
+            sosq = sum(list_of_squares)
+
+            hellinger = sosq / math.sqrt(2)
+
+            graph.add_datapoint(label, hellinger, str(current_meta[1]))
+
+    graph.plot_line()
+
+    graph.show()
+
+    graph.save(path, "hellinger_vs_batchsize.png")
+
+
+
 # Experiment 1.2
 def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None):
     run = run.copy()
@@ -346,3 +391,14 @@ def load_json():
     path = os.path.split(f.name)[0]
 
     return dump, path + "/"
+
+def probability_distribution(v, n):
+    distribution = np.zeros(n)
+    for x in v:
+        distribution[x] += 1
+
+    distribution = np.divide(distribution, sum(distribution))
+
+    return distribution
+
+

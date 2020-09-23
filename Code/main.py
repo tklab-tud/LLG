@@ -13,32 +13,36 @@ def main():
                list_bs=[8],
                list_balanced=[True],
                list_versions=["v1", "v2", "random"],
-               n=100,
+               n=1,
                extent="predict",
                trainsize=100,
-               trainsteps=100,
+               trainsteps=0,
                path=None,
                reconstruction_steps=100
                )
     """
     run, path = load_json()
+
     #negativ_value_check(run, path, dataset="MNIST", balanced=True)
     #negativ_value_check(run, path, dataset="MNIST", balanced=False)
     #negativ_value_check(run, path, dataset="CIFAR", balanced=True)
     #negativ_value_check(run, path, dataset="CIFAR", balanced=False)
     #pearson_check(run, path, version="v2")
 
-    
+    """
     for adjusted in [True, False]:
         for balanced in [True, False]:
             for dataset in ["MNIST", "CIFAR"]:
                 magnitude_check(run, path, adjusted=adjusted, balanced=balanced, version="v2", dataset=dataset, list_bs=[2, 8, 32, 128])
-
+    """
 
 
     #heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
 
+    visualize_hellinger_vs_batchsize(run, path)
     #visualize_class_prediction_accuracy_vs_batchsize(run, path )
+
+
     #visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path)
 
 
