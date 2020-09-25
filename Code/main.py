@@ -39,11 +39,15 @@ def main():
 
     #heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
 
-    visualize_hellinger_vs_batchsize(run, path)
-    #visualize_class_prediction_accuracy_vs_batchsize(run, path )
+    #visualize_hellinger_vs_batchsize(run, path)
 
 
-    #visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path)
+
+    for dataset in ["MNIST", "CIFAR"]:
+        visualize_class_prediction_accuracy_vs_batchsize(run, path , dataset=dataset)
+        visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset)
+
+
 
 
     # visualize_class_prediction_accuracy_vs_training(run, path, train_step_stop=100)

@@ -217,7 +217,14 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
 
     graph.show()
 
-    graph.save(path, "class_prediction_accuracy_vs_batchsize.png")
+    name = "class_prediction_accuracy_vs_batchsize_"
+    if balanced is not None:
+        name += "_balanced" if balanced else "_unbalanced"
+    if dataset is not None:
+        name += "_"+dataset
+    name += ".png"
+
+    graph.save(path, name)
 
 
 
@@ -291,7 +298,16 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
 
     graph.plot_line()
     graph.show()
-    graph.save(path, "flawles_class_prediction_accuracy_vs_batchsize.png")
+
+    name = "flawless_class_prediction_accuracy_vs_batchsize"
+    if balanced is not None:
+        name += "_balanced" if balanced else "_unbalanced"
+    if dataset is not None:
+        name += "_" + dataset
+    name += ".png"
+
+    graph.save(path, name)
+
 
     return graph
 
