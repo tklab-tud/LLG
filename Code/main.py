@@ -23,6 +23,8 @@ def main():
     """
     run, path = load_json()
 
+    visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="CIFAR", version="v2")
+
     #negativ_value_check(run, path, dataset="MNIST", balanced=True)
     #negativ_value_check(run, path, dataset="MNIST", balanced=False)
     #negativ_value_check(run, path, dataset="CIFAR", balanced=True)
@@ -42,11 +44,11 @@ def main():
     #visualize_hellinger_vs_batchsize(run, path)
 
 
-
+    """  
     for dataset in ["MNIST", "CIFAR"]:
         visualize_class_prediction_accuracy_vs_batchsize(run, path , dataset=dataset)
         visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset)
-
+    """
 
 
 

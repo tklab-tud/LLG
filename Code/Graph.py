@@ -56,6 +56,7 @@ class Graph:
             color = self.color(label)
             style = self.style(label)
 
+            print("Min y: {} for label {}".format(str(min(l_y)), label))
             plt.plot(l_x, l_y, label=label, linestyle=style, color=color)
 
 

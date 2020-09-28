@@ -396,6 +396,8 @@ def visualize_good_fidelity(run, path, fidelitysteps, bs, balanced):
     graph.save(path, "good_fidelity.png")
 
 
+
+
 def load_json():
     Tk().withdraw()
     filename = askopenfilename(initialdir="./results", defaultextension='.json',
