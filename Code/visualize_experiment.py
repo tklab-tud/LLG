@@ -51,7 +51,7 @@ def negativ_value_check(run, path, dataset=None, balanced=None, version="v2"):
     # Hypothesis 2
 
 
-def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, version=None, list_bs=None):
+def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, version=None, list_bs=None, trainstep=None):
     if adjusted and run["meta"] == "victim_side":
         print("Adjustment can only be made for a run with extent of prediction/full")
         return
@@ -78,6 +78,7 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
         current_meta = setting.split("_")
         if (balanced is None or current_meta[2] == str(balanced)) and (
                 dataset is None or current_meta[0] == dataset) and (
+                trainstep is None or current_meta[5] == str(trainstep)) and (
                 version is None or version == current_meta[3]):
             for label, gradient in enumerate(run[setting]["prediction_results"][gradienttype]):
                 g = graphs[meta["list_bs"].index(bs)]
