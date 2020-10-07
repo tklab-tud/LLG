@@ -106,6 +106,7 @@ class Graph:
             heat[x][heat_y] = min(heat[x][heat_y] + 1, 1000)
 
         heat = np.transpose(heat)
+        self.subplot.set_xticks(range(x_min, x_max, 1))
 
         plt.imshow(heat, cmap='hot', interpolation='spline16', extent=[0, x_max, y_min, y_max], aspect=0.05)
 
