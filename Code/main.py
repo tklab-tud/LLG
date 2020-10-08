@@ -6,22 +6,22 @@ from Dataloader import Dataloader
 def main():
     ############## Build your attack here ######################
     ### Identifying value analysis ###
-    """
+    #"""
     dataloader = Dataloader()
     experiment(dataloader=dataloader,
-               list_datasets=["MNIST"],
+               list_datasets=["CIFAR"],
                list_bs=[8],
                list_balanced=[True],
                list_versions=["v1", "v2", "random"],
-               n=1,
+               n=100,
                extent="predict",
                trainsize=100,
-               trainsteps=0,
+               trainsteps=100,
                path=None,
                reconstruction_steps=100
                )
-    """
-    run, path = load_json()
+    #"""
+    #run, path = load_json()
 
     #visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="CIFAR", version="v2")
 
@@ -39,7 +39,7 @@ def main():
     """
 
 
-    heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
+    #heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
 
     #visualize_hellinger_vs_batchsize(run, path)
 
