@@ -6,7 +6,7 @@ from Dataloader import Dataloader
 def main():
     ############## Build your attack here ######################
     ### Identifying value analysis ###
-    #"""
+    """
     dataloader = Dataloader()
     experiment(dataloader=dataloader,
                list_datasets=["CIFAR"],
@@ -20,10 +20,10 @@ def main():
                path=None,
                reconstruction_steps=100
                )
-    #"""
-    #run, path = load_json()
+    """
+    run, path = load_json()
 
-    #visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="CIFAR", version="v2")
+    #visualize_class_prediction_accuracy_vs_batchsize(run, path)
 
     #negativ_value_check(run, path, dataset="MNIST", balanced=True)
     #negativ_value_check(run, path, dataset="MNIST", balanced=False)
@@ -52,7 +52,7 @@ def main():
 
 
 
-    # visualize_class_prediction_accuracy_vs_training(run, path, train_step_stop=100)
+    visualize_class_prediction_accuracy_vs_training(run, path, train_step_stop=100)
 
     #visualize_good_fidelity(run, path, [0.1, 0.05, 0.01, 0.005, 0.001], 4, True)
 
