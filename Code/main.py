@@ -52,7 +52,7 @@ def main():
 
 
 
-    visualize_class_prediction_accuracy_vs_training(run, path, train_step_stop=100)
+    visualize_class_prediction_accuracy_vs_training(run, path, train_step_stop=1000)
 
     #visualize_good_fidelity(run, path, [0.1, 0.05, 0.01, 0.005, 0.001], 4, True)
 
