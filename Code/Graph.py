@@ -1,5 +1,5 @@
 import os
-
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats
@@ -107,8 +107,11 @@ class Graph:
 
         heat = np.transpose(heat)
         self.subplot.set_xticks(range(x_min, x_max, 1))
-
         plt.imshow(heat, cmap='hot', interpolation='spline16', extent=[0, x_max, y_min, y_max], aspect=0.05)
+
+        norm = matplotlib.colors.Normalize(vmin=np.min(heat), vmax=np.max(heat), clip=False)
+        cbar = self.subplot.figure.colorbar(plt.cm.ScalarMappable(norm=norm, cmap='hot'))
+        cbar.ax.set_ylabel("Amount of Identifying Values", rotation=-90, va="bottom")
 
     def take_average(self):
         # Repaces data with the averages for every label,y combination

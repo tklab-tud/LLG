@@ -39,7 +39,7 @@ def main():
     """
 
 
-    #heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
+    heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
 
     #visualize_hellinger_vs_batchsize(run, path)
 
@@ -52,7 +52,7 @@ def main():
 
 
 
-    visualize_class_prediction_accuracy_vs_training(run, path, train_step_stop=1000)
+    #visualize_class_prediction_accuracy_vs_training(run, path, train_step_stop=1000)
 
     #visualize_good_fidelity(run, path, [0.1, 0.05, 0.01, 0.005, 0.001], 4, True)
 
