@@ -5,7 +5,6 @@ from Dataloader import Dataloader
 
 def main():
     ############## Build your attack here ######################
-    ### Identifying value analysis ###
     """
     dataloader = Dataloader()
     experiment(dataloader=dataloader,
@@ -21,7 +20,15 @@ def main():
                reconstruction_steps=100
                )
     """
+
+    ########### Load an existing json an create graphs from it ##########
+
     run, path = load_json()
+
+
+
+
+    ### Some examples below ###
 
     #visualize_class_prediction_accuracy_vs_batchsize(run, path)
 
@@ -39,7 +46,7 @@ def main():
     """
 
 
-    heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
+    #heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
 
     #visualize_hellinger_vs_batchsize(run, path)
 
@@ -49,8 +56,6 @@ def main():
         visualize_class_prediction_accuracy_vs_batchsize(run, path , dataset=dataset)
         visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset)
     """
-
-
 
     #visualize_class_prediction_accuracy_vs_training(run, path, train_step_stop=1000)
 
