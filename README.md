@@ -19,6 +19,13 @@ experiment(dataloader=dataloader,
                reconstruction_steps=100
                )
 
+Running on a cluster you might want to comment out :
+
+from visualize_experiment import *
+
+In order to load jsons it uses a file chooser which only works in a desktop environment. 		   
+			   
+			   
 After that the resulting json can be loaded with
 			   
 run, path = load_json()
