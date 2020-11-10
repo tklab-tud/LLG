@@ -5,8 +5,8 @@ This framework implements the LLG attack.
 From main.py you can start an attack like this:
 
 
-dataloader = Dataloader()
-experiment(dataloader=dataloader,
+    dataloader = Dataloader()
+    experiment(dataloader=dataloader,
                list_datasets=["CIFAR", "MNIST"],
                list_bs=[8, 32],
                list_balanced=[True, False],
@@ -21,9 +21,10 @@ experiment(dataloader=dataloader,
 
 Running on a cluster you might want to comment out :
 
-from visualize_experiment import *
+    from visualize_experiment import *
 
-In order to load jsons it uses a file chooser which only works in a desktop environment. 		   
+In order to load jsons it uses a file chooser (from tk_inter) which only works in a desktop environment. 	
+	   
 			   
 			   
 After that the resulting json can be loaded with
