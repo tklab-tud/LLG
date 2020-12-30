@@ -26,6 +26,9 @@ class Dataloader():
         elif dataset == 'CIFAR-grey':
             self.train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt_grey)
             self.num_classes = 100
+        elif dataset == 'CELEB-A':
+            self.train_dataset = datasets.CelebA('./datasets', 'all', 'identity', download=True, transform=tt)
+            self.num_classes = 100
         else:
             print("Unsupported dataset '" + dataset + "'")
             exit()

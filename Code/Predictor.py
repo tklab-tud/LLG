@@ -143,16 +143,20 @@ class Predictor:
             for i in range(parameter["num_classes"]):
                 tmp_setting.configure(targets=[i] * parameter["batch_size"])
                 tmp_setting.dlg.victim_side()
-                tmp_gradients.append(torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy())
+                tmp_gradients = torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy()
                 impact += torch.sum(tmp_setting.dlg.gradient[-2], dim=-1)[i].item()
+                for j in range(parameter["num_classes"]):
+                    if j == i:
+                        continue
+                    else:
+                        acc_offset[j] +=tmp_gradients[j]
 
-            acc_offset += np.mean(tmp_gradients, 0)
             impact /= (parameter["num_classes"] * parameter["batch_size"])
             acc_impact += impact
 
         self.impact = (acc_impact / n) * (1 + 1/parameter["num_classes"])
 
-        acc_offset = np.divide(acc_offset, n)
+        acc_offset = np.divide(acc_offset, n*(parameter["num_classes"]-1))
         self.offset = torch.Tensor(acc_offset).to(self.setting.device)
 
         self.gradients_for_prediction -= self.offset
