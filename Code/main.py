@@ -13,12 +13,12 @@ def main():
 
         dataloader = Dataloader()
         experiment(dataloader=dataloader,
-                   list_datasets=["MNIST"],
-                   list_bs=[8],
+                   list_datasets=["MNIST", "CIFAR", "CELEB-A"],
+                   list_bs=[1,2,4,8,16,32,64,128,256],
                    list_balanced=[True],
-                   list_versions=["random"],
+                   list_versions=["v1"],
                    n=10,
-                   extent="victim_side",
+                   extent="predict",
                    trainsize=0,
                    trainsteps=0,
                    path=None,
@@ -43,11 +43,11 @@ def main():
         #negativ_value_check(run, path, dataset="CIFAR", balanced=False)
         #pearson_check(run, path, version="v2")
 
-
-
-        for adjusted in [True, False]:
-            magnitude_check(run, path, adjusted=adjusted, balanced=True)
-
+        """
+        for dataset in ["MNIST", "CIFAR", "CELEB-A"]:
+            for adjusted in [True, False]:
+                magnitude_check(run, path, adjusted=adjusted, balanced=True, dataset=dataset)
+        """
 
 
         #heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
@@ -55,11 +55,11 @@ def main():
         #visualize_hellinger_vs_batchsize(run, path)
 
 
-        """  
-        for dataset in ["MNIST", "CIFAR"]:
+        #"""
+        for dataset in ["MNIST", "CIFAR", "CELEB-A"]:
             visualize_class_prediction_accuracy_vs_batchsize(run, path , dataset=dataset)
             visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset)
-        """
+        #"""
 
         #visualize_class_prediction_accuracy_vs_training(run, path, train_step_stop=1000)
 

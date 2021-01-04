@@ -37,11 +37,16 @@ class Dataloader():
         self.currently_loaded = dataset
 
         # indexing
-        self.samples = [[] for _ in range(max(self.train_dataset.targets).item()+1)]
+        if dataset == "CIFAR" or dataset == "CIFAR-grey":
+            self.samples = [[] for _ in range(max(self.train_dataset.targets) + 1)]
+        else:
+            self.samples = [[] for _ in range(max(self.train_dataset.targets).item()+1)]
 
         for i, sample in enumerate(self.train_dataset.targets):
-            self.samples[sample.item()-1].append(i)
-
+            if dataset == "CIFAR" or dataset == "CIFAR-grey":
+                self.samples[sample-1].append(i)
+            else:
+                self.samples[sample.item() - 1].append(i)
 
         print("Finished loading dataset")
 
