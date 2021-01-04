@@ -29,6 +29,7 @@ class Dataloader():
         elif dataset == 'CELEB-A':
             self.train_dataset = datasets.CelebA('./datasets', 'all', 'identity', download=True, transform=tt)
             self.num_classes = 100
+            self.train_dataset.targets = self.train_dataset.identity
         else:
             print("Unsupported dataset '" + dataset + "'")
             exit()
@@ -36,10 +37,11 @@ class Dataloader():
         self.currently_loaded = dataset
 
         # indexing
-        self.samples = [[] for _ in range(len(self.train_dataset.targets))]
+        self.samples = [[] for _ in range(max(self.train_dataset.targets).item()+1)]
 
-        for sample in self.train_dataset:
-            self.samples[sample[1]].append(list(sample))
+        for i, sample in enumerate(self.train_dataset.targets):
+            self.samples[sample.item()-1].append(i)
+
 
         print("Finished loading dataset")
 
@@ -62,9 +64,9 @@ class Dataloader():
         # fill data and labels
         for i_target, target in enumerate(targets):
             rnd = np.random.randint(len(self.samples[target]))
-            data[i_target] = self.samples[target][rnd][0].float().unsqueeze(0)
+            data[i_target] = self.train_dataset[self.samples[target][rnd]][0].float().unsqueeze(0)
             data[i_target] = data[i_target].view(1, *data[i_target].size())
-            labels[i_target] = torch.Tensor([self.samples[target][rnd][1]]).long()
+            labels[i_target] = torch.Tensor([target]).long()
             labels[i_target] = labels[i_target].view(1, )
 
         return data, labels

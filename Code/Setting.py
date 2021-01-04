@@ -70,7 +70,7 @@ class Setting:
                     self.parameter["shape_img"] = (218, 178)
                     self.parameter["num_classes"] = 10177
                     self.parameter["channel"] = 3
-                    self.parameter["hidden"] = 768
+                    self.parameter["hidden"] = 29700
                 else:
                     print("Unsupported dataset '" + value + "'")
                     exit()

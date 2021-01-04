@@ -16,9 +16,9 @@ def main():
                    list_datasets=["MNIST"],
                    list_bs=[8],
                    list_balanced=[True],
-                   list_versions=["v2"],
+                   list_versions=["random"],
                    n=10,
-                   extent="predict",
+                   extent="victim_side",
                    trainsize=0,
                    trainsteps=0,
                    path=None,
@@ -46,7 +46,7 @@ def main():
 
 
         for adjusted in [True, False]:
-            magnitude_check(run, path, adjusted=adjusted, balanced=True, dataset="MNIST")
+            magnitude_check(run, path, adjusted=adjusted, balanced=True)
 
 
 
