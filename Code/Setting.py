@@ -71,6 +71,11 @@ class Setting:
                     self.parameter["num_classes"] = 10177
                     self.parameter["channel"] = 3
                     self.parameter["hidden"] = 29700
+                elif value == 'CELEB-A-male':
+                    self.parameter["shape_img"] = (218, 178)
+                    self.parameter["num_classes"] = 2
+                    self.parameter["channel"] = 3
+                    self.parameter["hidden"] = 29700
                 else:
                     print("Unsupported dataset '" + value + "'")
                     exit()

@@ -103,7 +103,7 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
             name += dataset
         name += ".png"
         graph.save(path, name)
-        graph.show()
+        #graph.show()
         graph.fig.clf()
 
 
@@ -138,7 +138,7 @@ def heatmap(run, path, adjusted=True, balanced=None, dataset=None, version=None,
     print("Creating graph")
     graph.sort()
     graph.plot_heatmap()
-    graph.show()
+    #graph.show()
     name = "Heatmap_"
     if balanced is not None:
         name += "balanced" if balanced else "unbalanced"
@@ -216,7 +216,7 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
 
     graph.plot_line()
 
-    graph.show()
+    #graph.show()
 
     name = "class_prediction_accuracy_vs_batchsize_"
     if balanced is not None:
@@ -266,7 +266,7 @@ def visualize_hellinger_vs_batchsize(run, path, balanced=None, dataset=None, ver
 
     graph.plot_line()
 
-    graph.show()
+    #graph.show()
 
     graph.save(path, "hellinger_vs_batchsize.png")
 
@@ -298,7 +298,7 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
                 graph.add_datapoint(label, 0, current_meta[1])
 
     graph.plot_line()
-    graph.show()
+    #graph.show()
 
     name = "flawless_class_prediction_accuracy_vs_batchsize"
     if balanced is not None:
@@ -345,7 +345,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
     graph.data = data2
     graph.plot_line(True, legend=False, skip_x_ticks=True)
 
-    graph.show()
+    #graph.show()
 
     graph.save(path, "class_prediction_accuracy_vs_training.png")
 
@@ -393,7 +393,7 @@ def visualize_good_fidelity(run, path, fidelitysteps, bs, balanced):
             graph.add_datapoint(label, y, x)
 
     graph.plot_line()
-    graph.show()
+    #graph.show()
     graph.save(path, "good_fidelity.png")
 
 

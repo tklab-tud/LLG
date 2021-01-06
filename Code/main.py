@@ -13,11 +13,11 @@ def main():
 
         dataloader = Dataloader()
         experiment(dataloader=dataloader,
-                   list_datasets=["MNIST", "CIFAR", "CELEB-A"],
+                   list_datasets=["CELEB-A-male"],
                    list_bs=[1,2,4,8,16,32,64,128,256],
                    list_balanced=[True],
-                   list_versions=["v1"],
-                   n=10,
+                   list_versions=["v2"],
+                   n=1,
                    extent="predict",
                    trainsize=0,
                    trainsteps=0,
@@ -44,11 +44,11 @@ def main():
         #pearson_check(run, path, version="v2")
 
         """
-        for dataset in ["MNIST", "CIFAR", "CELEB-A"]:
+        for dataset in ["MNIST", "CIFAR", "CELEB-A-male"]:
             for adjusted in [True, False]:
                 magnitude_check(run, path, adjusted=adjusted, balanced=True, dataset=dataset)
         """
-
+        magnitude_check(run, path)
 
         #heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
 
@@ -56,7 +56,7 @@ def main():
 
 
         #"""
-        for dataset in ["MNIST", "CIFAR", "CELEB-A"]:
+        for dataset in ["CELEB-A-male"]:
             visualize_class_prediction_accuracy_vs_batchsize(run, path , dataset=dataset)
             visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset)
         #"""

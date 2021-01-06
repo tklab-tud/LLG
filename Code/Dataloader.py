@@ -30,13 +30,19 @@ class Dataloader():
             self.train_dataset = datasets.CelebA('./datasets', 'all', 'identity', download=True, transform=tt)
             self.num_classes = 100
             self.train_dataset.targets = self.train_dataset.identity
+        elif dataset == 'CELEB-A-male':
+            self.train_dataset = datasets.CelebA('./datasets', 'all', 'attr', download=True, transform=tt)
+            self.num_classes = 2
+            #filtering male from attributes and set it as target
+            length = len(self.train_dataset.attr)
+            self.train_dataset.targets = torch.gather(self.train_dataset.attr, 1, torch.Tensor(length*[20]).long().view(-1, 1))
         else:
             print("Unsupported dataset '" + dataset + "'")
             exit()
 
         self.currently_loaded = dataset
 
-        # indexing
+        # indexing with fix for CIFAR
         if dataset == "CIFAR" or dataset == "CIFAR-grey":
             self.samples = [[] for _ in range(max(self.train_dataset.targets) + 1)]
         else:
