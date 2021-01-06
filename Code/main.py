@@ -15,7 +15,7 @@ def main():
         experiment(dataloader=dataloader,
                    list_datasets=["CELEB-A-male"],
                    list_bs=[1,2,4,8,16,32,64,128,256],
-                   list_balanced=[True],
+                   list_balanced=[False],
                    list_versions=["v2"],
                    n=1,
                    extent="predict",
@@ -48,7 +48,9 @@ def main():
             for adjusted in [True, False]:
                 magnitude_check(run, path, adjusted=adjusted, balanced=True, dataset=dataset)
         """
-        magnitude_check(run, path)
+
+        for adjusted in [True, False]:
+            magnitude_check(run, path, adjusted=adjusted)
 
         #heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
 
@@ -57,7 +59,7 @@ def main():
 
         #"""
         for dataset in ["CELEB-A-male"]:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path , dataset=dataset)
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset)
             visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset)
         #"""
 

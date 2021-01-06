@@ -36,6 +36,10 @@ class Dataloader():
             #filtering male from attributes and set it as target
             length = len(self.train_dataset.attr)
             self.train_dataset.targets = torch.gather(self.train_dataset.attr, 1, torch.Tensor(length*[20]).long().view(-1, 1))
+        elif dataset == 'SVHN':
+            self.train_dataset = datasets.SVHN('./datasets', 'train', download=True, transform=tt)
+            self.num_classes = 10
+            self.train_dataset.targets = self.train_dataset.labels.tolist()
         else:
             print("Unsupported dataset '" + dataset + "'")
             exit()
@@ -43,13 +47,13 @@ class Dataloader():
         self.currently_loaded = dataset
 
         # indexing with fix for CIFAR
-        if dataset == "CIFAR" or dataset == "CIFAR-grey":
+        if dataset == "CIFAR" or dataset == "CIFAR-grey" or dataset == "SVHN":
             self.samples = [[] for _ in range(max(self.train_dataset.targets) + 1)]
         else:
             self.samples = [[] for _ in range(max(self.train_dataset.targets).item()+1)]
 
         for i, sample in enumerate(self.train_dataset.targets):
-            if dataset == "CIFAR" or dataset == "CIFAR-grey":
+            if dataset == "CIFAR" or dataset == "CIFAR-grey" or dataset == "SVHN":
                 self.samples[sample-1].append(i)
             else:
                 self.samples[sample.item() - 1].append(i)

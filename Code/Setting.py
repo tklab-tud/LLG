@@ -76,6 +76,11 @@ class Setting:
                     self.parameter["num_classes"] = 2
                     self.parameter["channel"] = 3
                     self.parameter["hidden"] = 29700
+                elif value == 'SVHN':
+                    self.parameter["shape_img"] = (32, 32)
+                    self.parameter["num_classes"] = 10
+                    self.parameter["channel"] = 3
+                    self.parameter["hidden"] = 12*8*8
                 else:
                     print("Unsupported dataset '" + value + "'")
                     exit()
