@@ -12,6 +12,8 @@ class Dataloader():
         self.num_classes = None
 
     def load_dataset(self, dataset):
+        if dataset=="DUMMY": return
+
         print("Loading dataset " + dataset + ". This may take some seconds.")
 
         tt = torchvision.transforms.ToTensor()
@@ -83,5 +85,9 @@ class Dataloader():
             data[i_target] = data[i_target].view(1, *data[i_target].size())
             labels[i_target] = torch.Tensor([target]).long()
             labels[i_target] = labels[i_target].view(1, )
+
+        # dummys
+        if dataset=="DUMMY":
+            data.zero_()
 
         return data, labels

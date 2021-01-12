@@ -81,6 +81,8 @@ class Setting:
                     self.parameter["num_classes"] = 10
                     self.parameter["channel"] = 3
                     self.parameter["hidden"] = 12*8*8
+                elif value == 'DUMMY':
+                    continue
                 else:
                     print("Unsupported dataset '" + value + "'")
                     exit()
@@ -123,6 +125,7 @@ class Setting:
             "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
             "run_name": "",
             "set_size": None,
+            "dummy" : False,
 
             # Attack settings
             "dlg_lr": 1,

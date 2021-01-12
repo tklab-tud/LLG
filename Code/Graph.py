@@ -171,7 +171,8 @@ class Graph:
             "model accuracy": "#FF0F0F"
 
         }
-        return color[s]
+
+        return color[s] if color.__contains__(s) else "#000000"
 
     def style(self, s):
         style = {
@@ -192,7 +193,7 @@ class Graph:
             "model accuracy": "solid"
 
         }
-        return style[s]
+        return style[s] if style.__contains__(s) else "solid"
 
     def order(self, s):
         order = {
@@ -215,4 +216,4 @@ class Graph:
 
         }
 
-        return order[s]
+        return order[s] if order.__contains__(s) else np.random.randint(101, 100000)

@@ -101,6 +101,8 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
             name += "balanced" if balanced else "unbalanced"
         if dataset is not None:
             name += dataset
+        if version is not None:
+            name += version
         name += ".png"
         graph.save(path, name)
         #graph.show()
