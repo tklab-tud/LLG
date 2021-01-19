@@ -33,7 +33,7 @@ class Predictor:
             self.v1_prediction()
         elif parameter["version"] == "v2":
             self.v2_prediction()
-        elif parameter["version"] == "v3":
+        elif parameter["version"] in ["v3-zero", "v3-one", "v3-random"]:
             self.v3_prediction()
         else:
             exit("Unknown prediction strategy {}".format(parameter["version"]))
@@ -203,7 +203,16 @@ class Predictor:
             tmp_gradients = []
 
             for i in range(parameter["num_classes"]):
-                tmp_setting.configure(targets=[i] * parameter["batch_size"], dataset="DUMMY")
+                if parameter["version"] == "v3-zero":
+                    tmp_setting.configure(targets=[i] * parameter["batch_size"], dataset="DUMMY-ZERO")
+                elif parameter["version"] == "v3-one":
+                    tmp_setting.configure(targets=[i] * parameter["batch_size"], dataset="DUMMY-ONE")
+                elif parameter["version"] == "v3-random":
+                    tmp_setting.configure(targets=[i] * parameter["batch_size"], dataset="DUMMY-RANDOM")
+                else:
+                    exit("v3 called with wrong version")
+
+
                 tmp_setting.dlg.victim_side()
                 tmp_gradients = torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy()
                 impact += torch.sum(tmp_setting.dlg.gradient[-2], dim=-1)[i].item()

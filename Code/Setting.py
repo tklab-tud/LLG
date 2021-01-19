@@ -81,7 +81,7 @@ class Setting:
                     self.parameter["num_classes"] = 10
                     self.parameter["channel"] = 3
                     self.parameter["hidden"] = 12*8*8
-                elif value == 'DUMMY':
+                elif value in ['DUMMY-ONE', 'DUMMY-ZERO', 'DUMMY-RANDOM']:
                     continue
                 else:
                     print("Unsupported dataset '" + value + "'")

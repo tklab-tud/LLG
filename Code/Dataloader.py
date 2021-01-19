@@ -12,7 +12,7 @@ class Dataloader():
         self.num_classes = None
 
     def load_dataset(self, dataset):
-        if dataset=="DUMMY": return
+        if dataset in ["DUMMY-ONE", "DUMMY-ZERO", "DUMMY-RANDOM"]: return
 
         print("Loading dataset " + dataset + ". This may take some seconds.")
 
@@ -78,6 +78,9 @@ class Dataloader():
                             self.train_dataset[0][0].shape[2])
         labels = torch.Tensor(bs).long()
 
+
+
+
         # fill data and labels
         for i_target, target in enumerate(targets):
             rnd = np.random.randint(len(self.samples[target]))
@@ -87,7 +90,12 @@ class Dataloader():
             labels[i_target] = labels[i_target].view(1, )
 
         # dummys
-        if dataset=="DUMMY":
-            data.zero_()
+        if dataset=="DUMMY-ONE":
+            data = data.zero_()
+        elif dataset=="DUMMY-ZERO":
+            data = data.random_()
+        elif dataset=="DUMMY-RANDOM":
+            data = torch.ones(data.size())
+
 
         return data, labels

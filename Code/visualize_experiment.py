@@ -40,11 +40,11 @@ def negativ_value_check(run, path, dataset=None, balanced=None, version="v2"):
 
     name = "negative_value_check"
     if dataset is not None:
-        name+= "_" + dataset
+        name += "_" + dataset
     if balanced is not None:
-        name+= "_" + str(balanced)
+        name += "_" + str(balanced)
 
-    text_file = open(path + name +".txt", "w")
+    text_file = open(path + name + ".txt", "w")
     text_file.write(result)
     text_file.close()
 
@@ -105,7 +105,7 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
             name += version
         name += ".png"
         graph.save(path, name)
-        #graph.show()
+        # graph.show()
         graph.fig.clf()
 
 
@@ -140,7 +140,7 @@ def heatmap(run, path, adjusted=True, balanced=None, dataset=None, version=None,
     print("Creating graph")
     graph.sort()
     graph.plot_heatmap()
-    #graph.show()
+    # graph.show()
     name = "Heatmap_"
     if balanced is not None:
         name += "balanced" if balanced else "unbalanced"
@@ -162,8 +162,8 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
 
     graph = Graph("Occurrences", "Gradient value")
     result_string = ""
-    result_list_original=[]
-    result_list_adjusted=[]
+    result_list_original = []
+    result_list_adjusted = []
 
     for i, setting in enumerate(run):
         bs = run[setting]["parameter"]["batch_size"]
@@ -210,7 +210,8 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
         if (balanced is None or current_meta[2] == str(balanced)) and (
                 dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
             label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
-                current_meta[3] == "random" else "?"
+                current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
+            current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "?"
             label += " "
             label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
@@ -218,17 +219,16 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
 
     graph.plot_line()
 
-    #graph.show()
+    # graph.show()
 
     name = "class_prediction_accuracy_vs_batchsize_"
     if balanced is not None:
         name += "_balanced" if balanced else "_unbalanced"
     if dataset is not None:
-        name += "_"+dataset
+        name += "_" + dataset
     name += ".png"
 
     graph.save(path, name)
-
 
 
 def visualize_hellinger_vs_batchsize(run, path, balanced=None, dataset=None, version=None):
@@ -244,14 +244,17 @@ def visualize_hellinger_vs_batchsize(run, path, balanced=None, dataset=None, ver
         if (balanced is None or current_meta[2] == str(balanced)) and (
                 dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
             label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
-                current_meta[3] == "random" else "?"
+                current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
+            current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "?"
             label += " "
             label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
             # calculate hellinger distance between extraction and ground truth
             list_of_squares = []
-            p = probability_distribution(run[run_name]["prediction_results"]["prediction"], run[run_name]["parameter"]["num_classes"])
-            g = probability_distribution(run[run_name]["parameter"]["orig_label"], run[run_name]["parameter"]["num_classes"])
+            p = probability_distribution(run[run_name]["prediction_results"]["prediction"],
+                                         run[run_name]["parameter"]["num_classes"])
+            g = probability_distribution(run[run_name]["parameter"]["orig_label"],
+                                         run[run_name]["parameter"]["num_classes"])
             for p_i, g_i in zip(p, g):
                 # caluclate the square of the difference of ith distr elements
                 s = (math.sqrt(p_i) - math.sqrt(g_i)) ** 2
@@ -268,10 +271,9 @@ def visualize_hellinger_vs_batchsize(run, path, balanced=None, dataset=None, ver
 
     graph.plot_line()
 
-    #graph.show()
+    # graph.show()
 
     graph.save(path, "hellinger_vs_batchsize.png")
-
 
 
 # Experiment 1.2
@@ -287,7 +289,8 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
     for id, run_name in enumerate(run):
         current_meta = run_name.split("_")
         label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
-            current_meta[3] == "random" else "?"
+            current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
+            current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "?"
         label += " "
         label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
@@ -300,7 +303,7 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
                 graph.add_datapoint(label, 0, current_meta[1])
 
     graph.plot_line()
-    #graph.show()
+    # graph.show()
 
     name = "flawless_class_prediction_accuracy_vs_batchsize"
     if balanced is not None:
@@ -311,12 +314,12 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
 
     graph.save(path, name)
 
-
     return graph
 
 
 # Experiment 2
-def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, dataset=None, version=None, list_bs=None, train_step_stop=None):
+def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, dataset=None, version=None, list_bs=None,
+                                                    train_step_stop=None):
     run = run.copy()
 
     if list_bs is None:
@@ -325,7 +328,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
     graph = Graph("Training Process", "Label extraction accuracy", "Model accuracy (%)")
     meta = run["meta"].copy()
     run.__delitem__("meta")
-    data2=[]
+    data2 = []
 
     # Prediction Acc
     for id, run_name in enumerate(run):
@@ -335,19 +338,20 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                 version is None or version == current_meta[3]) and (
                 train_step_stop is None or train_step_stop >= int(current_meta[5])):
             label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
-                current_meta[3] == "random" else "?"
+                current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
+            current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "?"
             label += " "
             label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
             graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"], str(current_meta[5]))
             data2.append(["model accuracy", run[run_name]["parameter"]["test_acc"], str(current_meta[5])])
 
-    graph.data.append(["model accuracy", 0,str(0)])
-    graph.plot_line(location="center right", move=(1,0.4), skip_x_ticks=True)
+    graph.data.append(["model accuracy", 0, str(0)])
+    graph.plot_line(location="center right", move=(1, 0.4), skip_x_ticks=True)
     graph.data = data2
     graph.plot_line(True, legend=False, skip_x_ticks=True)
 
-    #graph.show()
+    # graph.show()
 
     graph.save(path, "class_prediction_accuracy_vs_training.png")
 
@@ -395,10 +399,8 @@ def visualize_good_fidelity(run, path, fidelitysteps, bs, balanced):
             graph.add_datapoint(label, y, x)
 
     graph.plot_line()
-    #graph.show()
+    # graph.show()
     graph.save(path, "good_fidelity.png")
-
-
 
 
 def load_json():
@@ -413,6 +415,7 @@ def load_json():
 
     return dump, path + "/"
 
+
 def probability_distribution(v, n):
     distribution = np.zeros(n)
     for x in v:
@@ -421,5 +424,3 @@ def probability_distribution(v, n):
     distribution = np.divide(distribution, sum(distribution))
 
     return distribution
-
-

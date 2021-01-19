@@ -14,10 +14,10 @@ def main():
         dataloader = Dataloader()
         experiment(dataloader=dataloader,
                    list_datasets=["MNIST"],
-                   list_bs=[32, 64, 128],
+                   list_bs=[16, 32, 64, 128, 256],
                    list_balanced=[True],
-                   list_versions=["v1", "v2", "v3"],
-                   n=10,
+                   list_versions=["v3-zero", "v3-one", "v3-random"],
+                   n=5,
                    extent="predict",
                    trainsize=0,
                    trainsteps=0,
@@ -48,20 +48,20 @@ def main():
             for adjusted in [True, False]:
                 magnitude_check(run, path, adjusted=adjusted, balanced=True, dataset=dataset)
         """
-
+        """
         for adjusted in [True, False]:
-            for version in ["v2", "v3"]:
+            for version in ["v3-zero", "v3-one", "v3-random"]:
                 magnitude_check(run, path, adjusted=adjusted, version=version)
-
+        """
         #heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
 
         #visualize_hellinger_vs_batchsize(run, path)
 
 
         #"""
-
+        #for adjusted in [True, False]:
         visualize_class_prediction_accuracy_vs_batchsize(run, path)
-        visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path)
+            #visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path)
         #"""
 
         #visualize_class_prediction_accuracy_vs_training(run, path, train_step_stop=1000)

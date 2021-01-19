@@ -59,8 +59,6 @@ class Graph:
             print("Min y: {} for label {}".format(str(min(l_y)), label))
             plt.plot(l_x, l_y, label=label, linestyle=style, color=color)
 
-
-
         handles, labels = plt.get_legend_handles_labels()
 
         if legend:
@@ -167,6 +165,12 @@ class Graph:
             "LLG+ (non-IID)": '#f032e6',
             "iDLG (non-IID)": "#000075",
             "DLG (non-IID)": "#808000",
+            "LLG-ZERO (IID)": "#b09ae6",
+            "LLG-ZERO (non-IID)": "#f57de3",
+            "LLG-ONE (IID)": "#8f5e10",
+            "LLG-ONE (non-IID)": "#9c0676",
+            "LLG-RANDOM (IID)": "#ff0044",
+            "LLG-RANDOM (non-IID)": "#ffbf00",
 
             "model accuracy": "#FF0F0F"
 
