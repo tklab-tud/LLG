@@ -7,23 +7,24 @@ def main():
     ############## Build your attack here ######################
 
     new = True
-    new = False
+    #new = False
 
     if new:
 
         dataloader = Dataloader()
         experiment(dataloader=dataloader,
                    list_datasets=["MNIST"],
-                   list_bs=[16, 32, 64, 128, 256],
+                   list_bs=[16],
                    list_balanced=[True],
-                   list_versions=["v3-zero", "v3-one", "v3-random"],
-                   n=5,
+                   list_versions=["v2"],
+                   n=10,
                    extent="predict",
-                   trainsize=0,
-                   trainsteps=0,
+                   trainsize=100,
+                   trainsteps=10,
                    path=None,
                    reconstruction_steps=0
                    )
+
     else:
 
         ########### Load an existing json an create graphs from it ##########
@@ -50,21 +51,26 @@ def main():
         """
         """
         for adjusted in [True, False]:
-            for version in ["v3-zero", "v3-one", "v3-random"]:
+            for version in ["v1", "v2", "v3-zero", "v3-one", "v3-random"]:
                 magnitude_check(run, path, adjusted=adjusted, version=version)
         """
+
         #heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
 
         #visualize_hellinger_vs_batchsize(run, path)
 
 
         #"""
-        #for adjusted in [True, False]:
-        visualize_class_prediction_accuracy_vs_batchsize(run, path)
+        #visualize_class_prediction_accuracy_vs_batchsize(run, path)
+
+        #visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None):
+
+
+
             #visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path)
         #"""
 
-        #visualize_class_prediction_accuracy_vs_training(run, path, train_step_stop=1000)
+        visualize_class_prediction_accuracy_vs_training(run, path)
 
         #visualize_good_fidelity(run, path, [0.1, 0.05, 0.01, 0.005, 0.001], 4, True)
 

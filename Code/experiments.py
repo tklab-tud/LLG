@@ -29,7 +29,7 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
     setting = Setting(dataloader, result_path=path)
 
     progress = 0
-    todo = len(list_datasets)* len(list_bs)* len(list_balanced)*len(list_versions)*n*trainsteps
+    todo = len(list_datasets)* len(list_bs)* len(list_balanced)*len(list_versions)*n*(trainsteps+1)
     for dataset in list_datasets:
         for trainstep in range(trainsteps+1):
             if not trainsteps == 0:
