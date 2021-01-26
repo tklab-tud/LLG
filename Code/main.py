@@ -7,7 +7,7 @@ def main():
     ############## Build your attack here ######################
 
     new = True
-    #new = False
+    new = False
 
     if new:
 
@@ -49,11 +49,11 @@ def main():
             for adjusted in [True, False]:
                 magnitude_check(run, path, adjusted=adjusted, balanced=True, dataset=dataset)
         """
-        """
+
         for adjusted in [True, False]:
-            for version in ["v1", "v2", "v3-zero", "v3-one", "v3-random"]:
-                magnitude_check(run, path, adjusted=adjusted, version=version)
-        """
+            for version in ["v2"]:
+                magnitude_check(run, path, adjusted=adjusted, version=version, group_by_class=False)
+
 
         #heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
 
@@ -70,7 +70,7 @@ def main():
             #visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path)
         #"""
 
-        visualize_class_prediction_accuracy_vs_training(run, path)
+        #visualize_class_prediction_accuracy_vs_training(run, path)
 
         #visualize_good_fidelity(run, path, [0.1, 0.05, 0.01, 0.005, 0.001], 4, True)
 

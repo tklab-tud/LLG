@@ -70,7 +70,7 @@ class Graph:
         if skip_x_ticks:
             plt.set_xticks(range(0, len(self.data), max(1, len(self.data) // 10)))
 
-    def plot_scatter(self):
+    def plot_scatter(self, location="best", move=None, legend=True):
         plt = self.subplot
         max_x = 0
 
@@ -78,15 +78,25 @@ class Graph:
             l_x = [x for (l, y, x) in self.data if l == label]
             l_y = [y for (l, y, x) in self.data if l == label]
             max_x = max(max_x, max(l_x))
+
             color = self.color((str(label)))
+
+
             style = self.style(str(label))
             pearson_r = scipy.stats.pearsonr(l_x, l_y)
-            visible_label = "Batch Size: " + str(label) + ", $\\rho = {:.5f}$".format(pearson_r[0])
+            visible_label = str(label) + ", $\\rho = {:.5f}$".format(pearson_r[0])
             plt.scatter(l_x, l_y, label=visible_label, marker=style, edgecolors=color, facecolors="none")
 
         plt.set_xticks(range(0, max_x + 1, max(1, max_x // 10)))
 
-        plt.legend(loc="lower right")
+        if legend:
+            order = []
+            handles, labels = plt.get_legend_handles_labels()
+            for label in labels:
+                order.append(self.order(label.split(",")[0]))
+            labels, handles, order = zip(*sorted(zip(labels, handles, order), key=lambda t: t[2]))
+            plt.legend(handles, labels, prop={'size': 11}, loc=location, bbox_to_anchor=move)
+            plt.legend(loc="lower right")
 
     def plot_heatmap(self):
 
@@ -152,8 +162,11 @@ class Graph:
 
     def color(self, s):
         color = {
-            "1": "#e6194B", "2": '#800000', "4": '#f58231', "8": '#3cb44b', "16": '#4363d8',
-            "32": '#000075', "64": '#911eb4', "128": '#000000', "256": '#f032e6',
+            "bs1": "#e6194B", "bs2": '#800000', "bs4": '#f58231', "bs8": '#3cb44b', "bs16": '#4363d8',
+            "bs32": '#000075', "bs64": '#911eb4', "bs128": '#000000', "bs256": '#f032e6',
+
+            "class0": "#e6194B", "class1": '#800000', "class2": '#f58231', "class3": '#3cb44b', "class4": '#4363d8',
+            "class5": '#000075', "class6": '#911eb4', "class7": '#000000', "class8": '#f032e6', "class9": "#ff0044",
 
             "Random (IID)": "#e6194B",
             "LLG (IID)": '#3cb44b',
@@ -172,6 +185,7 @@ class Graph:
             "LLG-RANDOM (IID)": "#ff0044",
             "LLG-RANDOM (non-IID)": "#ffbf00",
 
+
             "model accuracy": "#FF0F0F"
 
         }
@@ -180,8 +194,11 @@ class Graph:
 
     def style(self, s):
         style = {
-            "1": ".", "2": '*', "4": '8', "8": 'v', "16": 's',
-            "32": 'p', "64": 'D', "128": 'P', "256": '^',
+            "bs1": ".", "bs2": '*', "bs4": '8', "bs8": 'v', "bs16": 's',
+            "bs32": 'p', "bs64": 'D', "bs128": 'P', "bs256": '^',
+
+            "class0": ".", "class1": '*', "class2": '8', "class3": 'v', "class4": 's',
+            "class5": 'p', "class6": 'D', "class7": 'P', "class8": '^', "class9": 'h',
 
             "Random (IID)": "--",
             "LLG (IID)": (0, (3, 5, 1, 5, 1, 5)),
@@ -201,8 +218,8 @@ class Graph:
 
     def order(self, s):
         order = {
-            "1": 1, "2": 2, "4": 3, "8": 4, "16": 5,
-            "32": 6, "64": 7, "128": 8, "256": 9,
+            "bs1": 1, "bs2": 2, "bs4": 3, "bs8": 4, "bs16": 5,
+            "bs32": 6, "bs64": 7, "bs128": 8, "bs256": 9,
 
             "Random (IID)": 4,
             "LLG (IID)": 2,

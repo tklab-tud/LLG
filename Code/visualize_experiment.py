@@ -51,7 +51,7 @@ def negativ_value_check(run, path, dataset=None, balanced=None, version="v2"):
     # Hypothesis 2
 
 
-def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, version=None, list_bs=None, trainstep=None):
+def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, version=None, list_bs=None, trainstep=None, group_by_class=False):
     if adjusted and run["meta"] == "victim_side":
         print("Adjustment can only be made for a run with extent of prediction/full")
         return
@@ -83,8 +83,14 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
             for label, gradient in enumerate(run[setting]["prediction_results"][gradienttype]):
                 g = graphs[meta["list_bs"].index(bs)]
                 if bs in list_bs:
-                    g.add_datapoint(bs, gradient, run[setting]["parameter"]["orig_label"].count(label))
-                    composed_graph.add_datapoint(bs, gradient, run[setting]["parameter"]["orig_label"].count(label))
+                    #Colors in the graph will be based on:
+                    if group_by_class:
+                        row = "class"+str(label)
+                    else:
+                        row = "bs"+str(bs)
+
+                    g.add_datapoint(row, gradient, run[setting]["parameter"]["orig_label"].count(label))
+                    composed_graph.add_datapoint(row, gradient, run[setting]["parameter"]["orig_label"].count(label))
 
     graphs.append(composed_graph)
 
@@ -103,6 +109,10 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
             name += dataset
         if version is not None:
             name += version
+        if group_by_class:
+            name += "_class_colors"
+        else:
+            name += "_bs_colors"
         name += ".png"
         graph.save(path, name)
         # graph.show()
@@ -135,7 +145,7 @@ def heatmap(run, path, adjusted=True, balanced=None, dataset=None, version=None,
                 version is None or version == current_meta[3]) and (
                 bs in list_bs):
             for label, gradient in enumerate(run[setting]["prediction_results"][gradienttype]):
-                graph.add_datapoint(bs, gradient, run[setting]["parameter"]["orig_label"].count(label))
+                graph.add_datapoint("bs"+str(bs), gradient, run[setting]["parameter"]["orig_label"].count(label))
 
     print("Creating graph")
     graph.sort()
@@ -325,9 +335,11 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
     if list_bs is None:
         list_bs = run["meta"]["list_bs"]
 
-    graph = Graph("Training Process", "Label extraction accuracy", "Model accuracy (%)")
     meta = run["meta"].copy()
     run.__delitem__("meta")
+
+    graph = Graph("x{} Iterations".format(meta["trainsize"]), "Label extraction accuracy", "Model accuracy (%)")
+
     data2 = []
 
     # Prediction Acc
