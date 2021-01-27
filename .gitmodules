@@ -1,0 +1,3 @@
+[submodule "Code/aDPtorch"]
+	path = Code/aDPtorch
+	url = https://git.tk.informatik.tu-darmstadt.de/jens.keim/aDPtorch.git
