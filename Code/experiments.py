@@ -13,7 +13,8 @@ result_path = "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%
 
 
 ################## Completely Configurable ###################
-def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions, extent, n, trainsize=100, trainsteps=0, path=None, reconstruction_steps=0, model="LeNet"):
+def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions, extent, n, trainsize=100, trainsteps=0, path=None, reconstruction_steps=0, model="LeNet",
+               differential_privacy: bool=False, alphas: list=[], noise_multiplier: float=1.0, max_norm: float=1.0, noise_type: str="gauss"):
     run = {"meta": {
         "list_datasets": list_datasets,
         "trainsize": trainsize,
@@ -27,7 +28,7 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
         "model": model
     }}
 
-    setting = Setting(dataloader, result_path=path, model=model)
+    setting = Setting(dataloader, result_path=path, model=model, differential_privacy=differential_privacy, alphas=alphas, noise_multiplier=noise_multiplier, max_norm=max_norm, noise_type=noise_type)
 
     progress = 0
     todo = len(list_datasets)* len(list_bs)* len(list_balanced)*len(list_versions)*n*(trainsteps+1)
