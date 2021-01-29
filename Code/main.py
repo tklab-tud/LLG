@@ -14,7 +14,7 @@ def main():
         dataloader = Dataloader()
         experiment(dataloader=dataloader,
                    list_datasets=["MNIST"],
-                   list_bs=[16],
+                   list_bs=[4],
                    list_balanced=[True],
                    list_versions=["v2"],
                    n=10,
@@ -50,9 +50,10 @@ def main():
                 magnitude_check(run, path, adjusted=adjusted, balanced=True, dataset=dataset)
         """
 
-        for adjusted in [True, False]:
-            for version in ["v2"]:
-                magnitude_check(run, path, adjusted=adjusted, version=version, group_by_class=False)
+        for trainstep in range(0, 10, 1):
+            for adjusted in [False]:
+                for version in ["v2"]:
+                    magnitude_check(run, path, adjusted=adjusted, version=version, group_by_class=True, trainstep=trainstep)
 
 
         #heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
