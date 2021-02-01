@@ -7,7 +7,7 @@ def main():
     ############## Build your attack here ######################
 
     new = True
-    new = False
+    #new = False
 
     if new:
 
@@ -19,10 +19,11 @@ def main():
                    list_versions=["v2"],
                    n=10,
                    extent="predict",
-                   trainsize=100,
-                   trainsteps=10,
+                   trainsize=0,
+                   trainsteps=0,
                    path=None,
-                   reconstruction_steps=0
+                   reconstruction_steps=0,
+                   model="ResNet"
                    )
 
     else:
@@ -31,8 +32,8 @@ def main():
 
         run, path = load_json()
 
-
-
+        for adjusted in [False]:
+            magnitude_check(run, path, adjusted=adjusted, group_by_class=True)
 
         ### Some examples below ###
 
@@ -50,11 +51,12 @@ def main():
                 magnitude_check(run, path, adjusted=adjusted, balanced=True, dataset=dataset)
         """
 
+        """
         for trainstep in range(0, 10, 1):
             for adjusted in [False]:
                 for version in ["v2"]:
                     magnitude_check(run, path, adjusted=adjusted, version=version, group_by_class=True, trainstep=trainstep)
-
+        """
 
         #heatmap(run, path, adjusted=False, balanced=True, version="v2", dataset="MNIST", list_bs=[32])
 
@@ -71,7 +73,7 @@ def main():
             #visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path)
         #"""
 
-        #visualize_class_prediction_accuracy_vs_training(run, path)
+        visualize_class_prediction_accuracy_vs_training(run, path)
 
         #visualize_good_fidelity(run, path, [0.1, 0.05, 0.01, 0.005, 0.001], 4, True)
 

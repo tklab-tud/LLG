@@ -83,7 +83,12 @@ class Graph:
 
 
             style = self.style(str(label))
-            pearson_r = scipy.stats.pearsonr(l_x, l_y)
+            if len(l_y) == 1:
+                print("Cant calculate pearson from n=1 values")
+                pearson_r = [0]
+            else:
+                pearson_r = scipy.stats.pearsonr(l_x, l_y)
+
             visible_label = str(label) + ", $\\rho = {:.5f}$".format(pearson_r[0])
             plt.scatter(l_x, l_y, label=visible_label, marker=style, edgecolors=color, facecolors="none")
 
@@ -214,7 +219,7 @@ class Graph:
             "model accuracy": "solid"
 
         }
-        return style[s] if style.__contains__(s) else "solid"
+        return style[s] if style.__contains__(s) else "."
 
     def order(self, s):
         order = {

@@ -10,7 +10,7 @@ from Dataloader import Dataloader
 from Dlg import Dlg
 from Predictor import Predictor
 from Result import Result
-from model import Net1, weights_init
+from model import *
 from train import train, test
 
 
@@ -120,7 +120,7 @@ class Setting:
             "dataset": "MNIST",
             "targets": [],
             "batch_size": 2,
-            "model": 1,
+            "model": "LeNet",
             "log_interval": 10,
             "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
             "run_name": "",
@@ -155,9 +155,11 @@ class Setting:
             self.device = torch.device("cpu")
 
     def load_model(self):
-        if self.parameter["model"] == 1:
+        if self.parameter["model"] == "LeNet":
             model = Net1(self.parameter)
             model.apply(weights_init)
+        elif self.parameter["model"] == "ResNet":
+            model = resnet18(self.parameter)
         else:
             exit("No model found for: ", self.parameter["model"])
 
