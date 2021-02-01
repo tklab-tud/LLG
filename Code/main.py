@@ -17,13 +17,13 @@ def main():
                    list_bs=[4],
                    list_balanced=[True],
                    list_versions=["v2"],
-                   n=10,
+                   n=1,
                    extent="predict",
-                   trainsize=0,
-                   trainsteps=0,
+                   trainsize=1000,
+                   trainsteps=10,
                    path=None,
                    reconstruction_steps=0,
-                   model="ResNet"
+                   model="LeNet"
                    )
 
     else:

@@ -45,24 +45,27 @@ def train(setting, train_size):
 
     dataloader = setting.dataloader
 
-    optimizer = torch.optim.SGD(model.parameters(), lr=parameter["train_lr"])
+    #optimizer = torch.optim.SGD(model.parameters(), lr=parameter["train_lr"])
+    optimizer = torch.optim.LBFGS(model.parameters(), lr=parameter["train_lr"])
+
     criterion = torch.nn.CrossEntropyLoss().to(device)
 
     for i in range(train_size):
+        def closure():
+            optimizer.zero_grad()
 
-        data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"],
-                                            setting.parameter["batch_size"])
+            data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"],
+                                                setting.parameter["batch_size"])
 
-        data, target = data.to(device), target.to(device)
+            #data, target = data.to(device), target.to(device)
 
-        optimizer.zero_grad()
-        output = model(data)
-        loss = criterion(output, target)
-        loss.backward()
+            output = model(data)
 
-        optimizer.step()
+            loss = criterion(output, target)
+            loss.backward()
+            return loss
 
-        if i % 100 == 0:
-            print('Sample [{}/{}]\tLoss: {}'.format(i, train_size, loss.item()))
+        optimizer.step(closure)
+
 
     test(setting)
