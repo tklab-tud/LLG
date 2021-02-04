@@ -23,7 +23,8 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
         "list_versions": list_versions,
         "extent": extent,
         "n": n,
-        "reconstruction_steps": reconstruction_steps
+        "reconstruction_steps": reconstruction_steps,
+        "model": model
     }}
 
     setting = Setting(dataloader, result_path=path, model=model)

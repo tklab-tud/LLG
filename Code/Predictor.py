@@ -29,9 +29,9 @@ class Predictor:
             self.random_prediction()
         elif parameter["version"] == "idlg":
             self.simplified_prediction()
-        elif parameter["version"] == "v1":
+        elif parameter["version"] == "v1":#LLG
             self.v1_prediction()
-        elif parameter["version"] == "v2":
+        elif parameter["version"] == "v2":#LLG+
             self.v2_prediction()
         elif parameter["version"] in ["v3-zero", "v3-one", "v3-random"]:
             self.v3_prediction()

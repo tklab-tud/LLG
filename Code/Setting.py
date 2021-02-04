@@ -19,7 +19,6 @@ class Setting:
 
         # Parameter
         self.parameter = {}
-        self.parameter = {}
         self.restore_default_parameter()
         self.dataloader = dataloader
         self.predictor = None
@@ -27,7 +26,6 @@ class Setting:
         self.result = None
         self.dlg = None
         self.device = None
-
         self.check_cuda()
 
         self.configure(**kwargs)

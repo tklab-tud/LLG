@@ -91,11 +91,11 @@ class Dataloader():
 
         # dummys
         if dataset=="DUMMY-ONE":
-            data = data.zero_()
-        elif dataset=="DUMMY-ZERO":
-            data = data.random_()
-        elif dataset=="DUMMY-RANDOM":
             data = torch.ones(data.size())
+        elif dataset=="DUMMY-ZERO":
+            data = data.zero_()
+        elif dataset=="DUMMY-RANDOM":
+            data = data.random_()
 
 
         return data, labels
