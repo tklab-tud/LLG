@@ -53,18 +53,18 @@ def train(setting, train_size):
     criterion = torch.nn.CrossEntropyLoss().to(device)
 
     # Differential Privacy
-    if parameter["differential_privacy"]:
-        privacy_engine = adp.PrivacyEngineXL(
-            model,
-            batch_size=parameter["batch_size"],
-            sample_size=len(dataloader.train_dataset),
-            alphas=parameter["alphas"],
-            noise_multiplier=parameter["noise_multiplier"],
-            secure_rng=True, # Note: this is not yet implemented in aDPtorch, it is set to avoid warning spamming
-            max_grad_norm=parameter["max_norm"],
-            noise_type=parameter["noise_type"]
-        )
-        privacy_engine.attach(optimizer)
+    # if parameter["differential_privacy"]:
+    #     privacy_engine = adp.PrivacyEngineXL(
+    #         model,
+    #         batch_size=parameter["batch_size"],
+    #         sample_size=len(dataloader.train_dataset),
+    #         alphas=parameter["alphas"],
+    #         noise_multiplier=parameter["noise_multiplier"],
+    #         secure_rng=True, # Note: this is not yet implemented in aDPtorch, it is set to avoid warning spamming
+    #         max_grad_norm=parameter["max_norm"],
+    #         noise_type=parameter["noise_type"]
+    #     )
+    #     privacy_engine.attach(optimizer)
 
     for i in range(train_size):
         def closure():
