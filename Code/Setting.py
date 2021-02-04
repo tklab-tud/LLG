@@ -125,6 +125,13 @@ class Setting:
             "set_size": None,
             "dummy" : False,
 
+            # Differential Privacy settings
+            "differential_privacy": False,
+            "alphas": [],
+            "noise_multiplier": 1.0,
+            "max_norm": 1.0, # clip
+            "noise_type": "gauss",
+
             # Attack settings
             "dlg_lr": 1,
             "dlg_iterations": 50,
