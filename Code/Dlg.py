@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 from Result import Result
 
+import aDPtorch.privacy_engine_xl as adp
+
 
 class Dlg:
     def __init__(self, setting):
@@ -22,6 +24,9 @@ class Dlg:
         orig_out = self.setting.model(self.setting.parameter["orig_data"])
         y = self.criterion(orig_out, self.setting.parameter["orig_label"])
         grad = torch.autograd.grad(y, self.setting.model.parameters())
+        # Differential Privacy
+        if self.setting.parameter["differential_privacy"]:
+            adp.apply_noise(grad, self.setting.parameter["batch_size"], self.setting.parameter["max_norm"], self.setting.parameter["noise_multiplier"], self.setting.parameter["noise_type"], self.setting.device)
         self.gradient = list((_.detach().clone() for _ in grad))
 
 
