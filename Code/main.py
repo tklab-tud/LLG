@@ -16,11 +16,11 @@ def main():
                    list_datasets=["MNIST"],
                    list_bs=[4],
                    list_balanced=[True],
-                   list_versions=["v2"],
-                   n=1,
-                   extent="predict",
-                   trainsize=1000,
-                   trainsteps=10,
+                   list_versions=["v2"],    # v1=LLG, v2=LLG+, "v3-zero", "v3-one", "v3-random"
+                   n=1,                     # Amount of attacks
+                   extent="predict",        # "victim_side", "predict", "reconstruct"
+                   trainsize=1,             # Iterations per Trainstep
+                   trainsteps=10,           # Number of Attack&Train cycles
                    path=None,
                    reconstruction_steps=0,
                    model="LeNet"

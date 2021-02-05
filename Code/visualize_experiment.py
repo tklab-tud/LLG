@@ -68,9 +68,9 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
 
     graphs = []
     for _ in meta["list_bs"]:
-        graphs.append(Graph("Occurrences", "Gradient value"))
+        graphs.append(Graph("Label occurrences", "Gradient value"))
 
-    composed_graph = Graph("Occurrences", "Gradient value")
+    composed_graph = Graph("Label occurrences", "Gradient value")
 
     print("loading {} from json".format(gradienttype))
     for i, setting in enumerate(run):
@@ -135,7 +135,7 @@ def heatmap(run, path, adjusted=True, balanced=None, dataset=None, version=None,
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
-    graph = Graph("Occurrences", "Gradient value")
+    graph = Graph("Label occurrences", "Gradient value")
 
     print("loading {} from json".format(gradienttype))
     for i, setting in enumerate(run):
@@ -171,7 +171,7 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
-    graph = Graph("Occurrences", "Gradient value")
+    graph = Graph("Label occurrences", "Gradient value")
     result_string = ""
     result_list_original = []
     result_list_adjusted = []

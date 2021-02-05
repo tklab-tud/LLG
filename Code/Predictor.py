@@ -81,10 +81,8 @@ class Predictor:
 
 
     def v1_prediction(self): #LLG
-        # New way, first idea, choosing smallest values as prediction
-        parameter = self.setting.parameter
 
-        # Version 1 improvement suggestion
+        parameter = self.setting.parameter
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
         h1_extraction = []
         impact_acc = 0
@@ -179,7 +177,7 @@ class Predictor:
 
 
 
-    def v3_prediction(self): #LLG-
+    def v3_prediction(self): #LLG- with dummies
         parameter = self.setting.parameter
 
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
