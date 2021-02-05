@@ -24,9 +24,39 @@ class Dlg:
         orig_out = self.setting.model(self.setting.parameter["orig_data"])
         y = self.criterion(orig_out, self.setting.parameter["orig_label"])
         grad = torch.autograd.grad(y, self.setting.model.parameters())
+
         # Noisy Gradients
         if self.setting.parameter["differential_privacy"]:
             adp.apply_noise(grad, self.setting.parameter["batch_size"], self.setting.parameter["max_norm"], self.setting.parameter["noise_multiplier"], self.setting.parameter["noise_type"], self.setting.device)
+
+        # Gradient Compression
+        if self.setting.parameter["compression"]:
+            values = torch.sum(grad[-2], dim=-1).clone()
+            magnitudes = [torch.abs(value) for value in values]
+            magnitudes_sorted = sorted(magnitudes)
+
+            threshold = int(len(magnitudes_sorted) * self.setting.parameter["threshold"]) - 1
+            max_magnitude = magnitudes_sorted[threshold]
+            max_mag_count = 1
+            first_idx = threshold
+            for i, mag in enumerate(magnitudes_sorted):
+                if mag == max_magnitude:
+                    first_idx = i
+            max_mag_count = threshold - first_idx
+
+            count = 0
+            for magnitude, tens in zip(magnitudes, grad):
+                if magnitude < max_magnitude:
+                    tens.zero_()
+                elif magnitude == max_magnitude:
+                    if count <= max_mag_count:
+                        tens.zero_()
+                    else:
+                        continue
+                    count += 1
+                elif magnitude > max_magnitude:
+                    continue
+
         self.gradient = list((_.detach().clone() for _ in grad))
 
 
