@@ -132,6 +132,11 @@ class Setting:
             "max_norm": 1.0, # clip
             "noise_type": "gauss",
 
+            # Defenses
+            "dropout": 0.0,
+            "compression": False,
+            "threshold": 0.1,
+
             # Attack settings
             "dlg_lr": 1,
             "dlg_iterations": 50,
