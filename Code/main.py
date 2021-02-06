@@ -34,12 +34,16 @@ def main():
         run, path = load_json()
 
 
-        # Magnitude Check plots a scatterplot of the gradients of a run.
+        # magnitude_check plots a scatterplot of the gradients of a run.
         # gradient_type: "individual_gradients", "original_gradients", "adjusted_gradients"
         # Grads before summing up, after summing up and after adjustment
-        magnitude_check(run, path, gradient_type="individual_gradients", group_by_class=True)
+        # magnitude_check(run, path, gradient_type="individual_gradients", group_by_class=True)
 
 
+        # negativ_value_check partitions the gradients into 4 categories: (non)present x sign
+        # gradient_type: "individual_gradients", "original_gradients", "adjusted_gradients"
+        #
+        negativ_value_check(run, path, gradient_type = "individual_gradients")
 
 
 
