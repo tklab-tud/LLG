@@ -43,7 +43,11 @@ def main():
         # negativ_value_check partitions the gradients into 4 categories: (non)present x sign
         # gradient_type: "individual_gradients", "original_gradients", "adjusted_gradients"
         #
-        negativ_value_check(run, path, gradient_type = "individual_gradients")
+        #negativ_value_check(run, path, gradient_type = "individual_gradients")
+
+        # same_sign_check(run, path, dataset=None, balanced=None)
+        # checks the split gradient_sum_sign x individual_grad_sign
+        same_sign_check(run, path)
 
 
 

@@ -8,7 +8,7 @@ from tkinter.filedialog import askopenfilename, asksaveasfile
 
 
 # Hypothesis 1
-def negativ_value_check(run, path, dataset=None, balanced=None, version="v2", gradient_type = "original_gradients"):
+def negativ_value_check(run, path, dataset=None, balanced=None, version="v2", gradient_type="original_gradients"):
     run = run.copy()
 
     gradient_analysis = {
@@ -38,7 +38,6 @@ def negativ_value_check(run, path, dataset=None, balanced=None, version="v2", gr
                     present = "present" if label in run[setting]["parameter"]["orig_label"] else "nonpresent"
                     gradient_analysis[sign][present] += 1
 
-
     result = "Negative + present: {}\tNegative + nonpresent: {}\nPositive + present: {}\tPositive + nonpresent: {} ".format(
         gradient_analysis["negative"]["present"], gradient_analysis["negative"]["nonpresent"],
         gradient_analysis["positive"]["present"], gradient_analysis["positive"]["nonpresent"])
@@ -53,11 +52,50 @@ def negativ_value_check(run, path, dataset=None, balanced=None, version="v2", gr
     text_file.write(result)
     text_file.close()
 
+
+def same_sign_check(run, path, dataset=None, balanced=None):
+    run = run.copy()
+
+    gradient_analysis = {
+        "positive sum":
+            {"positive individual gradient": 0,
+             "negative individual gradient": 0},
+        "negative sum":
+            {"positive individual gradient": 0,
+             "negative individual gradient": 0},
+    }
+
+    meta = run["meta"].copy()
+    run.__delitem__("meta")
+
+    for setting in run:
+        current_meta = setting.split("_")
+        if (balanced is None or current_meta[2] == str(balanced)) and (
+                dataset is None or current_meta[0] == dataset):
+
+            for label, gradient in enumerate(run[setting]["prediction_results"]["original_gradients"]):
+                sum_pos = gradient > 0
+                for individual_gradient in run[setting]["prediction_results"]["individual_gradients"][label]:
+                    ind_pos = individual_gradient > 0
+                    gradient_analysis["positive sum" if sum_pos else "negative sum"][
+                        "positive individual gradient" if ind_pos else "negative individual gradient"] += 1
+
+    result = "Positive Sum + Positive Individual Gradient: {}\tPositive Sum + Negative Individual Gradient: {}\nNegative Sum + Positive Individual Gradient: {}\tNegative Sum + Negative Individual Gradient: {}" \
+        .format(gradient_analysis["positive sum"]["positive individual gradient"],
+                gradient_analysis["positive sum"]["negative individual gradient"],
+                gradient_analysis["negative sum"]["positive individual gradient"],
+                gradient_analysis["negative sum"]["negative individual gradient"])
+
+    text_file = open(path + "same_sign_check" + ".txt", "w")
+    text_file.write(result)
+    text_file.close()
+
     # Hypothesis 2
 
 
-def magnitude_check(run, path, gradient_type="original_gradients", balanced=None, dataset=None, version=None, list_bs=None, trainstep=None, group_by_class=False):
-    if gradient_type== "adjusted_gradients" and run["meta"] == "victim_side":
+def magnitude_check(run, path, gradient_type="original_gradients", balanced=None, dataset=None, version=None,
+                    list_bs=None, trainstep=None, group_by_class=False):
+    if gradient_type == "adjusted_gradients" and run["meta"] == "victim_side":
         print("Adjusted gradients can not be made for a quick run (extend=victim_side)")
         return
 
@@ -65,7 +103,6 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
         list_bs = run["meta"]["list_bs"]
 
     run = run.copy()
-
 
     meta = run["meta"].copy()
     run.__delitem__("meta")
@@ -87,18 +124,19 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
             for label, gradient in enumerate(run[setting]["prediction_results"][gradient_type]):
                 g = graphs[meta["list_bs"].index(bs)]
                 if bs in list_bs:
-                    #Colors in the graph will be based on:
+                    # Colors in the graph will be based on:
                     if group_by_class:
-                        row = "class"+str(label)
+                        row = "class" + str(label)
                     else:
-                        row = "bs"+str(bs)
+                        row = "bs" + str(bs)
 
                     if not isinstance(gradient, list):
                         gradient = [gradient]
 
                     for grad_val in gradient:
                         g.add_datapoint(row, grad_val, run[setting]["parameter"]["orig_label"].count(label))
-                        composed_graph.add_datapoint(row, grad_val, run[setting]["parameter"]["orig_label"].count(label))
+                        composed_graph.add_datapoint(row, grad_val,
+                                                     run[setting]["parameter"]["orig_label"].count(label))
 
     graphs.append(composed_graph)
 
@@ -127,7 +165,6 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
         graph.fig.clf()
 
 
-
 def heatmap(run, path, adjusted=True, balanced=None, dataset=None, version=None, list_bs=None):
     if adjusted and run["meta"] == "victim_side":
         print("Adjustment can only be made for a run with extent of prediction/full")
@@ -154,7 +191,7 @@ def heatmap(run, path, adjusted=True, balanced=None, dataset=None, version=None,
                 version is None or version == current_meta[3]) and (
                 bs in list_bs):
             for label, gradient in enumerate(run[setting]["prediction_results"][gradienttype]):
-                graph.add_datapoint("bs"+str(bs), gradient, run[setting]["parameter"]["orig_label"].count(label))
+                graph.add_datapoint("bs" + str(bs), gradient, run[setting]["parameter"]["orig_label"].count(label))
 
     print("Creating graph")
     graph.sort()
@@ -230,7 +267,7 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                 dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
             label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
                 current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
-            current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "?"
+                current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "?"
             label += " "
             label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
@@ -264,7 +301,7 @@ def visualize_hellinger_vs_batchsize(run, path, balanced=None, dataset=None, ver
                 dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
             label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
                 current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
-            current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "?"
+                current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "?"
             label += " "
             label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
@@ -360,7 +397,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                 train_step_stop is None or train_step_stop >= int(current_meta[5])):
             label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
                 current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
-            current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "?"
+                current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "?"
             label += " "
             label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
