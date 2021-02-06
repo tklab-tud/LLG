@@ -51,9 +51,9 @@ def negativ_value_check(run, path, dataset=None, balanced=None, version="v2"):
     # Hypothesis 2
 
 
-def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, version=None, list_bs=None, trainstep=None, group_by_class=False):
-    if adjusted and run["meta"] == "victim_side":
-        print("Adjustment can only be made for a run with extent of prediction/full")
+def magnitude_check(run, path, gradient_type="original_gradients", balanced=None, dataset=None, version=None, list_bs=None, trainstep=None, group_by_class=False):
+    if gradient_type== "adjusted_gradients" and run["meta"] == "victim_side":
+        print("Adjusted gradients can not be made for a quick run (extend=victim_side)")
         return
 
     if list_bs is None:
@@ -61,7 +61,6 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
 
     run = run.copy()
 
-    gradienttype = "adjusted_gradients" if adjusted else "original_gradients"
 
     meta = run["meta"].copy()
     run.__delitem__("meta")
@@ -72,7 +71,7 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
 
     composed_graph = Graph("Label occurrences", "Gradient value")
 
-    print("loading {} from json".format(gradienttype))
+    print("loading {} from json".format(gradient_type))
     for i, setting in enumerate(run):
         bs = run[setting]["parameter"]["batch_size"]
         current_meta = setting.split("_")
@@ -80,7 +79,7 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
                 dataset is None or current_meta[0] == dataset) and (
                 trainstep is None or current_meta[5] == str(trainstep)) and (
                 version is None or version == current_meta[3]):
-            for label, gradient in enumerate(run[setting]["prediction_results"][gradienttype]):
+            for label, gradient in enumerate(run[setting]["prediction_results"][gradient_type]):
                 g = graphs[meta["list_bs"].index(bs)]
                 if bs in list_bs:
                     #Colors in the graph will be based on:
@@ -89,8 +88,12 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
                     else:
                         row = "bs"+str(bs)
 
-                    g.add_datapoint(row, gradient, run[setting]["parameter"]["orig_label"].count(label))
-                    composed_graph.add_datapoint(row, gradient, run[setting]["parameter"]["orig_label"].count(label))
+                    if not isinstance(gradient, list):
+                        gradient = [gradient]
+
+                    for grad_val in gradient:
+                        g.add_datapoint(row, grad_val, run[setting]["parameter"]["orig_label"].count(label))
+                        composed_graph.add_datapoint(row, grad_val, run[setting]["parameter"]["orig_label"].count(label))
 
     graphs.append(composed_graph)
 
@@ -102,7 +105,7 @@ def magnitude_check(run, path, adjusted=True, balanced=None, dataset=None, versi
         graph.sort()
         graph.plot_scatter()
         # graph.show()
-        name = "Magnitude_BS_{}_{}_".format(filesuffix[id], gradienttype)
+        name = "Magnitude_BS_{}_{}_".format(filesuffix[id], gradient_type)
         if balanced is not None:
             name += "balanced" if balanced else "unbalanced"
         if dataset is not None:

@@ -13,7 +13,7 @@ result_path = "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%
 
 
 ################## Completely Configurable ###################
-def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions, extent, n, trainsize=100, trainsteps=0, path=None, reconstruction_steps=0, model="LeNet",
+def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions, extent, n, trainsize=100, trainsteps=0, path=None, reconstruction_steps=0, model="LeNet", store_individual_gradients= False,
                differential_privacy: bool=False, alphas: list=[], noise_multiplier: float=1.0, max_norm: float=1.0, noise_type: str="gauss"):
     run = {"meta": {
         "list_datasets": list_datasets,
@@ -68,7 +68,7 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
                             setting.attack(extent)
 
                             # dump the current state of the attack
-                            run.update({run_name: setting.get_backup()})
+                            run.update({run_name: setting.get_backup(store_individual_gradients)})
 
             # train the model for trainsize batches (last time needs no training afterwards)
             if trainstep < trainsteps:

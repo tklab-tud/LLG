@@ -193,7 +193,7 @@ class Setting:
         tmp_setting = Setting(self.dataloader, **kwargs)
         return tmp_setting
 
-    def get_backup(self):
+    def get_backup(self, store_individual_gradients=False):
 
         tmp_parameter = self.parameter.copy()
         tmp_parameter.pop("orig_data", None)
@@ -202,6 +202,8 @@ class Setting:
         adjusted_gradients = self.dlg.gradient[-2].sum(-1) - self.predictor.offset
         adjusted_gradients = adjusted_gradients.cpu().detach().numpy().tolist()
         original_gradients = self.dlg.gradient[-2].sum(-1).cpu().detach().numpy().tolist()
+
+
 
         data_dic = {
             "parameter": tmp_parameter,
@@ -220,6 +222,9 @@ class Setting:
                 "original_gradients": original_gradients,
                 "adjusted_gradients": adjusted_gradients}
         }
+
+        if store_individual_gradients:
+            data_dic["prediction_results"].update({"individual_gradients": self.dlg.gradient[-2].cpu().detach().numpy().tolist()})
 
         return data_dic
 
