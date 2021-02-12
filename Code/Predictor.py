@@ -39,10 +39,13 @@ class Predictor:
             exit("Unknown prediction strategy {}".format(parameter["version"]))
 
         self.prediction.sort()
+        self.update_accuracy()
 
+
+
+    def update_accuracy(self):
         # analyse prediction
         orig_label = self.setting.parameter["orig_label"].tolist()
-
         self.correct = 0
         self.false = 0
         for p in self.prediction:
@@ -54,6 +57,7 @@ class Predictor:
 
         self.acc = self.correct / (self.correct + self.false)
         print(self.setting.parameter["version"], ": ACC: ", self.acc)
+
 
     def print_prediction(self):
         orig_label = self.setting.parameter["orig_label"].tolist()

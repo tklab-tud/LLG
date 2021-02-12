@@ -85,8 +85,11 @@ class Dlg:
             if iteration % parameter["log_interval"] == 0:
                 res.add_snapshot(self.dummy_data.cpu().detach().numpy())
 
-        self.setting.predictor.prediction = [self.dummy_label[x].argmax().item() for x in range(parameter["batch_size"])]
+        if self.setting.parameter["version"] == "dlg":
+            self.setting.predictor.prediction = [self.dummy_label[x].argmax().item() for x in range(parameter["batch_size"])]
+            self.setting.predictor.update_accuracy()
+            #res.update_figures()
 
-        res.update_figures()
+
         self.setting.result = res
 

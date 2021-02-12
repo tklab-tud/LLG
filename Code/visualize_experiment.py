@@ -267,7 +267,8 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                 dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
             label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
                 current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
-                current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "?"
+                current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "DLG" if \
+            current_meta[3] == "dlg" else "iDLG" if current_meta[3] == "idlg" else "?"
             label += " "
             label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
