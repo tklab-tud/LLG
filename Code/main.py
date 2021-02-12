@@ -7,24 +7,29 @@ def main():
     ############## Build your attack here ######################
 
     new = True
-    new = False
+    #new = False
 
     if new:
 
         dataloader = Dataloader()
         experiment(dataloader=dataloader,
                    list_datasets=["MNIST"],
-                   list_bs=[4],
+                   list_bs=[2],
                    list_balanced=[True],
-                   list_versions=["v2"],    # v1=LLG, v2=LLG+, "v3-zero", "v3-one", "v3-random"
-                   n=100,                     # Amount of attacks
-                   extent="victim_side",        # "victim_side", "predict", "reconstruct"
-                   trainsize=1,             # Iterations per Trainstep
+                   list_versions=["dlg"],   # v1=LLG, v2=LLG+, "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
+                   n=2,                     # Amount of attacks
+                   extent="reconstruct",        # "victim_side", "predict", "reconstruct"
+                   trainsize=0,             # Iterations per Trainstep
                    trainsteps=0,           # Number of Attack&Train cycles
                    path=None,
-                   reconstruction_steps=0,
                    model="LeNet",
-                   store_individual_gradients=True
+                   store_individual_gradients=True, # Will store the ~500 gradients connected to one output node and not just their sum
+                   dlg_lr= 1, # learrate of (i)dlg image reconstruction
+                   dlg_iterations= 100, # amount of (i)dlg reconstruction iterations
+                   log_interval=10,  # Won't store each (i)dlg iteration's images but every n-th iteration's
+                   store_composed_image = True, # storing dlg output images as composed image
+                   store_separate_images = True, # storing dlg output images as seperate images
+
                    )
 
     else:

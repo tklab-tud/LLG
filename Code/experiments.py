@@ -13,8 +13,9 @@ result_path = "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%
 
 
 ################## Completely Configurable ###################
-def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions, extent, n, trainsize=100, trainsteps=0, path=None, reconstruction_steps=0, model="LeNet", store_individual_gradients= False,
-               differential_privacy: bool=False, alphas: list=[], noise_multiplier: float=1.0, max_norm: float=1.0, noise_type: str="gauss"):
+def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions, extent, n, trainsize=100, trainsteps=0, path=None, model="LeNet", store_individual_gradients= False,
+               differential_privacy: bool=False, alphas: list=[], noise_multiplier: float=1.0, max_norm: float=1.0, noise_type: str="gauss", store_composed_image=False, store_separate_images=False,
+               **more_args):
     run = {"meta": {
         "list_datasets": list_datasets,
         "trainsize": trainsize,
@@ -24,7 +25,6 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
         "list_versions": list_versions,
         "extent": extent,
         "n": n,
-        "reconstruction_steps": reconstruction_steps,
         "model": model
     }}
 
@@ -61,11 +61,17 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
 
                             # configure the setting
                             setting.configure(dataset=dataset, batch_size=bs, version=version,
-                                              run_name=run_name, targets=target, result_path=path,
-                                              dlg_iterations=reconstruction_steps)
+                                              run_name=run_name, targets=target, result_path=path, **more_args)
 
                             # run the attack
                             setting.attack(extent)
+
+                            if store_composed_image:
+                                setting.result.store_composed_image() #saves the (i)dlg reconstructed images composed
+                            if store_separate_images:
+                                setting.result.store_separate_images() #saves the (i)dlg reconstructed images seperatly
+                            if store_composed_image or store_separate_images:
+                                setting.result.delete() #deletes the images in the memory, to safe resources.
 
                             # dump the current state of the attack
                             run.update({run_name: setting.get_backup(store_individual_gradients)})

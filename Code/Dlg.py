@@ -37,13 +37,14 @@ class Dlg:
         model = self.setting.model
         setting = self.setting
 
+
         self.dummy_data = torch.randn(
             (setting.parameter["batch_size"], setting.parameter["channel"], setting.parameter["shape_img"][0],
              setting.parameter["shape_img"][1])).to(
             setting.device).requires_grad_(True)
         self.dummy_label = torch.randn((setting.parameter["batch_size"], setting.parameter["num_classes"])).to(
             setting.device).requires_grad_(True)
-
+        self.dummy_pred = None
 
         # optimizer setup
         if parameter["version"] == "dlg":
@@ -62,14 +63,13 @@ class Dlg:
             # clears gradients, computes loss, returns loss
             def closure():
                 optimizer.zero_grad()
-                dummy_pred = model(self.dummy_data)
+                self.dummy_pred = model(self.dummy_data)
                 if parameter["version"] == "dlg":
                     dummy_loss = - torch.mean(
-                        torch.sum(torch.softmax(self.dummy_label, -1) * torch.log(torch.softmax(dummy_pred, -1)),
+                        torch.sum(torch.softmax(self.dummy_label, -1) * torch.log(torch.softmax(self.dummy_pred, -1)),
                                   dim=-1))
-                    self.setting.predictor.prediction = [torch.argmin(dummy_pred).item()]
                 else:
-                    dummy_loss = self.criterion(dummy_pred, pred)
+                    dummy_loss = self.criterion(self.dummy_pred, pred)
 
                 dummy_gradient = torch.autograd.grad(dummy_loss, model.parameters(), create_graph=True)
 
@@ -84,6 +84,9 @@ class Dlg:
 
             if iteration % parameter["log_interval"] == 0:
                 res.add_snapshot(self.dummy_data.cpu().detach().numpy())
+
+        self.final_dummy_labels = [self.dummy_label[x].argmax().item() for x in range(parameter["batch_size"])]
+        self.final_model_labels = [self.dummy_pred[0].argmax().item() for x in range(parameter["batch_size"])]
 
         res.update_figures()
         self.setting.result = res
