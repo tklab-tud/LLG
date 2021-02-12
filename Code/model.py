@@ -23,10 +23,13 @@ class Net1(nn.Module):
             nn.Linear(parameter["hidden"], parameter["num_classes"])
         )
 
+        self.dropout = nn.Dropout(p=parameter["dropout"])
+
     def forward(self, x):
         x = self.body(x)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
+        x = self.dropout(x)
         return x
 
 ######################################################################
