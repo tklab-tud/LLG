@@ -67,8 +67,8 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
                                 progress += 1
 
                                 # The name of the run for later identification and file naming
-                                run_name = "{}_{:03.0f}_{}_{}_{}_{}_{:07.0f}".format(
-                                    dataset, bs, balanced, version, extent, trainstep, i)
+                                run_name = "{}_{:03.0f}_{}_{}_{}_{}_{}_{:07.0f}".format(
+                                    dataset, bs, balanced, version, extent, trainstep, defense, i)
 
                                 # defining attacked batch. Later it will be filled with random samples if len(target) < bs
                                 if balanced:

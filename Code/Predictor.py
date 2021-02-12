@@ -56,7 +56,16 @@ class Predictor:
                 self.false += 1
 
         self.acc = self.correct / (self.correct + self.false)
-        print(self.setting.parameter["version"], ": ACC: ", self.acc)
+
+        defense = "none"
+        if self.setting.parameter["compression"]:
+            defense = "compression"
+        elif self.setting.parameter["differential_privacy"]:
+            defense = "differential_privacy"
+        elif self.setting.parameter["dropout"] != 0.0:
+            defense = "dropout"
+
+        print(f'{self.setting.parameter["version"]}: {defense}: ACC: {self.acc}')
 
 
     def print_prediction(self):
