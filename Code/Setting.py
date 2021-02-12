@@ -210,8 +210,6 @@ class Setting:
             "attack_results": {
                 "losses": self.result.losses,
                 "mses": self.result.mses.tolist(),
-                "final_model_labels":self.dlg.final_model_labels,
-                "final_dummy_labels":self.dlg.final_dummy_labels
                 # "snapshots": list(map(lambda x: x.tolist(), self.result.snapshots))
             },
             "prediction_results": {

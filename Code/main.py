@@ -14,10 +14,10 @@ def main():
         dataloader = Dataloader()
         experiment(dataloader=dataloader,
                    list_datasets=["MNIST"],
-                   list_bs=[2],
+                   list_bs=[1,2,4,8],
                    list_balanced=[True],
-                   list_versions=["dlg"],   # v1=LLG, v2=LLG+, "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
-                   n=2,                     # Amount of attacks
+                   list_versions=["dlg", "v2"],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
+                   n=10,                     # Amount of attacks
                    extent="reconstruct",        # "victim_side", "predict", "reconstruct"
                    trainsize=0,             # Iterations per Trainstep
                    trainsteps=0,           # Number of Attack&Train cycles
@@ -52,7 +52,12 @@ def main():
 
         # same_sign_check(run, path, dataset=None, balanced=None)
         # checks the split gradient_sum_sign x individual_grad_sign
-        same_sign_check(run, path)
+        #same_sign_check(run, path)
+
+        # Comparing accuracies
+        visualize_class_prediction_accuracy_vs_batchsize(run, path)
+
+
 
 
 
