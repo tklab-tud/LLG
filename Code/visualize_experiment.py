@@ -94,7 +94,7 @@ def same_sign_check(run, path, dataset=None, balanced=None):
 
 
 def magnitude_check(run, path, gradient_type="original_gradients", balanced=None, dataset=None, version=None,
-                    list_bs=None, trainstep=None, group_by_class=False):
+                    list_bs=None, trainstep=None, group_by="bs"):
     if gradient_type == "adjusted_gradients" and run["meta"] == "victim_side":
         print("Adjusted gradients can not be made for a quick run (extend=victim_side)")
         return
@@ -116,6 +116,17 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
     print("loading {} from json".format(gradient_type))
     for i, setting in enumerate(run):
         bs = run[setting]["parameter"]["batch_size"]
+
+        # get defense
+        if run[setting]["parameter"]["compression"]:
+            defense = "compression" #+ str(run[setting]["parameter"]["threshold"])
+        elif run[setting]["parameter"]["differential_privacy"]:
+            defense = "dp" #+ str(run[setting]["parameter"]["noise_multiplier"])
+        elif run[setting]["parameter"]["dropout"] != 0.0:
+            defense = "dropout" #+ str(run[setting]["parameter"]["dropout"])
+        else:
+            defense = "none"
+
         current_meta = setting.split("_")
         if (balanced is None or current_meta[2] == str(balanced)) and (
                 dataset is None or current_meta[0] == dataset) and (
@@ -125,9 +136,11 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
                 g = graphs[meta["list_bs"].index(bs)]
                 if bs in list_bs:
                     # Colors in the graph will be based on:
-                    if group_by_class:
+                    if group_by == "class":
                         row = "class" + str(label)
-                    else:
+                    elif group_by == "defense":
+                        row = defense
+                    elif group_by == "bs":
                         row = "bs" + str(bs)
 
                     if not isinstance(gradient, list):
@@ -155,9 +168,11 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
             name += dataset
         if version is not None:
             name += version
-        if group_by_class:
+        if group_by == "class":
             name += "_class_colors"
-        else:
+        elif group_by == "defenses":
+            name += "_defense_colors"
+        elif group_by == "bs":
             name += "_bs_colors"
         name += ".png"
         graph.save(path, name)
