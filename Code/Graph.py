@@ -173,6 +173,8 @@ class Graph:
             "class0": "#e6194B", "class1": '#800000', "class2": '#f58231', "class3": '#3cb44b', "class4": '#4363d8',
             "class5": '#000075', "class6": '#911eb4', "class7": '#000000', "class8": '#f032e6', "class9": "#ff0044",
 
+            "none": "#e6194B", "compression": '#800000', "dp": '#f58231', "dropout": '#3cb44b',
+
             "Random (IID)": "#e6194B",
             "LLG (IID)": '#3cb44b',
             "LLG+ (IID)": '#4363d8',
@@ -204,6 +206,8 @@ class Graph:
 
             "class0": ".", "class1": '*', "class2": '8', "class3": 'v', "class4": 's',
             "class5": 'p', "class6": 'D', "class7": 'P', "class8": '^', "class9": 'h',
+
+            "none": ".", "compression": '*', "dp": '8', "dropout": 'v',
 
             "Random (IID)": "--",
             "LLG (IID)": (0, (3, 5, 1, 5, 1, 5)),
