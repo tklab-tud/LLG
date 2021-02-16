@@ -170,6 +170,11 @@ class Setting:
             model.apply(weights_init)
         elif self.parameter["model"] == "ResNet":
             model = resnet18(self.parameter)
+        elif self.parameter["model"] == "MLP":
+            len_in = 1
+            for x in self.parameter["shape_img"]:
+                len_in *= x
+            model = MLP(len_in, self.parameter["hidden"], self.parameter["num_classes"], dropout=self.parameter["dropout"])
         else:
             exit("No model found for: ", self.parameter["model"])
 

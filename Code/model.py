@@ -206,14 +206,33 @@ def resnet18(parameter):
     return ResNet(in_channels, n_classes, dropout=parameter["dropout"], block=block, deepths=[2, 2, 2, 2])
 
 
+# multi-layer perceptron
+# source: https://git.tk.informatik.tu-darmstadt.de/aidmar.wainakh/code-aidmar-HFL_PyTorch
+class MLP(nn.Module):
+    def __init__(self, dim_in, dim_hidden, dim_out, dropout: float=0.0):
+        super(MLP, self).__init__()
+        self.layer_input = nn.Linear(dim_in, dim_hidden)
+        self.relu = nn.ReLU()
+        self.dropout = nn.Dropout()
+        self.layer_hidden1 = nn.Linear(dim_hidden, dim_hidden)
+        self.relu = nn.ReLU()
+        self.dropout = nn.Dropout()
+        self.layer_hidden2 = nn.Linear(dim_hidden, dim_out)
+        self.softmax = nn.Softmax(dim=1)
+        self.dropout = nn.Dropout(dropout)
 
-
-
-
-
-
-
-
+    def forward(self, x):
+        x = x.view(-1, x.shape[1]*x.shape[-2]*x.shape[-1])
+        x = self.layer_input(x)
+        x = self.dropout(x)
+        x = self.relu(x)
+        x = self.layer_hidden1(x)
+        x = self.dropout(x)
+        x = self.relu(x)
+        x = self.layer_hidden2(x)
+        x = self.softmax(x)
+        x = self.dropout(x)
+        return x
 
 
 ######################################################################
