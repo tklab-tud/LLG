@@ -168,6 +168,9 @@ class Setting:
         if self.parameter["model"] == "LeNet":
             model = Net1(self.parameter)
             model.apply(weights_init)
+        elif self.parameter["model"] == "LeNetNew":
+            model = LeNet(self.parameter)
+            model.apply(weights_init)
         elif self.parameter["model"] == "ResNet":
             model = resnet18(self.parameter)
         elif self.parameter["model"] == "MLP":

@@ -235,6 +235,33 @@ class MLP(nn.Module):
         return x
 
 
+# proper LeNet
+class LeNet(nn.Module):
+    def __init__(self, parameter):
+        super(LeNet, self).__init__()
+
+        self.body = nn.Sequential(
+            nn.Conv2d(parameter["channel"], 6, kernel_size=28, padding=0, stride=1),
+            nn.AdaptiveAvgPool2d(14),
+            nn.Conv2d(6, 16, kernel_size=10, padding=0, stride=1),
+            nn.AdaptiveAvgPool2d(5),
+            nn.Conv2d(16, 120, kernel_size=5, padding=0, stride=1),
+        )
+        self.fc = nn.Sequential(
+            nn.Linear(120, 84),
+            nn.Linear(84, parameter["num_classes"]),
+        )
+
+        self.dropout = nn.Dropout(p=parameter["dropout"])
+
+    def forward(self, x):
+        x = self.body(x)
+        x = torch.flatten(x, start_dim=1)
+        x = self.fc(x)
+        x = self.dropout(x)
+        return x
+
+
 ######################################################################
 
 
