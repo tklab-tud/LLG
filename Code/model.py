@@ -23,10 +23,13 @@ class Net1(nn.Module):
             nn.Linear(parameter["hidden"], parameter["num_classes"])
         )
 
+        self.dropout = nn.Dropout(p=parameter["dropout"])
+
     def forward(self, x):
         x = self.body(x)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
+        x = self.dropout(x)
         return x
 
 ######################################################################
@@ -183,14 +186,16 @@ class ResnetDecoder(nn.Module):
 
 class ResNet(nn.Module):
 
-    def __init__(self, in_channels, n_classes, *args, **kwargs):
+    def __init__(self, in_channels, n_classes, dropout: float=0.0, *args, **kwargs):
         super().__init__()
         self.encoder = ResNetEncoder(in_channels, *args, **kwargs)
         self.decoder = ResnetDecoder(self.encoder.blocks[-1].blocks[-1].expanded_channels, n_classes)
+        self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
         x = self.encoder(x)
         x = self.decoder(x)
+        x = self.dropout(x)
         return x
 
 def resnet18(parameter):
@@ -198,7 +203,7 @@ def resnet18(parameter):
     n_classes = parameter["num_classes"]
     block = ResNetBasicBlock
 
-    return ResNet(in_channels, n_classes, block=block, deepths=[2, 2, 2, 2])
+    return ResNet(in_channels, n_classes, dropout=parameter["dropout"], block=block, deepths=[2, 2, 2, 2])
 
 
 
