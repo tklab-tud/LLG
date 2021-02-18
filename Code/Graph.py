@@ -158,12 +158,12 @@ class Graph:
     def save(self, path, name):
         if not os.path.exists(path):
             os.makedirs(path)
-        self.fig.savefig(path + name, dpi=600)
+        self.fig.savefig(path + name, dpi=600, format='pdf')
 
     def save_f(self, f):
         if f is None:
             return
-        self.fig.savefig(f.name, dpi=600)
+        self.fig.savefig(f.name, dpi=600, format='pdf')
 
     def color(self, s):
         color = {
