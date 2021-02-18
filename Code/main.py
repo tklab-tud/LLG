@@ -80,15 +80,19 @@ def main():
 
     #Visualization Set 1
     elif job == "Set1-visualization":
-        print("todo")
+        visualize_class_prediction_accuracy_vs_batchsize(run, path)
 
     # Visualization Set 2
     elif job == "Set2-visualization":
-        print("todo")
+        visualize_class_prediction_accuracy_vs_batchsize(run, path)
 
     # Visualization Set 3
     elif job == "Set3-visualization":
-        print("todo")
+        visualize_class_prediction_accuracy_vs_training(run, path)
+
+    # Visualization Set 4
+    elif job == "Set4-visualization":
+        visualize_class_prediction_accuracy_vs_training(run, path)
 
 
     else:
