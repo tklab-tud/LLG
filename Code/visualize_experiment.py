@@ -174,7 +174,7 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
             name += "_defense_colors"
         elif group_by == "bs":
             name += "_bs_colors"
-        name += ".png"
+        name += ".pdf"
         graph.save(path, name)
         # graph.show()
         graph.fig.clf()
@@ -217,7 +217,7 @@ def heatmap(run, path, adjusted=True, balanced=None, dataset=None, version=None,
         name += "balanced" if balanced else "unbalanced"
     if adjusted is not None:
         name += "adjusted" if adjusted else "original"
-    name += ".png"
+    name += ".pdf"
     graph.save(path, name)
     graph.fig.clf()
 
@@ -298,7 +298,7 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
         name += "_balanced" if balanced else "_unbalanced"
     if dataset is not None:
         name += "_" + dataset
-    name += ".png"
+    name += ".pdf"
 
     graph.save(path, name)
 
@@ -345,7 +345,7 @@ def visualize_hellinger_vs_batchsize(run, path, balanced=None, dataset=None, ver
 
     # graph.show()
 
-    graph.save(path, "hellinger_vs_batchsize.png")
+    graph.save(path, "hellinger_vs_batchsize.pdf")
 
 
 # Experiment 1.2
@@ -382,7 +382,7 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
         name += "_balanced" if balanced else "_unbalanced"
     if dataset is not None:
         name += "_" + dataset
-    name += ".png"
+    name += ".pdf"
 
     graph.save(path, name)
 
@@ -427,7 +427,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
 
     # graph.show()
 
-    graph.save(path, "class_prediction_accuracy_vs_training.png")
+    graph.save(path, "class_prediction_accuracy_vs_training.pdf")
 
 
 # Experiment 3: Good Fidelity
@@ -474,7 +474,7 @@ def visualize_good_fidelity(run, path, fidelitysteps, bs, balanced):
 
     graph.plot_line()
     # graph.show()
-    graph.save(path, "good_fidelity.png")
+    graph.save(path, "good_fidelity.pdf")
 
 
 def load_json():
