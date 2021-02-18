@@ -6,19 +6,19 @@ from Dataloader import Dataloader
 def main():
     ############## Build your attack here ######################
 
-    new = True
-    new = False
+    job = "custom-experiment"
+    #job = "custom-visualize"
 
-    if new:
+    if job == "custom-experiment":
 
         dataloader = Dataloader()
         experiment(dataloader=dataloader,
                    list_datasets=["MNIST"],
-                   list_bs=[8,16,32,64],
+                   list_bs=[8,64],
                    list_balanced=[True],
-                   list_versions=["dlg", "v2"],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
-                   n=1,                     # Amount of attacks
-                   extent="reconstruct",        # "victim_side", "predict", "reconstruct"
+                   list_versions=["v3-zero", "v3-one", "v3-random"],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
+                   n=100,                     # Amount of attacks
+                   extent="predict",        # "victim_side", "predict", "reconstruct"
                    trainsize=0,             # Iterations per Trainstep
                    trainsteps=0,           # Number of Attack&Train cycles
                    path=None,
@@ -32,7 +32,7 @@ def main():
 
                    )
 
-    else:
+    elif job == "custom-visualize":
 
         ########### Load an existing json an create graphs from it ##########
 
@@ -58,7 +58,41 @@ def main():
         visualize_class_prediction_accuracy_vs_batchsize(run, path)
 
 
+    # Set 1 and 2 generation
+    elif job == "Untrained_MNIST-experiment":
+        print("todo")
+    elif job == "Untrained_CIFAR-experiment":
+        print("todo")
+    elif job == "Untrained_CELEB-A-experiment":
+        print("todo")
+    elif job == "Untrained_CIFAR-experiment":
+        print("todo")
 
+    # Set 3 generation
+    elif job == "Trained_MNIST-experiment":
+        print("todo")
+    elif job == "Trained_CIFAR-experiment":
+        print("todo")
+    elif job == "Trained_CELEB-A-experiment":
+        print("todo")
+    elif job == "Trained_CIFAR-experiment":
+        print("todo")
+
+    #Visualization Set 1
+    elif job == "Set1-visualization":
+        print("todo")
+
+    # Visualization Set 2
+    elif job == "Set2-visualization":
+        print("todo")
+
+    # Visualization Set 3
+    elif job == "Set3-visualization":
+        print("todo")
+
+
+    else:
+        print("Unknown job")
 
 
     ############################################################
