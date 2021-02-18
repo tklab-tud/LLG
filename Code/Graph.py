@@ -223,7 +223,7 @@ class Graph:
             "model accuracy": "solid"
 
         }
-        return style[s] if style.__contains__(s) else "."
+        return style[s] if style.__contains__(s) else "-"
 
     def order(self, s):
         order = {
