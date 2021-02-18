@@ -13,8 +13,8 @@ def main():
 
         dataloader = Dataloader()
         experiment(dataloader=dataloader,
-                   list_datasets=["MNIST"],
-                   list_bs=[8,64],
+                   list_datasets=["MNIST", "CIFAR", "SVHN"],
+                   list_bs=[8,16,32,64],
                    list_balanced=[True],
                    list_versions=["v3-zero", "v3-one", "v3-random"],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
                    n=100,                     # Amount of attacks
