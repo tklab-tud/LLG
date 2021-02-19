@@ -22,8 +22,8 @@ def main():
                     list_versions=["dlg"],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
                     n=100,                     # Amount of attacks
                     extent="predict",        # "victim_side", "predict", "reconstruct"
-                    trainsize=0,             # Iterations per Trainstep
-                    trainsteps=0,           # Number of Attack&Train cycles
+                    trainsize=100,             # Iterations per Trainstep
+                    trainsteps=100,           # Number of Attack&Train cycles
                     path=None,
                     model="LeNet",
                     store_individual_gradients=False, # Will store the ~500 gradients connected to one output node and not just their sum
