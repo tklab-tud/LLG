@@ -60,6 +60,10 @@ def main():
         # Comparing accuracies
         visualize_class_prediction_accuracy_vs_batchsize(run, path)
 
+        # visualize_class_prediction_accuracy_vs_training(run, path, dataset="MNIST")
+        # visualize_class_prediction_accuracy_vs_training(run, path, dataset="CIFAR")
+        # visualize_class_prediction_accuracy_vs_training(run, path, dataset="CELEB-A-male")
+        # visualize_class_prediction_accuracy_vs_training(run, path, dataset="SVHN")
 
     # Set 1 and 2 generation
     elif job == "Untrained_MNIST-experiment":
