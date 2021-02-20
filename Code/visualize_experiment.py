@@ -427,7 +427,14 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
 
     # graph.show()
 
-    graph.save(path, "class_prediction_accuracy_vs_training.pdf")
+    name = "class_prediction_accuracy_vs_training"
+    if balanced is not None:
+        name += "_balanced" if balanced else "_unbalanced"
+    if dataset is not None:
+        name += "_" + dataset
+    name += ".pdf"
+
+    graph.save(path, name)
 
 
 # Experiment 3: Good Fidelity
