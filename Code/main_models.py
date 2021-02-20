@@ -7,8 +7,7 @@ def main():
     ############## Build your attack here ######################
 
     dlg_iterations = [100,200,400,800]
-    models = ["LeNet", "LeNetNew"] # "LeNet", "LeNetNew" already done
-    #models = ["MLP", "ResNet"] # "LeNet", "LeNetNew" already done
+    models = ["LeNet", "LeNetNew", "MLP", "ResNet"]
 
     job = "custom-experiment"
     #job = "custom-visualize"
