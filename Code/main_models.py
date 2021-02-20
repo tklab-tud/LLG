@@ -7,7 +7,8 @@ def main():
     ############## Build your attack here ######################
 
     dlg_iterations = [100,200,400,800]
-    models = ["MLP", "ResNet"] # "LeNet", "LeNetNew" already done
+    models = ["LeNet", "LeNetNew"] # "LeNet", "LeNetNew" already done
+    #models = ["MLP", "ResNet"] # "LeNet", "LeNetNew" already done
 
     job = "custom-experiment"
     #job = "custom-visualize"
@@ -23,7 +24,7 @@ def main():
                     list_versions=["v2"],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
                     n=100,                     # Amount of attacks
                     extent="predict",        # "victim_side", "predict", "reconstruct"
-                    trainsize=100,             # Iterations per Trainstep
+                    trainsize=10000,             # Iterations per Trainstep
                     trainsteps=10,           # Number of Attack&Train cycles
                     path=None,
                     model=model,
