@@ -174,7 +174,7 @@ class Setting:
         elif self.parameter["model"] == "ResNet":
             model = resnet18(self.parameter)
         elif self.parameter["model"] == "MLP":
-            len_in = 1
+            len_in = self.parameter["channel"]
             for x in self.parameter["shape_img"]:
                 len_in *= x
             model = MLP(len_in, self.parameter["hidden"], self.parameter["num_classes"], dropout=self.parameter["dropout"])
