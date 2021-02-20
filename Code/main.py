@@ -6,7 +6,7 @@ from Dataloader import Dataloader
 def main():
     ############## Build your attack here ######################
 
-    dlg_iterations = [0]
+    dlg_iterations = [100]
 
     job = "custom-experiment"
     #job = "custom-visualize"
@@ -17,13 +17,13 @@ def main():
         for dlg_iteration in dlg_iterations:
             experiment(dataloader=dataloader,
                     list_datasets=["MNIST"],
-                    list_bs=[8,16,32,64],
-                    list_balanced=[True],
-                    list_versions=["v3-zero", "v3-one", "v3-random"],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
+                    list_bs=[1,2,4,8,16,32,64,128],
+                    list_balanced=[False],
+                    list_versions=["dlg"],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
                     n=100,                     # Amount of attacks
                     extent="predict",        # "victim_side", "predict", "reconstruct"
-                    trainsize=100,             # Iterations per Trainstep
-                    trainsteps=100,           # Number of Attack&Train cycles
+                    trainsize=0,             # Iterations per Trainstep
+                    trainsteps=0,           # Number of Attack&Train cycles
                     path=None,
                     model="LeNet",
                     store_individual_gradients=False, # Will store the ~500 gradients connected to one output node and not just their sum
