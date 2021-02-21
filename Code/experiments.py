@@ -44,8 +44,6 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
     todo = len(list_datasets)* len(list_bs)* len(list_balanced)*len(list_versions)*len(defenses)*n*(trainsteps+1)
     for dataset in list_datasets:
         for trainstep in range(trainsteps+1):
-            if not trainsteps == 0:
-                test(setting)
 
             for bs in list_bs:
                 for balanced in list_balanced:
@@ -88,6 +86,9 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
                                                   differential_privacy=differential_privacy,
                                                   dropout=dropout,
                                                   **more_args)
+
+                                if not trainsteps == 0:
+                                    test(setting)
 
                                 # run the attack
                                 setting.attack(extent)

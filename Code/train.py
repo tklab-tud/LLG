@@ -43,12 +43,14 @@ def train(setting, train_size):
     device = setting.device
     model = setting.model
 
+    model.train()
+
     print("Training for {} batches".format(train_size))
 
     dataloader = setting.dataloader
 
-    #optimizer = torch.optim.SGD(model.parameters(), lr=parameter["train_lr"])
-    optimizer = torch.optim.LBFGS(model.parameters(), lr=parameter["train_lr"])
+    optimizer = torch.optim.SGD(model.parameters(), lr=parameter["train_lr"])
+    #optimizer = torch.optim.LBFGS(model.parameters(), lr=parameter["train_lr"])
 
     criterion = torch.nn.CrossEntropyLoss().to(device)
 
@@ -84,4 +86,4 @@ def train(setting, train_size):
         optimizer.step(closure)
 
 
-    test(setting)
+    #test(setting)
