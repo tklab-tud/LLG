@@ -20,7 +20,7 @@ def main():
             experiment(dataloader=dataloader,
                     list_datasets=[dataset],
                     list_bs=[1,2,4,8,16,32,64,128],
-                    list_balanced=[False],
+                    list_balanced=[True, False],
                     list_versions=["v1", "v2", v3[dataset], "dlg", "random"],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
                     n=1000,                     # Amount of attacks
                     extent="predict",        # "victim_side", "predict", "reconstruct"
