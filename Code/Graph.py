@@ -175,6 +175,13 @@ class Graph:
 
             "none": "#e6194B", "compression": '#800000', "dp": '#f58231', "dropout": '#3cb44b',
 
+            "Random": "#e6194B",
+            "LLG": '#3cb44b',
+            "LLG+": '#4363d8',
+            "LLG*": '#f032e6',
+            "iDLG": "#800000",
+            "DLG": "#911eb4",
+
             "Random (IID)": "#e6194B",
             "LLG (IID)": '#3cb44b',
             "LLG+ (IID)": '#4363d8',
@@ -209,6 +216,13 @@ class Graph:
 
             "none": ".", "compression": '*', "dp": '8', "dropout": 'v',
 
+            "Random": "--",
+            "LLG": (0, (3, 5, 1, 5, 1, 5)),
+            "LLG+": '-',
+            "LLG*": '-.',
+            "iDLG": (0, (3, 10, 1, 10, 1, 10)),
+            "DLG": (0, (3, 1, 1, 1, 1, 1)),
+
             "Random (IID)": "--",
             "LLG (IID)": (0, (3, 5, 1, 5, 1, 5)),
             "LLG+ (IID)": '-',
@@ -229,6 +243,13 @@ class Graph:
         order = {
             "bs1": 1, "bs2": 2, "bs4": 3, "bs8": 4, "bs16": 5,
             "bs32": 6, "bs64": 7, "bs128": 8, "bs256": 9,
+
+            "LLG": 0,
+            "LLG*": 2,
+            "LLG+": 4,
+            "DLG": 6,
+            "iDLG": 8,
+            "Random": 10,
 
             "Random (IID)": 4,
             "LLG (IID)": 2,
