@@ -486,6 +486,27 @@ def visualize_good_fidelity(run, path, fidelitysteps, bs, balanced):
     graph.save(path, "good_fidelity.pdf")
 
 
+def get_meta(run, cut_meta=False):
+
+    meta = run["meta"].copy()
+    if cut_meta:
+        run.__delitem__("meta")
+
+    return run, meta
+
+def compare_meta(meta1, meta2):
+    for key in meta1.keys():
+        elem1 = meta1[key]
+        elem2 = meta2[key]
+        if elem1 != elem2:
+            print(key, ":", elem1, "or", elem2)
+
+def merge_runs(run_meta, run):
+
+    run_meta.update(run)
+
+    return run_meta
+
 def load_json():
     Tk().withdraw()
     filename = askopenfilename(initialdir="./results", defaultextension='.json',
