@@ -281,11 +281,12 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
         if (balanced is None or current_meta[2] == str(balanced)) and (
                 dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
             label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
-                current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
-                current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "DLG" if \
-            current_meta[3] == "dlg" else "iDLG" if current_meta[3] == "idlg" else "?"
-            label += " "
-            label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
+                current_meta[3] == "random" else "LLG*" if current_meta[3] in ["v3-one",  "v3-zero", "v3-random"] else "DLG" if \
+                current_meta[3] == "dlg" else "iDLG" if current_meta[3] == "idlg" else "?"
+                # current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
+                # current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "DLG" if \
+            # label += " "
+            # label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
             graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"], str(current_meta[1]))
 
@@ -361,10 +362,11 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
     for id, run_name in enumerate(run):
         current_meta = run_name.split("_")
         label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
-            current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
-            current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "?"
-        label += " "
-        label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
+            current_meta[3] == "random" else "LLG*" if current_meta[3] in ["v3-one",  "v3-zero", "v3-random"] else "?"
+            # current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
+            # current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "?"
+        # label += " "
+        # label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
         if (balanced is None or current_meta[2] == str(balanced)) and (
                 dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
