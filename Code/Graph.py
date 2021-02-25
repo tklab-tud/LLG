@@ -7,7 +7,7 @@ import itertools
 
 
 class Graph:
-    def __init__(self, xlabel, ylabel, y_range=None, ylabel2=None):
+    def __init__(self, xlabel, ylabel, ylabel2=None, y_range=None):
         self.data = []
         self.fig, self.subplot = plt.subplots(1, 1)
         self.subplot.set_xlabel(xlabel)
