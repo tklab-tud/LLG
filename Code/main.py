@@ -116,6 +116,7 @@ def main():
         run, path = load_json()
         magnitude_check(run, path, gradient_type="original_gradients", group_by="bs", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True, legend_location="lower right")
         magnitude_check(run, path, gradient_type="adjusted_gradients", group_by="bs", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True, legend_location="lower right")
+        heatmap(run, path, gradient_type="original_gradients", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True)
 
     else:
         print("Unknown job")

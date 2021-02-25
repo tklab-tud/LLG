@@ -109,8 +109,8 @@ class Graph:
 
         x_max = max([x for _, _, x in self.data])
         x_min = min([x for _, _, x in self.data])
-        y_max = max([y for _, y, _ in self.data])
-        y_min = min([y for _, y, _ in self.data])
+        y_max = self.y_range[1]#max([y for _, y, _ in self.data])
+        y_min = self.y_range[0]#min([y for _, y, _ in self.data])
         y_span = y_max - y_min
         x_span = x_max - x_min
 
@@ -121,12 +121,16 @@ class Graph:
             heat[x][heat_y] = min(heat[x][heat_y] + 1, 1000)
 
         heat = np.transpose(heat)
-        self.subplot.set_xticks(range(x_min, x_max, 1))
-        plt.imshow(heat, cmap='hot', interpolation='spline16', extent=[0, x_max, y_min, y_max], aspect=0.05)
+        plt.xticks(range(0, x_max + 1, max(1, x_max // 10)))
+        if self.y_range is not None:
+            plt.ylim(self.y_range[0], self.y_range[-1])
+
+        plt.imshow(heat, cmap='hot', interpolation='spline16', extent=[0, x_max, y_min, y_max], aspect='auto')
 
         norm = matplotlib.colors.Normalize(vmin=np.min(heat), vmax=np.max(heat), clip=False)
         cbar = self.subplot.figure.colorbar(plt.cm.ScalarMappable(norm=norm, cmap='hot'))
         cbar.ax.set_ylabel("Amount of Identifying Values", rotation=-90, va="bottom")
+
 
     def take_average(self):
         # Repaces data with the averages for every label,y combination

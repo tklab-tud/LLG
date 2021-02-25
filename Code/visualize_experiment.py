@@ -180,43 +180,43 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
         graph.fig.clf()
 
 
-def heatmap(run, path, adjusted=True, balanced=None, dataset=None, version=None, list_bs=None):
-    if adjusted and run["meta"] == "victim_side":
-        print("Adjustment can only be made for a run with extent of prediction/full")
-        return
+def heatmap(run, path, gradient_type="original_gradients", balanced=None, dataset=None, version=None, list_bs=None, y_range=None, trainstep=0):
 
     if list_bs is None:
         list_bs = run["meta"]["list_bs"]
 
     run = run.copy()
 
-    gradienttype = "adjusted_gradients" if adjusted else "original_gradients"
 
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
-    graph = Graph("Label occurrences", "Gradient value")
+    graph = Graph("Label occurrences", "Gradient value", y_range=y_range)
 
-    print("loading {} from json".format(gradienttype))
+    print("loading {} from json".format(gradient_type))
     for i, setting in enumerate(run):
         bs = run[setting]["parameter"]["batch_size"]
         current_meta = setting.split("_")
         if (balanced is None or current_meta[2] == str(balanced)) and (
                 dataset is None or current_meta[0] == dataset) and (
-                version is None or version == current_meta[3]) and (
-                bs in list_bs):
-            for label, gradient in enumerate(run[setting]["prediction_results"][gradienttype]):
+                trainstep is None or current_meta[5] == str(trainstep)) and (
+                version is None or version == current_meta[3]):
+            for label, gradient in enumerate(run[setting]["prediction_results"][gradient_type]):
                 graph.add_datapoint("bs" + str(bs), gradient, run[setting]["parameter"]["orig_label"].count(label))
 
     print("Creating graph")
     graph.sort()
     graph.plot_heatmap()
     # graph.show()
-    name = "Heatmap_"
+    name = "Heatmap_BS_{}_".format( gradient_type)
+    if list_bs is not None:
+        name += str(list_bs)
     if balanced is not None:
         name += "balanced" if balanced else "unbalanced"
-    if adjusted is not None:
-        name += "adjusted" if adjusted else "original"
+    if dataset is not None:
+        name += dataset
+    if version is not None:
+        name += version
     name += ".pdf"
     graph.save(path, name)
     graph.fig.clf()
