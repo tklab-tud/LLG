@@ -17,14 +17,14 @@ def main():
         dataloader = Dataloader()
         for model in models:
             experiment(dataloader=dataloader,
-                    list_datasets=["MNIST", "CIFAR", "CELEB-A-male", "SVHN"],
-                    list_bs=[32],
-                    list_balanced=[True],
+                    list_datasets=["MNIST"],
+                    list_bs=[1,2,4,8,16,32,64,128],
+                    list_balanced=[True, False],
                     list_versions=["v2"],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
                     n=100,                     # Amount of attacks
                     extent="predict",        # "victim_side", "predict", "reconstruct"
-                    trainsize=10000,             # Iterations per Trainstep
-                    trainsteps=10,           # Number of Attack&Train cycles
+                    trainsize=100,             # Iterations per Trainstep
+                    trainsteps=100,           # Number of Attack&Train cycles
                     path=None,
                     model=model,
                     store_individual_gradients=False, # Will store the ~500 gradients connected to one output node and not just their sum
