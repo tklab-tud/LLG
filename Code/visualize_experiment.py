@@ -94,7 +94,7 @@ def same_sign_check(run, path, dataset=None, balanced=None):
 
 
 def magnitude_check(run, path, gradient_type="original_gradients", balanced=None, dataset=None, version=None,
-                    list_bs=None, trainstep=None, group_by="bs"):
+                    list_bs=None, trainstep=None, group_by="bs", y_range=None, legend_location="best"):
     if gradient_type == "adjusted_gradients" and run["meta"] == "victim_side":
         print("Adjusted gradients can not be made for a quick run (extend=victim_side)")
         return
@@ -109,9 +109,9 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
 
     graphs = []
     for _ in meta["list_bs"]:
-        graphs.append(Graph("Label occurrences", "Gradient value"))
+        graphs.append(Graph("Label occurrences", "Gradient value", y_range=y_range))
 
-    composed_graph = Graph("Label occurrences", "Gradient value")
+    composed_graph = Graph("Label occurrences", "Gradient value", y_range=y_range)
 
     print("loading {} from json".format(gradient_type))
     for i, setting in enumerate(run):
@@ -159,7 +159,7 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
     for id, graph in enumerate(graphs):
         print("Creating graph: " + str(filesuffix[id]))
         graph.sort()
-        graph.plot_scatter()
+        graph.plot_scatter(location=legend_location)
         # graph.show()
         name = "Magnitude_BS_{}_{}_".format(filesuffix[id], gradient_type)
         if balanced is not None:

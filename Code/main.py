@@ -55,7 +55,7 @@ def main():
         # magnitude_check plots a scatterplot of the gradients of a run.
         # gradient_type: "individual_gradients", "original_gradients", "adjusted_gradients"
         # Grads before summing up, after summing up and after adjustment
-        # magnitude_check(run, path, gradient_type="individual_gradients", group_by_class=True)
+        # magnitude_check(run, path, gradient_type="individual_gradients", group_by="class")
 
 
         # negativ_value_check partitions the gradients into 4 categories: (non)present x sign
@@ -111,6 +111,11 @@ def main():
     elif job == "Set4-visualization":
         visualize_class_prediction_accuracy_vs_training(run, path)
 
+    # Visualization Set 5
+    elif job == "Set5-visualization":
+        run, path = load_json()
+        magnitude_check(run, path, gradient_type="original_gradients", group_by="bs", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True, legend_location="lower right")
+        magnitude_check(run, path, gradient_type="adjusted_gradients", group_by="bs", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True, legend_location="lower right")
 
     else:
         print("Unknown job")

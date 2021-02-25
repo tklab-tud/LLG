@@ -7,7 +7,7 @@ import itertools
 
 
 class Graph:
-    def __init__(self, xlabel, ylabel, ylabel2=None):
+    def __init__(self, xlabel, ylabel, y_range=None, ylabel2=None):
         self.data = []
         self.fig, self.subplot = plt.subplots(1, 1)
         self.subplot.set_xlabel(xlabel)
@@ -20,6 +20,7 @@ class Graph:
             self.subplot2 = None
 
         self.subplot.use_sticky_edges = True
+        self.y_range = y_range
 
     def add_datapoint(self, line, y, x=0):
         self.data.append((line, y, x,))
@@ -101,7 +102,8 @@ class Graph:
                 order.append(self.order(label.split(",")[0]))
             labels, handles, order = zip(*sorted(zip(labels, handles, order), key=lambda t: t[2]))
             plt.legend(handles, labels, prop={'size': 11}, loc=location, bbox_to_anchor=move)
-            plt.legend(loc="lower right")
+            if self.y_range is not None:
+                plt.set_ylim(self.y_range[0], self.y_range[-1])
 
     def plot_heatmap(self):
 
