@@ -29,8 +29,13 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
         "model": model
     }}
 
+    pre_run_test = False
+    if not trainsteps == 0:
+        pre_run_test = True
+
     if len(defenses) == 0:
         defenses.append("none")
+
 
     if "dropout" in defenses:
         dropout_save = dropout
@@ -87,8 +92,9 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
                                                   dropout=dropout,
                                                   **more_args)
 
-                                if not trainsteps == 0:
+                                if pre_run_test:
                                     test(setting)
+                                    pre_run_test = False
 
                                 # run the attack
                                 setting.attack(extent)
