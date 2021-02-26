@@ -172,7 +172,7 @@ class Setting:
             model = LeNet(self.parameter)
             model.apply(weights_init)
         elif self.parameter["model"] == "ResNet":
-            model = resnet18(self.parameter)
+            model = resnet20(self.parameter)
         elif self.parameter["model"] == "MLP":
             len_in = self.parameter["channel"]
             for x in self.parameter["shape_img"]:
