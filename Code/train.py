@@ -86,4 +86,4 @@ def train(setting, train_size):
         optimizer.step(closure)
 
 
-    #test(setting)
+    test(setting)
