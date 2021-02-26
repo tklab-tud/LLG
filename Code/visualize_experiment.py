@@ -297,11 +297,11 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                 if models:
                     label = run[run_name]["parameter"]["model"]
                     if label == "LeNet":
-                        label = "ConvNet"
+                        label = "CNN"
                     elif label == "LeNetNew":
                         label = "LeNet"
                     elif label == "MLP":
-                        label = "MLP"
+                        label = "FCNN"
 
                 graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"], str(current_meta[1]))
 
