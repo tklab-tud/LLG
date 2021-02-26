@@ -75,7 +75,7 @@ def train(setting, train_size):
             data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"],
                                                 setting.parameter["batch_size"])
 
-            #data, target = data.to(device), target.to(device)
+            data, target = data.to(device), target.to(device)
 
             output = model(data)
 
