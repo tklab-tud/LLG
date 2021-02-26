@@ -268,27 +268,42 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
 
 
 # Experiment 1.1
-def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None):
+def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, models=False):
     run = run.copy()
 
     graph = Graph("Batch Size", "Label extraction accuracy")
-    meta = run["meta"].copy()
-    run.__delitem__("meta")
 
-    # Prediction Acc
-    for id, run_name in enumerate(run):
-        current_meta = run_name.split("_")
-        if (balanced is None or current_meta[2] == str(balanced)) and (
-                dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
-            label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
-                current_meta[3] == "random" else "LLG*" if current_meta[3] in ["v3-one",  "v3-zero", "v3-random"] else "DLG" if \
-                current_meta[3] == "dlg" else "iDLG" if current_meta[3] == "idlg" else "?"
-                # current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
-                # current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "DLG" if \
-            # label += " "
-            # label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
+    if not isinstance(run, list):
+        runs = [run]
+    else:
+        runs = run
 
-            graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"], str(current_meta[1]))
+    for run in runs:
+        # Prediction Acc
+        for id, run_name in enumerate(run):
+            if run_name == "meta":
+                continue
+            current_meta = run_name.split("_")
+            if (balanced is None or current_meta[2] == str(balanced)) and (
+                    dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
+                label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
+                    current_meta[3] == "random" else "LLG*" if current_meta[3] in ["v3-one",  "v3-zero", "v3-random"] else "DLG" if \
+                    current_meta[3] == "dlg" else "iDLG" if current_meta[3] == "idlg" else "?"
+                    # current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
+                    # current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "DLG" if \
+                # label += " "
+                # label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
+
+                if models:
+                    label = run[run_name]["parameter"]["model"]
+                    if label == "LeNet":
+                        label = "ConvNet"
+                    elif label == "LeNetNew":
+                        label = "LeNet"
+                    elif label == "MLP":
+                        label = "MLP"
+
+                graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"], str(current_meta[1]))
 
     graph.plot_line()
 
@@ -500,6 +515,14 @@ def compare_meta(meta1, meta2):
         elem2 = meta2[key]
         if elem1 != elem2:
             print(key, ":", elem1, "or", elem2)
+
+def append_runs(run_meta, run):
+
+    if not isinstance(run_meta, list):
+        run_meta = [run_meta]
+    run_meta.append(run)
+
+    return run_meta
 
 def merge_runs(run_meta, run):
 

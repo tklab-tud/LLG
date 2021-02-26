@@ -45,12 +45,15 @@ def main():
         run, path = load_json()
         # _, meta = get_meta(run)
 
-        # run2, path2 = load_json()
-        # run2, meta2 = get_meta(run2, cut_meta=True)
+        # for i in range(2):
+        #     run2, path2 = load_json()
+        #     run2, meta2 = get_meta(run2, cut_meta=True)
 
-        # compare_meta(meta, meta2)
+        #     compare_meta(meta, meta2)
 
-        # run = merge_runs(run, run2)
+        #     # run = merge_runs(run, run2)
+        #     # for models
+        #     run = append_runs(run, run2)
 
         # magnitude_check plots a scatterplot of the gradients of a run.
         # gradient_type: "individual_gradients", "original_gradients", "adjusted_gradients"
@@ -68,7 +71,10 @@ def main():
         #same_sign_check(run, path)
 
         # Comparing accuracies
-        visualize_class_prediction_accuracy_vs_batchsize(run, path)
+        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=True)
+        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=False)
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=True, models=True)
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=False, models=True)
 
         # visualize_class_prediction_accuracy_vs_training(run, path, dataset="MNIST")
         # visualize_class_prediction_accuracy_vs_training(run, path, dataset="CIFAR")
