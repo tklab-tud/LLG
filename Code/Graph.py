@@ -188,9 +188,9 @@ class Graph:
             "iDLG": "#800000",
             "DLG": "#911eb4",
 
-            "ConvNet": '#3cb44b',
+            "CNN": '#3cb44b',
             "LeNet": '#4363d8',
-            "MLP": '#f032e6',
+            "FCNN": '#f032e6',
 
             "Random (IID)": "#e6194B",
             "LLG (IID)": '#3cb44b',
@@ -233,9 +233,9 @@ class Graph:
             "iDLG": (0, (3, 10, 1, 10, 1, 10)),
             "DLG": (0, (3, 1, 1, 1, 1, 1)),
 
-            "ConvNet": (0, (3, 5, 1, 5, 1, 5)),
+            "CNN": (0, (3, 5, 1, 5, 1, 5)),
             "LeNet": '-',
-            "MLP": '-.',
+            "FCNN": '-.',
 
             "Random (IID)": "--",
             "LLG (IID)": (0, (3, 5, 1, 5, 1, 5)),
@@ -265,9 +265,9 @@ class Graph:
             "iDLG": 8,
             "Random": 10,
 
-            "ConvNet": 0,
-            "LeNet": 2,
-            "MLP": 4,
+            "CNN": 0,
+            "FCNN": 2,
+            "LeNet": 4,
 
             "Random (IID)": 4,
             "LLG (IID)": 2,
