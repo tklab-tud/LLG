@@ -268,7 +268,7 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
 
 
 # Experiment 1.1
-def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, models=False):
+def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels=""):
     run = run.copy()
 
     graph = Graph("Batch Size", "Label extraction accuracy")
@@ -294,8 +294,10 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                 # label += " "
                 # label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
-                if models:
-                    label = run[run_name]["parameter"]["model"]
+                # labels need to be one of the attack parameters
+                # e.g. "model", "threshold", "noise_multiplier"
+                label = run[run_name]["parameter"][labels]
+                if labels == "model":
                     if label == "LeNet":
                         label = "CNN"
                     elif label == "LeNetNew":

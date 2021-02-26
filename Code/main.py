@@ -71,10 +71,12 @@ def main():
         #same_sign_check(run, path)
 
         # Comparing accuracies
-        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=True)
-        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=False)
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=True, models=True)
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=False, models=True)
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=True)
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=False)
+        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=True, labels="threshold")
+        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=False, labels="threshold")
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=True, labels="model")
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=False, labels="model")
 
         # visualize_class_prediction_accuracy_vs_training(run, path, dataset="MNIST")
         # visualize_class_prediction_accuracy_vs_training(run, path, dataset="CIFAR")
