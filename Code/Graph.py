@@ -117,6 +117,9 @@ class Graph:
         heat = np.zeros((x_max + 1, 101))
 
         for _, y, x in self.data:
+            if not self.y_range[0] < y < self.y_range[1]: # a value outside of y_range
+                print("Skipping {}, because its outside y_range [{}, {}]".format(y, self.y_range[0], self.y_range[1]))
+                continue
             heat_y = 100 - (int((y - y_min) // (y_span / 100)))
             heat[x][heat_y] = min(heat[x][heat_y] + 1, 1000)
 
