@@ -188,6 +188,10 @@ class Graph:
             "iDLG": "#800000",
             "DLG": "#911eb4",
 
+            "ConvNet": '#3cb44b',
+            "LeNet": '#4363d8',
+            "MLP": '#f032e6',
+
             "Random (IID)": "#e6194B",
             "LLG (IID)": '#3cb44b',
             "LLG+ (IID)": '#4363d8',
@@ -229,6 +233,10 @@ class Graph:
             "iDLG": (0, (3, 10, 1, 10, 1, 10)),
             "DLG": (0, (3, 1, 1, 1, 1, 1)),
 
+            "ConvNet": (0, (3, 5, 1, 5, 1, 5)),
+            "LeNet": '-',
+            "MLP": '-.',
+
             "Random (IID)": "--",
             "LLG (IID)": (0, (3, 5, 1, 5, 1, 5)),
             "LLG+ (IID)": '-',
@@ -256,6 +264,10 @@ class Graph:
             "DLG": 6,
             "iDLG": 8,
             "Random": 10,
+
+            "ConvNet": 0,
+            "LeNet": 2,
+            "MLP": 4,
 
             "Random (IID)": 4,
             "LLG (IID)": 2,
