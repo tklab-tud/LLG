@@ -365,7 +365,7 @@ class LeNetTut(nn.Module):
         super(LeNetTut, self).__init__()
         # 1 input image channel, 6 output channels, 3x3 square convolution
         # kernel
-        self.conv1 = nn.Conv2d(in_channel, 6, 3)
+        self.conv1 = nn.Conv2d(in_channel, 6, in_channel)
         self.conv2 = nn.Conv2d(6, 16, 3)
         # an affine operation: y = Wx + b
         self.fc1 = nn.Linear(16 * 6 * 6, 120)  # 6*6 from image dimension
