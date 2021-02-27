@@ -296,7 +296,8 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
 
                 # labels need to be one of the attack parameters
                 # e.g. "model", "threshold", "noise_multiplier"
-                label = run[run_name]["parameter"][labels]
+                if labels != "":
+                    label = run[run_name]["parameter"][labels]
                 if labels == "model":
                     if label == "LeNet":
                         label = "CNN"
