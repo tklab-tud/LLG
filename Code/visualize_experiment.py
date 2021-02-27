@@ -302,6 +302,8 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                         label = "CNN"
                     elif label == "LeNetNew":
                         label = "LeNet"
+                    elif label == "NewNewLeNet":
+                        label = "LeNet"
                     elif label == "MLP":
                         label = "FCNN"
 
