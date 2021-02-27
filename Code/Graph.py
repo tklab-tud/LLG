@@ -136,7 +136,7 @@ class Graph:
 
         norm = matplotlib.colors.Normalize(vmin=np.min(heat), vmax=np.max(heat), clip=False)
         cbar = self.subplot.figure.colorbar(plt.cm.ScalarMappable(norm=norm, cmap='hot'))
-        cbar.ax.set_ylabel("Number of gradients", rotation=-90, va="bottom")
+        cbar.ax.set_ylabel("Number of gradients", rotation=-90, va="bottom", labelpad=-60)
 
 
     def take_average(self):
