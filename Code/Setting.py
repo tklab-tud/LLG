@@ -168,6 +168,8 @@ class Setting:
         if self.parameter["model"] == "LeNet":
             model = Net1(self.parameter)
             model.apply(weights_init)
+        elif self.parameter["model"] == "LeNetNew":
+            model = LeNet(self.parameter)
         elif self.parameter["model"] == "NewNewLeNet":
             model = NewNewLeNet(self.parameter)
             model.apply(weights_init)
