@@ -167,12 +167,10 @@ class Setting:
     def load_model(self):
         if self.parameter["model"] == "LeNet":
             model = Net1(self.parameter)
-            model.apply(weights_init)
         elif self.parameter["model"] == "LeNetNew":
             model = LeNet(self.parameter)
         elif self.parameter["model"] == "NewNewLeNet":
             model = NewNewLeNet(self.parameter)
-            model.apply(weights_init)
         elif self.parameter["model"] == "ResNet":
             model = resnet20(self.parameter)
         elif self.parameter["model"] == "MLP":
@@ -183,6 +181,7 @@ class Setting:
         else:
             exit("No model found for: ", self.parameter["model"])
 
+        model.apply(weights_init)
         return model.to(self.device)
 
 
