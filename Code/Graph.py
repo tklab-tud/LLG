@@ -109,8 +109,12 @@ class Graph:
 
         x_max = max([x for _, _, x in self.data])
         x_min = min([x for _, _, x in self.data])
-        y_max = self.y_range[1]#max([y for _, y, _ in self.data])
-        y_min = self.y_range[0]#min([y for _, y, _ in self.data])
+        if self.y_range is None:
+            self.y_range = [0,0]
+            self.y_range[1] = max([y for _, y, _ in self.data])
+            self.y_range[0] = min([y for _, y, _ in self.data])
+        y_max = self.y_range[1]
+        y_min = self.y_range[0]
         y_span = y_max - y_min
         x_span = x_max - x_min
 

@@ -180,7 +180,7 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
         graph.fig.clf()
 
 
-def heatmap(run, path, gradient_type="original_gradients", balanced=None, dataset=None, version=None, list_bs=None, y_range=None, trainstep=0):
+def heatmap(run, path, gradient_type="original_gradients", balanced=None, dataset=None, version=None, list_bs=None, y_range=None, trainstep=None):
 
     if list_bs is None:
         list_bs = run["meta"]["list_bs"]
