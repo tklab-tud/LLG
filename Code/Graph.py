@@ -9,7 +9,7 @@ import itertools
 class Graph:
     def __init__(self, xlabel, ylabel, ylabel2=None, y_range=None):
         self.data = []
-        self.fig, self.subplot = plt.subplots(1, 1)
+        self.fig, self.subplot = plt.subplots(1, 1) # figsize=(8,5)
         self.subplot.set_xlabel(xlabel)
         self.subplot.set_ylabel(ylabel)
         if ylabel2 is not None:
@@ -72,6 +72,9 @@ class Graph:
             plt.set_xticks(range(0, len(self.data), max(1, len(self.data) // 10)))
 
     def plot_scatter(self, location="best", move=None, legend=True):
+        if self.data == []:
+            return
+
         plt = self.subplot
         max_x = 0
 
@@ -94,6 +97,7 @@ class Graph:
             plt.scatter(l_x, l_y, label=visible_label, marker=style, edgecolors=color, facecolors="none")
 
         plt.set_xticks(range(0, max_x + 1, max(1, max_x // 10)))
+        plt.margins(x=0)
 
         if legend:
             order = []
@@ -136,7 +140,8 @@ class Graph:
 
         norm = matplotlib.colors.Normalize(vmin=np.min(heat), vmax=np.max(heat), clip=False)
         cbar = self.subplot.figure.colorbar(plt.cm.ScalarMappable(norm=norm, cmap='hot'))
-        cbar.ax.set_ylabel("Number of gradients", rotation=-90, va="bottom", labelpad=-60)
+        cbar.ax.set_ylabel("Number of gradients", rotation=-90, va="bottom")
+
 
 
     def take_average(self):
