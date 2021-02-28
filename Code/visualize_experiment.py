@@ -271,7 +271,7 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
 def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels=""):
     run = run.copy()
 
-    graph = Graph("Batch Size", "Label extraction accuracy")
+    graph = Graph("Batch size", "Label extraction accuracy (%)", y_range=[0,105])
 
     if not isinstance(run, list):
         runs = [run]
@@ -302,13 +302,45 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                     if label == "LeNet":
                         label = "CNN"
                     elif label == "LeNetNew":
-                        label = "LeNet"
+                        label = "OldLeNet"
                     elif label == "NewNewLeNet":
                         label = "LeNet"
                     elif label == "MLP":
                         label = "FCNN"
+                if labels == "threshold":
+                    if label == 0.1:
+                        label = "θ=10%"
+                        if run[run_name]["parameter"]["version"] == "random":
+                            label = "Random"
+                        elif run[run_name]["parameter"]["compression"] == False:
+                            label = "θ=0%"
+                        else:
+                            continue
+                    elif label == 0.2:
+                        label = "θ=20%"
+                    elif label == 0.4:
+                        label = "θ=40%"
+                    elif label == 0.8:
+                        label = "θ=80%"
+                    elif label == 0.0:
+                        label = "θ=0%"
+                if labels == "noise_multiplier":
+                    if run[run_name]["parameter"]["version"] == "random":
+                        label = "Random"
+                    elif run[run_name]["parameter"]["differential_privacy"] == False:
+                        label = "var = 0"
+                    elif label == 0.1:
+                        label = "var = 10⁻¹"
+                    elif label == 0.01:
+                        label = "var = 10⁻²"
+                    elif label == 0.001:
+                        label = "var = 10⁻³"
+                    elif label == 0.0001:
+                        label = "var = 10⁻⁴"
+                    elif label == 0.0:
+                        label = "var = 0"
 
-                graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"], str(current_meta[1]))
+                graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"]*100, current_meta[1])
 
     graph.plot_line()
 
@@ -413,36 +445,73 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
 
 # Experiment 2
 def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, dataset=None, version=None, list_bs=None,
-                                                    train_step_stop=None):
+                                                    train_step_stop=None, labels="", model_id=1):
     run = run.copy()
 
-    if list_bs is None:
-        list_bs = run["meta"]["list_bs"]
+    # if list_bs is None:
+    #     list_bs = run["meta"]["list_bs"]
 
-    meta = run["meta"].copy()
-    run.__delitem__("meta")
+    if not isinstance(run, list):
+        runs = [run]
+    else:
+        runs = run
 
-    graph = Graph("x{} Iterations".format(meta["trainsize"]), "Label extraction accuracy", "Model accuracy (%)")
+    graph = Graph("Iterations (x100)", "Label extraction accuracy (%)", "Model accuracy (%)")
 
     data2 = []
 
-    # Prediction Acc
-    for id, run_name in enumerate(run):
-        current_meta = run_name.split("_")
-        if (balanced is None or current_meta[2] == str(balanced)) and (
-                dataset is None or current_meta[0] == dataset) and (
-                version is None or version == current_meta[3]) and (
-                train_step_stop is None or train_step_stop >= int(current_meta[5])):
-            label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
-                current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
-                current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "?"
-            label += " "
-            label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
+    model_accs = {}
 
-            graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"], str(current_meta[5]))
-            data2.append(["model accuracy", run[run_name]["parameter"]["test_acc"], str(current_meta[5])])
+    for id, run in enumerate(runs):
+        # Prediction Acc
+        for run_name in run:
+            if run_name == "meta":
+                meta = run["meta"].copy()
+                continue
+            current_meta = run_name.split("_")
+            if (balanced is None or current_meta[2] == str(balanced)) and (
+                    dataset is None or current_meta[0] == dataset) and (
+                    version is None or version == current_meta[3]) and (
+                    train_step_stop is None or train_step_stop >= int(current_meta[5])):
+                label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
+                    current_meta[3] == "random" else "LLG*" if current_meta[3] in ["v3-one",  "v3-zero", "v3-random"] else "DLG" if \
+                    current_meta[3] == "dlg" else "iDLG" if current_meta[3] == "idlg" else "?"
+                # label += " "
+                # label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
-    graph.data.append(["model accuracy", 0, str(0)])
+                # labels need to be one of the attack parameters
+                # e.g. "model", "threshold", "noise_multiplier"
+                if labels != "":
+                    label = run[run_name]["parameter"][labels]
+                if labels == "model":
+                    if label == "LeNet":
+                        label = "CNN"
+                    elif label == "LeNetNew":
+                        label = "OldLeNet"
+                    elif label == "NewNewLeNet":
+                        label = "LeNet"
+                    elif label == "MLP":
+                        label = "FCNN"
+
+                x_tick_name = str(int(current_meta[5])) # int(x)*meta["trainsize"] # combined iterations
+
+                graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"]*100, x_tick_name)
+                # if id == model_id:
+                #     data2.append(["Model", run[run_name]["parameter"]["test_acc"], x_tick_name])
+
+                acc = float(run[run_name]["parameter"]["test_acc"])/4.0
+                if x_tick_name in model_accs.keys():
+                    acc += model_accs[x_tick_name]
+
+                model_accs.update({x_tick_name: acc})
+
+    print(model_accs)
+    data2 = [["Model", val/len(model_accs), key] for key, val in model_accs.items()]
+    print(data2)
+    print(len(data2))
+    print(len(model_accs))
+
+    graph.data.append(["Model", 0, str(0)])
     graph.plot_line(location="center right", move=(1, 0.4), skip_x_ticks=True)
     graph.data = data2
     graph.plot_line(True, legend=False, skip_x_ticks=True)
@@ -454,6 +523,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
         name += "_balanced" if balanced else "_unbalanced"
     if dataset is not None:
         name += "_" + dataset
+    # name += "_" + str(model_id)
     name += ".pdf"
 
     graph.save(path, name)

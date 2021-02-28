@@ -43,7 +43,7 @@ class Graph:
         for dat in self.data:
             plt.bar(str(dat[0]), dat[1], 0.5, color=self.color(str(dat[0])))
 
-    def plot_line(self, alt_ax=False, location="best", move=None, legend=True, skip_x_ticks=False):
+    def plot_line(self, alt_ax=False, location="lower right", move=None, legend=True, skip_x_ticks=False):
         if alt_ax:
             plt = self.subplot2
         else:
@@ -58,7 +58,11 @@ class Graph:
             style = self.style(label)
 
             print("Min y: {} for label {}".format(str(min(l_y)), label))
-            plt.plot(l_x, l_y, label=label, linestyle=style, color=color)
+            plt.plot(l_x, l_y, label=label, linestyle=style, color=color, linewidth=2.5)
+
+        # plt.ticklabel_format(scilimits=(0,3),useMathText=True)
+        # plt.set_ylim(self.y_range)
+        # plt.set_xlim([-5,105])
 
         handles, labels = plt.get_legend_handles_labels()
 
@@ -166,7 +170,10 @@ class Graph:
 
         self.data = []
 
+        # sorted(dict.items(), key = lambda kv: kv[1])
+
         for label in dict.keys():
+            # for x in sorted(dict[label]):
             for x in dict[label]:
                 self.data.append((label, dict[label][x]["value"] / dict[label][x]["count"], x))
 
@@ -194,29 +201,40 @@ class Graph:
             "none": "#e6194B", "compression": '#800000', "dp": '#f58231', "dropout": '#3cb44b',
 
             "Random": "#e6194B",
-            "LLG": '#3cb44b',
+            "LLG": "#911eb4",
             "LLG+": '#4363d8',
             "LLG*": '#f032e6',
             "iDLG": "#800000",
-            "DLG": "#911eb4",
+            "DLG": '#277831', #'#3cb44b',
 
-            "CNN": '#3cb44b',
-            "LeNet": '#4363d8',
+            "CNN": '#4363d8',
+            "LeNet": '#277831',
+            "OldLeNet": '#ff0044',
             "FCNN": '#f032e6',
+            "ResNet": "#e6194B",
 
             # compression threshold
-            "0.1": "#e6194B",
-            "0.2": '#3cb44b',
-            "0.4": '#4363d8',
-            "0.8": '#f032e6',
+            "θ=0%": "#4363d8",
+            "θ=10%": "#ff0044",
+            "θ=20%": '#277831',
+            "θ=40%": '#f032e6',
+            "θ=80%": '#f58231',
 
             # noise multiplier
-            "0.01": '#3cb44b',
-            "0.001": '#4363d8',
-            "0.0001": '#f032e6',
+            "var = 10⁻⁴": "#e6194B",
+            "var = 10⁻³": '#f032e6',
+            "var = 10⁻²": '#4363d8',
+            "var = 10⁻¹": '#277831',
+            "var = 0": "#4363d8",
+
+            # noise type
+            "normal": "#e6194B",
+            "laplace": '#277831',
+            "exponential": '#4363d8',
+            "none": '#f032e6',
 
             "Random (IID)": "#e6194B",
-            "LLG (IID)": '#3cb44b',
+            "LLG (IID)": '#277831',
             "LLG+ (IID)": '#4363d8',
             "iDLG (IID)": "#800000",
             "DLG (IID)": "#911eb4",
@@ -233,7 +251,7 @@ class Graph:
             "LLG-RANDOM (non-IID)": "#ffbf00",
 
 
-            "model accuracy": "#FF0F0F"
+            "Model": '#000000' #"#FF0F0F"
 
         }
 
@@ -250,26 +268,37 @@ class Graph:
             "none": ".", "compression": '*', "dp": '8', "dropout": 'v',
 
             "Random": "--",
-            "LLG": (0, (3, 5, 1, 5, 1, 5)),
+            "LLG": (0, (3, 1, 1, 1, 1, 1)),
             "LLG+": '-',
             "LLG*": '-.',
             "iDLG": (0, (3, 10, 1, 10, 1, 10)),
-            "DLG": (0, (3, 1, 1, 1, 1, 1)),
+            "DLG": (0, (3, 5, 1, 5, 1, 5)),
 
-            "CNN": (0, (3, 5, 1, 5, 1, 5)),
-            "LeNet": '-',
+            "CNN": '-',
+            "LeNet": (0, (3, 5, 1, 5, 1, 5)),
+            "OldLeNet": (0, (1, 1, 1, 3)),
             "FCNN": '-.',
+            "ResNet": "--",
 
             # compression threshold
-            "0.1": "--",
-            "0.2": (0, (3, 5, 1, 5, 1, 5)),
-            "0.4": '-',
-            "0.8": '-.',
+            "θ=0%": '-',
+            "θ=10%": (0, (1, 1, 1, 3)),
+            "θ=20%": (0, (3, 5, 1, 5, 1, 5)),
+            "θ=40%": '-.',
+            "θ=80%": ':',
 
             # noise multiplier
-            "0.01": (0, (3, 5, 1, 5, 1, 5)),
-            "0.001": '-',
-            "0.0001": '-.',
+            "var = 10⁻⁴": ':',
+            "var = 10⁻³": '-.',
+            "var = 10⁻²": (0, (3, 5, 1, 5, 1, 5)),
+            "var = 10⁻¹": (0, (1, 1, 1, 3)),
+            "var = 0": '-',
+
+            # noise type
+            "normal": "--",
+            "laplace": (0, (3, 5, 1, 5, 1, 5)),
+            "exponential": '-',
+            "none": '-.',
 
             "Random (IID)": "--",
             "LLG (IID)": (0, (3, 5, 1, 5, 1, 5)),
@@ -282,7 +311,7 @@ class Graph:
             "iDLG (non-IID)": (0, (1, 4, 10, 1)),
             "DLG (non-IID)": (0, (1, 1, 1, 3)),
 
-            "model accuracy": "solid"
+            "Model": "solid"
 
         }
         return style[s] if style.__contains__(s) else "-"
@@ -302,6 +331,28 @@ class Graph:
             "CNN": 0,
             "FCNN": 2,
             "LeNet": 4,
+            "OldLeNet": 6,
+            "ResNet": 8,
+
+            # compression threshold
+            "θ=0%": 0,
+            "θ=10%": 1,
+            "θ=20%": 2,
+            "θ=40%": 4,
+            "θ=80%": 8,
+
+            # noise multiplier
+            "var = 0": 0,
+            "var = 10⁻⁴": 1,
+            "var = 10⁻³": 2,
+            "var = 10⁻²": 3,
+            "var = 10⁻¹": 4,
+
+            # noise type
+            "normal": 1,
+            "laplace": 2,
+            "exponential": 3,
+            "none": 100,
 
             "Random (IID)": 4,
             "LLG (IID)": 2,
@@ -315,7 +366,7 @@ class Graph:
             "iDLG (non-IID)": 9,
             "DLG (non-IID)": 7,
 
-            "model accuracy": 100
+            "Model": 100
 
         }
 
