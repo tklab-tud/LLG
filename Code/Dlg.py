@@ -27,7 +27,7 @@ class Dlg:
 
         # Noisy Gradients
         if self.setting.parameter["differential_privacy"]:
-            adp.apply_noise(grad, self.setting.parameter["batch_size"], self.setting.parameter["max_norm"], self.setting.parameter["noise_multiplier"], self.setting.parameter["noise_type"], self.setting.device)
+            adp.apply_noise(grad, self.setting.parameter["batch_size"], self.setting.parameter["max_norm"], self.setting.parameter["noise_multiplier"], self.setting.parameter["noise_type"], self.setting.device, loss_reduction="none")
 
         # Gradient Compression
         if self.setting.parameter["compression"]:
