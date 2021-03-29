@@ -7,8 +7,8 @@ def main():
     ############## Build your attack here ######################
 
     dlg_iterations = [100]
-    datasets = ["MNIST", "CIFAR", "CELEB-A-male", "SVHN"]
-    datasets = ["SVHN", "CELEB-A-male", "CIFAR", "MNIST"]
+    datasets = ["MNIST"] #, "CIFAR", "CELEB-A-male", "SVHN"]
+    # datasets = ["SVHN", "CELEB-A-male", "CIFAR", "MNIST"]
     v3 = {"MNIST": "v3-zero", "CIFAR": "v3-one", "CELEB-A-male": "v3-zero", "SVHN": "v3-random"}
 
     job = "custom-experiment"
