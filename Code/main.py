@@ -15,7 +15,7 @@ def main():
     # job = "visualize"
 
     # visualization parameters
-    set = 1
+    experiment_set = 1
     num_files = 1
     dataset = "MNIST"
     # dataset = "CIFAR"
@@ -113,42 +113,42 @@ def main():
         #     visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False, model_id=i)
 
         # Visualization Set 0
-        if set == 0:
+        if experiment_set == 0:
             run, path = load_json()
             magnitude_check(run, path, gradient_type="original_gradients", group_by="bs", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True, legend_location="lower right")
             magnitude_check(run, path, gradient_type="adjusted_gradients", group_by="bs", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True, legend_location="lower right")
             heatmap(run, path, gradient_type="original_gradients", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True)
 
         # Visualization Set 1
-        elif set == 1:
+        elif experiment_set == 1:
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True)
 
         # Visualization Set 2
-        elif set == 2:
+        elif experiment_set == 2:
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False)
 
         # Visualization Set 3
-        elif set == 3:
+        elif experiment_set == 3:
             visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True)
 
         # Visualization Set 4
-        elif set == 4:
+        elif experiment_set == 4:
             visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False)
 
         # Visualization Set 5
-        elif set == 5:
+        elif experiment_set == 5:
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="model")
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="model")
 
         # Visualization Set 6
-        elif set == 6:
+        elif experiment_set == 6:
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_multiplier")
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_multiplier")
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_type")
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_type")
 
         # Visualization Set 7
-        elif set == 7:
+        elif experiment_set == 7:
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="threshold")
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="threshold")
 
