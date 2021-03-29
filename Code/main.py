@@ -121,6 +121,13 @@ def main():
     elif job == "Trained_CIFAR-experiment":
         print("todo")
 
+    # Visualization Set 0
+    elif job == "Set0-visualization":
+        run, path = load_json()
+        magnitude_check(run, path, gradient_type="original_gradients", group_by="bs", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True, legend_location="lower right")
+        magnitude_check(run, path, gradient_type="adjusted_gradients", group_by="bs", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True, legend_location="lower right")
+        heatmap(run, path, gradient_type="original_gradients", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True)
+
     #Visualization Set 1
     elif job == "Set1-visualization":
         visualize_class_prediction_accuracy_vs_batchsize(run, path)
@@ -136,13 +143,6 @@ def main():
     # Visualization Set 4
     elif job == "Set4-visualization":
         visualize_class_prediction_accuracy_vs_training(run, path)
-
-    # Visualization Set 5
-    elif job == "Set5-visualization":
-        run, path = load_json()
-        magnitude_check(run, path, gradient_type="original_gradients", group_by="bs", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True, legend_location="lower right")
-        magnitude_check(run, path, gradient_type="adjusted_gradients", group_by="bs", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True, legend_location="lower right")
-        heatmap(run, path, gradient_type="original_gradients", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True)
 
     else:
         print("Unknown job")
