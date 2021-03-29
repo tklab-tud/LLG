@@ -45,7 +45,8 @@ def main():
         run, path = load_json()
         # _, meta = get_meta(run)
 
-        # for i in range(2):
+        # num_files = 6
+        # for i in range(num_files-1):
         #     run2, path2 = load_json()
         #     run2, meta2 = get_meta(run2, cut_meta=True)
 
