@@ -47,6 +47,26 @@ def main():
 
                     )
 
+    # Set 1 and 2 generation
+    elif job == "Untrained_MNIST-experiment":
+        print("todo")
+    elif job == "Untrained_CIFAR-experiment":
+        print("todo")
+    elif job == "Untrained_CELEB-A-experiment":
+        print("todo")
+    elif job == "Untrained_CIFAR-experiment":
+        print("todo")
+
+    # Set 3 generation
+    elif job == "Trained_MNIST-experiment":
+        print("todo")
+    elif job == "Trained_CIFAR-experiment":
+        print("todo")
+    elif job == "Trained_CELEB-A-experiment":
+        print("todo")
+    elif job == "Trained_CIFAR-experiment":
+        print("todo")
+
     elif job == "custom-visualize":
 
         ########### Load an existing json an create graphs from it ##########
@@ -89,26 +109,6 @@ def main():
         # for i in range(num_files):
         #     visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True, model_id=i)
         #     visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False, model_id=i)
-
-    # Set 1 and 2 generation
-    elif job == "Untrained_MNIST-experiment":
-        print("todo")
-    elif job == "Untrained_CIFAR-experiment":
-        print("todo")
-    elif job == "Untrained_CELEB-A-experiment":
-        print("todo")
-    elif job == "Untrained_CIFAR-experiment":
-        print("todo")
-
-    # Set 3 generation
-    elif job == "Trained_MNIST-experiment":
-        print("todo")
-    elif job == "Trained_CIFAR-experiment":
-        print("todo")
-    elif job == "Trained_CELEB-A-experiment":
-        print("todo")
-    elif job == "Trained_CIFAR-experiment":
-        print("todo")
 
     # Visualization Set 0
     elif job == "Set0-visualization":
