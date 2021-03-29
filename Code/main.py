@@ -76,17 +76,30 @@ def main():
         #same_sign_check(run, path)
 
         # Comparing accuracies
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=True)
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=False)
-        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=True, labels="threshold")
-        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=False, labels="threshold")
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=True, labels="model")
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset="MNIST", balanced=False, labels="model")
+        dataset = "MNIST"
+        # dataset = "CIFAR"
+        # dataset = "CELEB-A-male"
+        # dataset = "SVHN"
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True)
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False)
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="threshold")
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="threshold")
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_type")
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_type")
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_multiplier")
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_multiplier")
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="model")
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="model")
 
         # visualize_class_prediction_accuracy_vs_training(run, path, dataset="MNIST")
         # visualize_class_prediction_accuracy_vs_training(run, path, dataset="CIFAR")
         # visualize_class_prediction_accuracy_vs_training(run, path, dataset="CELEB-A-male")
         # visualize_class_prediction_accuracy_vs_training(run, path, dataset="SVHN")
+        # # visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True)
+        # visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False)
+        # for i in range(num_files):
+        #     visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True, model_id=i)
+        #     visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False, model_id=i)
 
     # Set 1 and 2 generation
     elif job == "Untrained_MNIST-experiment":
