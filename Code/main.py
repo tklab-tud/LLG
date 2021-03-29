@@ -35,6 +35,10 @@ def main():
                     log_interval=100000,  # Won't store each (i)dlg iteration's images but every n-th iteration's
                     store_composed_image = False, # storing dlg output images as composed image
                     store_separate_images = False, # storing dlg output images as seperate images
+                    defenses=["dp"],
+                    differential_privacy=True,
+                    noise_type="normal",
+                    noise_multiplier=0.1
 
                     )
 
