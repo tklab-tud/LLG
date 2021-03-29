@@ -14,6 +14,11 @@ def main():
     job = "custom-experiment"
     #job = "custom-visualize"
 
+    dataset = "MNIST"
+    # dataset = "CIFAR"
+    # dataset = "CELEB-A-male"
+    # dataset = "SVHN"
+
     if job == "custom-experiment":
 
         dataloader = Dataloader()
@@ -76,12 +81,6 @@ def main():
         #same_sign_check(run, path)
 
         # Comparing accuracies
-        dataset = "MNIST"
-        # dataset = "CIFAR"
-        # dataset = "CELEB-A-male"
-        # dataset = "SVHN"
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True)
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False)
         # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="threshold")
         # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="threshold")
         # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_type")
@@ -95,8 +94,6 @@ def main():
         # visualize_class_prediction_accuracy_vs_training(run, path, dataset="CIFAR")
         # visualize_class_prediction_accuracy_vs_training(run, path, dataset="CELEB-A-male")
         # visualize_class_prediction_accuracy_vs_training(run, path, dataset="SVHN")
-        # # visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True)
-        # visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False)
         # for i in range(num_files):
         #     visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True, model_id=i)
         #     visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False, model_id=i)
@@ -128,21 +125,21 @@ def main():
         magnitude_check(run, path, gradient_type="adjusted_gradients", group_by="bs", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True, legend_location="lower right")
         heatmap(run, path, gradient_type="original_gradients", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True)
 
-    #Visualization Set 1
+    # Visualization Set 1
     elif job == "Set1-visualization":
-        visualize_class_prediction_accuracy_vs_batchsize(run, path)
+        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True)
 
     # Visualization Set 2
     elif job == "Set2-visualization":
-        visualize_class_prediction_accuracy_vs_batchsize(run, path)
+        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False)
 
     # Visualization Set 3
     elif job == "Set3-visualization":
-        visualize_class_prediction_accuracy_vs_training(run, path)
+        visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True)
 
     # Visualization Set 4
     elif job == "Set4-visualization":
-        visualize_class_prediction_accuracy_vs_training(run, path)
+        visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False)
 
     else:
         print("Unknown job")
