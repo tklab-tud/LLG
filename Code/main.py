@@ -81,14 +81,6 @@ def main():
         #same_sign_check(run, path)
 
         # Comparing accuracies
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="threshold")
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="threshold")
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_type")
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_type")
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_multiplier")
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_multiplier")
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="model")
-        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="model")
 
         # visualize_class_prediction_accuracy_vs_training(run, path, dataset="MNIST")
         # visualize_class_prediction_accuracy_vs_training(run, path, dataset="CIFAR")
@@ -140,6 +132,23 @@ def main():
     # Visualization Set 4
     elif job == "Set4-visualization":
         visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False)
+
+    # Visualization Set 5
+    elif job == "Set5-visualization":
+        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="model")
+        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="model")
+
+    # Visualization Set 6
+    elif job == "Set6-visualization":
+        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_multiplier")
+        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_multiplier")
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_type")
+        # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_type")
+
+    # Visualization Set 7
+    elif job == "Set7-visualization":
+        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="threshold")
+        visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="threshold")
 
     else:
         print("Unknown job")
