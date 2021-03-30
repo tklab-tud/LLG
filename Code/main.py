@@ -50,6 +50,9 @@ def main():
         # version = "random"
         # version = "v1"
         # version = v3[dataset]
+        # TODO: this will take forever, only run when absolutely necessary
+        # FIXME: don't run this for set 3&4 (trained) only for 1&2 (untrained)
+        # version = "dlg"
 
     # with exception of set 3 and 4 all sets use all batch sizes and don't train
     list_bs = [1,2,4,8,16,32,64,128]
