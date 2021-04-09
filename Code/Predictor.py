@@ -150,7 +150,7 @@ class Predictor:
         # calculate bias and impact
         for _ in range(n):
             tmp_gradients = []
-
+            impact = 0
             for i in range(parameter["num_classes"]):
                 tmp_setting.configure(targets=[i] * parameter["batch_size"])
                 tmp_setting.dlg.victim_side()
@@ -212,7 +212,7 @@ class Predictor:
         # calculate bias and impact
         for _ in range(n):
             tmp_gradients = []
-
+            impact = 0
             for i in range(parameter["num_classes"]):
                 if parameter["version"] == "v3-zero":
                     tmp_setting.configure(targets=[i] * parameter["batch_size"], dataset="DUMMY-ZERO")
