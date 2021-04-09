@@ -143,14 +143,11 @@ class Predictor:
         tmp_setting = self.setting.copy()
         tmp_setting.model = self.setting.model
         impact = 0
-        acc_impact = 0
         acc_offset = np.zeros(parameter["num_classes"])
         n = 10
 
-        # calculate bias and impact
+        # accumulating calculation base
         for _ in range(n):
-            tmp_gradients = []
-            impact = 0
             for i in range(parameter["num_classes"]):
                 tmp_setting.configure(targets=[i] * parameter["batch_size"])
                 tmp_setting.dlg.victim_side()
@@ -160,18 +157,15 @@ class Predictor:
                     if j == i:
                         continue
                     else:
-                        acc_offset[j] +=tmp_gradients[j]
+                        acc_offset[j] += tmp_gradients[j]
 
-            impact /= (parameter["num_classes"] * parameter["batch_size"])
-            acc_impact += impact
-
-        self.impact = (acc_impact / n) * (1 + 1/parameter["num_classes"])
-
+        # Offset calculation
         acc_offset = np.divide(acc_offset, n*(parameter["num_classes"]-1))
         self.offset = torch.Tensor(acc_offset).to(self.setting.device)
-
         self.gradients_for_prediction -= self.offset
 
+        # Impact calculation
+        self.impact = ((impact - self.offset.sum()*n)/(parameter["batch_size"]*parameter["num_classes"]*n)).item()
 
         # compensate h1 extraction
         for (i_c, _) in h1_extraction:
@@ -205,14 +199,12 @@ class Predictor:
         tmp_setting = self.setting.copy()
         tmp_setting.model = self.setting.model
         impact = 0
-        acc_impact = 0
+
         acc_offset = np.zeros(parameter["num_classes"])
         n = 10
 
-        # calculate bias and impact
+        # accumulating calculation base
         for _ in range(n):
-            tmp_gradients = []
-            impact = 0
             for i in range(parameter["num_classes"]):
                 if parameter["version"] == "v3-zero":
                     tmp_setting.configure(targets=[i] * parameter["batch_size"], dataset="DUMMY-ZERO")
@@ -223,7 +215,6 @@ class Predictor:
                 else:
                     exit("v3 called with wrong version")
 
-
                 tmp_setting.dlg.victim_side()
                 tmp_gradients = torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy()
                 impact += torch.sum(tmp_setting.dlg.gradient[-2], dim=-1)[i].item()
@@ -233,15 +224,13 @@ class Predictor:
                     else:
                         acc_offset[j] +=tmp_gradients[j]
 
-            impact /= (parameter["num_classes"] * parameter["batch_size"])
-            acc_impact += impact
-
-        self.impact = (acc_impact / n) * (1 + 1/parameter["num_classes"])
-
+        # Offset calculation
         acc_offset = np.divide(acc_offset, n*(parameter["num_classes"]-1))
         self.offset = torch.Tensor(acc_offset).to(self.setting.device)
-
         self.gradients_for_prediction -= self.offset
+
+        # Impact calculation
+        self.impact = ((impact - self.offset.sum() * n) / (parameter["batch_size"] * (parameter["num_classes"]) * n)).item()
 
 
         # compensate h1 extraction
