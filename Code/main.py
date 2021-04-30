@@ -26,6 +26,7 @@ def main():
     max_norms = [None]
     compression = False
     thresholds = [0.0]
+    n = 100
 
     # with exception of set 1 and 3 all sets use non-IID
     balanced = False
@@ -38,6 +39,12 @@ def main():
     version = "v2"
 
     v3 = {"MNIST": "v3-zero", "CIFAR": "v3-one", "CELEB-A-male": "v3-zero", "SVHN": "v3-random"}
+
+    if experiment_set == 0:
+        n=3
+        dataset = "CELEB-A-hair"
+        version = "v2"
+        model = "LeNet"
 
     if experiment_set in [1, 2, 3, 4]:
         # TODO: run all DATASETS separately ("in parallel")
@@ -127,7 +134,7 @@ def main():
                             list_bs=list_bs,
                             list_balanced=[balanced],
                             list_versions=[version],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
-                            n=100,                     # Amount of attacks
+                            n=n,                     # Amount of attacks
                             extent="predict",        # "victim_side", "predict", "reconstruct"
                             trainsize=trainsize,             # Iterations per Trainstep
                             trainsteps=trainsteps,           # Number of Attack&Train cycles
@@ -193,10 +200,8 @@ def main():
 
         # Visualization Set 0
         if experiment_set == 0:
-            run, path = load_json()
-            magnitude_check(run, path, gradient_type="original_gradients", group_by="bs", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True, legend_location="lower right")
-            magnitude_check(run, path, gradient_type="adjusted_gradients", group_by="bs", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True, legend_location="lower right")
-            heatmap(run, path, gradient_type="original_gradients", y_range=[-300, 400], dataset="MNIST", trainstep=0, list_bs=[2,8,32,128], balanced=True)
+            visualize_class_prediction_accuracy_vs_batchsize(run, path)
+
 
         # Visualization Set 1
         elif experiment_set == 1:
