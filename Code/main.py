@@ -6,12 +6,12 @@ from Dataloader import Dataloader
 def main():
     ############## Build your attack here ######################
 
-    experiment_set = 1
+    experiment_set = 8
 
     # visualization parameters
     job = "visualize"
     # specify the number of json files you want to select for plotting
-    num_files = 1
+    num_files = 5
 
     # experiment parameters
     # FIXME: outcomment this line if you want the run the visualization
@@ -23,6 +23,7 @@ def main():
     differential_privacy = False
     noise_type = "normal"
     noise_multipliers = [0.0]
+    max_norm = None
     compression = False
     thresholds = [0.0]
 
@@ -90,7 +91,11 @@ def main():
         noise_type = "normal"
         # noise_type = "laplace"
         # noise_type = "exponential"
-        noise_multipliers = [0.1, 0.01, 0.001, 0.0001]
+        noise_multipliers = [0.0, 0.1, 0.01, 0.001, 0.0001]
+        noise_multipliers = [noise_multipliers[1]]
+        # noise_multipliers = [0.0, 0.1] #, 0.25, 0.5, 1.0]
+        # version = "v1"
+        # version = v3[dataset]
 
     # Set 7 generation
     if experiment_set == 7:
@@ -98,9 +103,24 @@ def main():
         compression = True
         thresholds = [0.1, 0.2, 0.4, 0.8]
 
+    # Set 8 generation
+    # differential privacy = clipping + noise
+    if experiment_set == 8:
+        defenses = ["dp"]
+        differential_privacy = True
+        # TODO: run all NOISE TYPES separately ("in parallel")
+        noise_type = "normal"
+        # noise_type = "laplace"
+        # noise_type = "exponential"
+        noise_multipliers = [0.0, 0.1, 0.01, 0.001, 0.0001]
+        max_norms = [None, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0]
+
     if job == "experiment":
         dataloader = Dataloader()
-        for noise_multiplier in noise_multipliers:
+        # for noise_multiplier in noise_multipliers:
+        for max_norm in max_norms:
+            if max_norm != None and max_norm > 0:
+                noise_multiplier = noise_multiplier/max_norm
             for threshold in thresholds:
                 experiment(dataloader=dataloader,
                         list_datasets=[dataset],
@@ -124,6 +144,7 @@ def main():
                         differential_privacy=differential_privacy,
                         noise_type=noise_type,
                         noise_multiplier=noise_multiplier,
+                        max_norm=max_norm,
                         compression=compression,
                         threshold=threshold
                         )
@@ -200,7 +221,7 @@ def main():
 
         # Visualization Set 6
         elif experiment_set == 6:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_multiplier")
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_multiplier")
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_multiplier")
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_type")
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_type")
@@ -209,6 +230,12 @@ def main():
         elif experiment_set == 7:
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="threshold")
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="threshold")
+
+        # Visualization Set 8
+        elif experiment_set == 8:
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="max_norm")
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_type")
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_type")
 
     else:
         print("Unknown job")

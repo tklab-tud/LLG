@@ -129,7 +129,7 @@ class Setting:
             "differential_privacy": False,
             "alphas": [],
             "noise_multiplier": 1.0,
-            "max_norm": 1.0, # clip
+            "max_norm": None, # clip
             "noise_type": "gauss",
 
             # Defenses
