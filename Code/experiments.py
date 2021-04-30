@@ -48,6 +48,9 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
     progress = 0
     todo = len(list_datasets)* len(list_bs)* len(list_balanced)*len(list_versions)*len(defenses)*n*(trainsteps+1)
     for dataset in list_datasets:
+        if dataloader.currently_loaded != dataset:
+            dataloader.load_dataset(dataset)
+
         for trainstep in range(trainsteps+1):
 
             for bs in list_bs:
@@ -78,7 +81,7 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
                                     target = []
                                 else:
                                     # we define unbalanced as 50% class a, 25% class b, 25% random
-                                    choice1 = np.random.choice(range(setting.parameter["num_classes"])).item()
+                                    choice1 = np.random.choice(dataloader.num_classes)
                                     choice2 = np.random.choice(
                                         np.setdiff1d(range(setting.parameter["num_classes"]), choice1)).item()
                                     target = (bs // 2) * [choice1] + (bs // 4) * [choice2]

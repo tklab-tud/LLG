@@ -74,6 +74,11 @@ class Setting:
                     self.parameter["num_classes"] = 2
                     self.parameter["channel"] = 3
                     self.parameter["hidden"] = 29700
+                elif value == 'CELEB-A-hair':
+                    self.parameter["shape_img"] = (218, 178)
+                    self.parameter["num_classes"] = 5
+                    self.parameter["channel"] = 3
+                    self.parameter["hidden"] = 29700
                 elif value == 'SVHN':
                     self.parameter["shape_img"] = (32, 32)
                     self.parameter["num_classes"] = 10

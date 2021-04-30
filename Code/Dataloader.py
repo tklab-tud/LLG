@@ -38,6 +38,32 @@ class Dataloader():
             #filtering male from attributes and set it as target
             length = len(self.train_dataset.attr)
             self.train_dataset.targets = torch.gather(self.train_dataset.attr, 1, torch.Tensor(length*[20]).long().view(-1, 1))
+        elif dataset == 'CELEB-A-hair':
+            self.train_dataset = datasets.CelebA('./datasets', 'all', 'attr', download=True, transform=tt)
+            self.num_classes = 5
+            length = len(self.train_dataset.attr)
+            self.train_dataset.targets = []
+
+
+            for i, attr in enumerate(self.train_dataset.attr):
+                bald = attr[4]
+                black = attr[8]
+                blond = attr[9]
+                brown = attr[11]
+                gray = attr[17]
+                other = 0
+
+                if bald+black+blond+brown+gray != 1:
+                    bald = black = blond = brown = gray = 0
+                    other = 1
+
+                self.train_dataset.targets.append(np.argmax([bald,black,blond,brown,gray,other])+1)
+
+
+
+            print("done")
+
+
         elif dataset == 'SVHN':
             self.train_dataset = datasets.SVHN('./datasets', 'train', download=True, transform=tt)
             self.num_classes = 10
