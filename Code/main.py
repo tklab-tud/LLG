@@ -23,7 +23,7 @@ def main():
     differential_privacy = False
     noise_type = "normal"
     noise_multipliers = [0.0]
-    max_norm = None
+    max_norms = [None]
     compression = False
     thresholds = [0.0]
 
@@ -117,37 +117,37 @@ def main():
 
     if job == "experiment":
         dataloader = Dataloader()
-        # for noise_multiplier in noise_multipliers:
-        for max_norm in max_norms:
-            if max_norm != None and max_norm > 0:
-                noise_multiplier = noise_multiplier/max_norm
-            for threshold in thresholds:
-                experiment(dataloader=dataloader,
-                        list_datasets=[dataset],
-                        list_bs=list_bs,
-                        list_balanced=[balanced],
-                        list_versions=[version],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
-                        n=100,                     # Amount of attacks
-                        extent="predict",        # "victim_side", "predict", "reconstruct"
-                        trainsize=trainsize,             # Iterations per Trainstep
-                        trainsteps=trainsteps,           # Number of Attack&Train cycles
-                        train_lr=train_lr,
-                        path=None,
-                        model=model,
-                        store_individual_gradients=False, # Will store the ~500 gradients connected to one output node and not just their sum
-                        dlg_lr= 1, # learrate of (i)dlg image reconstruction
-                        dlg_iterations=100, # amount of (i)dlg reconstruction iterations
-                        log_interval=100000,  # Won't store each (i)dlg iteration's images but every n-th iteration's
-                        store_composed_image = False, # storing dlg output images as composed image
-                        store_separate_images = False, # storing dlg output images as seperate images
-                        defenses=defenses,
-                        differential_privacy=differential_privacy,
-                        noise_type=noise_type,
-                        noise_multiplier=noise_multiplier,
-                        max_norm=max_norm,
-                        compression=compression,
-                        threshold=threshold
-                        )
+        for noise_multiplier in noise_multipliers:
+            for max_norm in max_norms:
+                if max_norm != None and max_norm > 0:
+                    noise_multiplier = noise_multiplier/max_norm
+                for threshold in thresholds:
+                    experiment(dataloader=dataloader,
+                            list_datasets=[dataset],
+                            list_bs=list_bs,
+                            list_balanced=[balanced],
+                            list_versions=[version],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
+                            n=100,                     # Amount of attacks
+                            extent="predict",        # "victim_side", "predict", "reconstruct"
+                            trainsize=trainsize,             # Iterations per Trainstep
+                            trainsteps=trainsteps,           # Number of Attack&Train cycles
+                            train_lr=train_lr,
+                            path=None,
+                            model=model,
+                            store_individual_gradients=False, # Will store the ~500 gradients connected to one output node and not just their sum
+                            dlg_lr= 1, # learrate of (i)dlg image reconstruction
+                            dlg_iterations=100, # amount of (i)dlg reconstruction iterations
+                            log_interval=100000,  # Won't store each (i)dlg iteration's images but every n-th iteration's
+                            store_composed_image = False, # storing dlg output images as composed image
+                            store_separate_images = False, # storing dlg output images as seperate images
+                            defenses=defenses,
+                            differential_privacy=differential_privacy,
+                            noise_type=noise_type,
+                            noise_multiplier=noise_multiplier,
+                            max_norm=max_norm,
+                            compression=compression,
+                            threshold=threshold
+                            )
 
     elif job == "visualize":
 
