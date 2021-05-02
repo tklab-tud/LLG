@@ -235,8 +235,8 @@ class MLP(nn.Module):
 
 
 #Architecture
-# LeNet-5 consists of 7 layers – alternatingly 2 convolutional and 2 average pooling layers, 
-#and then 2 fully connected layers and the output layer with activation function softmax. 
+# LeNet-5 consists of 7 layers – alternatingly 2 convolutional and 2 average pooling layers,
+#and then 2 fully connected layers and the output layer with activation function softmax.
 #https://analyticsindiamag.com/complete-tutorial-on-lenet-5-guide-to-begin-with-cnns/
 
 #??
