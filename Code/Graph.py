@@ -71,7 +71,7 @@ class Graph:
             for label in labels:
                 order.append(self.order(label))
             labels, handles, order = zip(*sorted(zip(labels, handles, order), key=lambda t: t[2]))
-            plt.legend(handles, labels, prop={'size': 11}, loc=location, bbox_to_anchor=move)
+            plt.legend(handles, labels, prop={'size': 12}, loc=location, bbox_to_anchor=move)
         if skip_x_ticks:
             plt.set_xticks(range(0, len(self.data), max(1, len(self.data) // 10)))
 
@@ -109,7 +109,7 @@ class Graph:
             for label in labels:
                 order.append(self.order(label.split(",")[0]))
             labels, handles, order = zip(*sorted(zip(labels, handles, order), key=lambda t: t[2]))
-            plt.legend(handles, labels, prop={'size': 11}, loc=location, bbox_to_anchor=move)
+            plt.legend(handles, labels, prop={'size': 12}, loc=location, bbox_to_anchor=move)
             if self.y_range is not None:
                 plt.set_ylim(self.y_range[0], self.y_range[-1])
 
