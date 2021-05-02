@@ -113,7 +113,7 @@ def main():
         # noise_type = "laplace"
         # noise_type = "exponential"
         noise_multipliers = [0.0, 0.1, 0.01, 0.001, 0.0001]
-        max_norms = [None, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0]
+        max_norms = [None, 0.05, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 5, 10]
 
     if job == "experiment":
         dataloader = Dataloader()
