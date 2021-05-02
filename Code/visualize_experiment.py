@@ -354,6 +354,8 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                         label = "norm = 10⁻⁴"
                     elif label == 0.0:
                         label = "norm = 0"
+                    elif label == None:
+                        label = "norm = inf"
 
                 graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"]*100, current_meta[1])
 
