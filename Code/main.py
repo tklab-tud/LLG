@@ -6,7 +6,7 @@ from Dataloader import Dataloader
 def main():
     ############## Build your attack here ######################
 
-    experiment_set = 8
+    experiment_set = 2
 
     # visualization parameters
     job = "visualize"
@@ -38,7 +38,7 @@ def main():
     dataset = "MNIST"
     version = "v2"
 
-    v3 = {"MNIST": "v3-zero", "CIFAR": "v3-one", "CELEB-A-male": "v3-zero", "SVHN": "v3-random"}
+    v3 = {"MNIST": "v3-zero", "CIFAR": "v3-one", "CELEB-A-male": "v3-zero", "CELEB-A-hair": "v3-zero", "SVHN": "v3-random"}
 
     if experiment_set == 0:
         n=3
@@ -51,6 +51,7 @@ def main():
         dataset = "MNIST"
         # dataset = "CIFAR"
         # dataset = "CELEB-A-male"
+        dataset = "CELEB-A-hair"
         # dataset = "SVHN"
         # versions in order of importance
         # TODO: run all VERSIONS separately per DATASET ("in parallel")
