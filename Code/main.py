@@ -1,6 +1,7 @@
 from experiments import *
 from visualize_experiment import *
 from Dataloader import Dataloader
+import time
 
 
 def main():
@@ -123,6 +124,8 @@ def main():
         noise_multipliers = [0.0, 0.1, 0.01, 0.001, 0.0001]
         max_norms = [None, 0.05, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 5, 10]
 
+    start = time.time()
+
     if job == "experiment":
         dataloader = Dataloader()
         for noise_multiplier in noise_multipliers:
@@ -156,6 +159,10 @@ def main():
                             compression=compression,
                             threshold=threshold
                             )
+
+        end = time.time()
+        duration = end - start
+        print(duration)
 
     elif job == "visualize":
 
