@@ -122,7 +122,7 @@ def main():
         # variance = 1
         noise_multipliers = [1]
         # epsilon =   10, 1, 0.1
-        max_norms = [0.1, 1, 10]
+        max_norms = [None, 0.1, 1, 10]
 
     start = time.time()
 
