@@ -118,8 +118,11 @@ def main():
         noise_type = "normal"
         # noise_type = "laplace"
         # noise_type = "exponential"
-        noise_multipliers = [0.0, 0.1, 0.01, 0.001, 0.0001]
-        max_norms = [None, 0.05, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 5, 10]
+
+        # variance = 1
+        noise_multipliers = [1]
+        # epsilon =   10, 1, 0.1
+        max_norms = [0.1, 1, 10]
 
     start = time.time()
 
