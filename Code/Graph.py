@@ -7,11 +7,12 @@ import itertools
 
 
 class Graph:
-    def __init__(self, xlabel, ylabel, ylabel2=None, y_range=None):
+    def __init__(self, xlabel, ylabel, ylabel2=None, y_range=None, fontsize=14):
         self.data = []
         self.fig, self.subplot = plt.subplots(1, 1) # figsize=(8,5)
-        self.subplot.set_xlabel(xlabel)
-        self.subplot.set_ylabel(ylabel)
+        self.fontsize = fontsize
+        self.subplot.set_xlabel(xlabel, fontsize=self.fontsize)
+        self.subplot.set_ylabel(ylabel, fontsize=self.fontsize)
         if ylabel2 is not None:
             self.subplot2 = self.subplot.twinx()
             self.subplot2.set_ylabel(ylabel2)
@@ -63,6 +64,8 @@ class Graph:
         # plt.ticklabel_format(scilimits=(0,3),useMathText=True)
         # plt.set_ylim(self.y_range)
         # plt.set_xlim([-5,105])
+        plt.tick_params(axis='x', labelsize=self.fontsize)
+        plt.tick_params(axis='y', labelsize=self.fontsize)
 
         handles, labels = plt.get_legend_handles_labels()
 
@@ -71,9 +74,9 @@ class Graph:
             for label in labels:
                 order.append(self.order(label))
             labels, handles, order = zip(*sorted(zip(labels, handles, order), key=lambda t: t[2]))
-            plt.legend(handles, labels, prop={'size': 12}, loc=location, bbox_to_anchor=move)
+            plt.legend(handles, labels, prop={'size': self.fontsize}, loc=location, bbox_to_anchor=move)
         if skip_x_ticks:
-            plt.set_xticks(range(0, len(self.data), max(1, len(self.data) // 10)))
+            plt.set_xticks(range(0, len(self.data), max(1, len(self.data) // 10)), fontsize=self.fontsize)
 
     def plot_scatter(self, location="best", move=None, legend=True):
         if self.data == []:
@@ -100,7 +103,7 @@ class Graph:
             visible_label = str(label) + ", $\\rho = {:.5f}$".format(pearson_r[0])
             plt.scatter(l_x, l_y, label=visible_label, marker=style, edgecolors=color, facecolors="none")
 
-        plt.set_xticks(range(0, max_x + 1, max(1, max_x // 10)))
+        plt.set_xticks(range(0, max_x + 1, max(1, max_x // 10)), fontsize=self.fontsize)
         plt.margins(x=0)
 
         if legend:
@@ -109,7 +112,7 @@ class Graph:
             for label in labels:
                 order.append(self.order(label.split(",")[0]))
             labels, handles, order = zip(*sorted(zip(labels, handles, order), key=lambda t: t[2]))
-            plt.legend(handles, labels, prop={'size': 12}, loc=location, bbox_to_anchor=move)
+            plt.legend(handles, labels, prop={'size': self.fontsize}, loc=location, bbox_to_anchor=move)
             if self.y_range is not None:
                 plt.set_ylim(self.y_range[0], self.y_range[-1])
 
@@ -136,7 +139,7 @@ class Graph:
             heat[x][heat_y] = min(heat[x][heat_y] + 1, 1000)
 
         heat = np.transpose(heat)
-        plt.xticks(range(0, x_max + 1, max(1, x_max // 10)))
+        plt.xticks(range(0, x_max + 1, max(1, x_max // 10)), fontsize=self.fontsize)
         if self.y_range is not None:
             plt.ylim(self.y_range[0], self.y_range[-1])
 
