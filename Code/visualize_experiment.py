@@ -329,34 +329,24 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                     if run[run_name]["parameter"]["version"] == "random":
                         label = "Random"
                     elif run[run_name]["parameter"]["differential_privacy"] == False:
-                        label = "var = 0"
-                    elif label == 0.1:
-                        label = "var = 10⁻¹"
-                    elif label == 0.01:
-                        label = "var = 10⁻²"
-                    elif label == 0.001:
-                        label = "var = 10⁻³"
-                    elif label == 0.0001:
-                        label = "var = 10⁻⁴"
+                        label = "No noise"
                     elif label == 0.0:
-                        label = "var = 0"
+                        label = "No noise"
+                    else:
+                        label = "σ² = " + str(label)
                 if labels == "max_norm":
                     if run[run_name]["parameter"]["version"] == "random":
                         label = "Random"
                     elif run[run_name]["parameter"]["differential_privacy"] == False:
-                        label = "norm = 0"
-                    elif label == 0.1:
-                        label = "norm = 10⁻¹"
-                    elif label == 0.01:
-                        label = "norm = 10⁻²"
-                    elif label == 0.001:
-                        label = "norm = 10⁻³"
-                    elif label == 0.0001:
-                        label = "norm = 10⁻⁴"
+                        label = "No noise"
+                    elif run[run_name]["parameter"]["noise_multiplier"] == 0.0:
+                        label = "No noise"
                     elif label == 0.0:
-                        label = "norm = 0"
+                        label = "ϵ = 0"
                     elif label == None:
-                        label = "norm = inf"
+                        label = "ϵ = ∞"
+                    else:
+                        label = "ϵ = " + str(label)
 
                 graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"]*100, current_meta[1])
 
