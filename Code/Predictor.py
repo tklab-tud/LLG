@@ -35,6 +35,8 @@ class Predictor:
             self.v2_prediction()
         elif parameter["version"] in ["v3-zero", "v3-one", "v3-random"]:
             self.v3_prediction()
+        elif parameter["version"] == "experimental":
+            self.experimental_prediction()
         else:
             exit("Unknown prediction strategy {}".format(parameter["version"]))
 
@@ -187,7 +189,63 @@ class Predictor:
             # add the mean value of one occurance to the candidate
             self.gradients_for_prediction[min_id] = self.gradients_for_prediction[min_id].add(-self.impact)
 
+    def experimental_prediction(self):  # LLG+
+        parameter = self.setting.parameter
 
+        self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
+        h1_extraction = []
+
+        # do h1 extraction
+        for i_cg, class_gradient in enumerate(self.gradients_for_prediction):
+            if class_gradient < 0:
+                h1_extraction.append((i_cg, class_gradient))
+
+        # create a new setting for impact / offset calculation
+        tmp_setting = self.setting.copy()
+        tmp_setting.model = self.setting.model
+        impact = 0
+        acc_impact = 0
+        acc_offset = np.zeros(parameter["num_classes"])
+        n = 10
+
+        # calculate bias and impact
+        for _ in range(n):
+            tmp_gradients = []
+            # impact = 0
+            for i in range(parameter["num_classes"]):
+                tmp_setting.configure(targets=[i] * parameter["batch_size"])
+                tmp_setting.dlg.victim_side()
+                tmp_gradients = torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy()
+                impact += torch.sum(tmp_setting.dlg.gradient[-2], dim=-1)[i].item()
+                for j in range(parameter["num_classes"]):
+                    if j == i:
+                        continue
+                    else:
+                        acc_offset[j] += tmp_gradients[j]
+
+            impact /= (parameter["num_classes"] * parameter["batch_size"])
+            acc_impact += impact
+
+        self.impact = (acc_impact / n) * (1 + 1 / parameter["num_classes"])
+
+        acc_offset = np.divide(acc_offset, n * (parameter["num_classes"] - 1))
+        self.offset = torch.Tensor(acc_offset).to(self.setting.device)
+
+        self.gradients_for_prediction -= self.offset
+
+        # compensate h1 extraction
+        for (i_c, _) in h1_extraction:
+            self.prediction.append(i_c)
+            self.gradients_for_prediction[i_c] = self.gradients_for_prediction[i_c].add(-self.impact)
+
+        # predict the rest
+        for _ in range(parameter["batch_size"] - len(self.prediction)):
+            # add minimal candidat, likely to be present, to prediction
+            min_id = torch.argmin(self.gradients_for_prediction).item()
+            self.prediction.append(min_id)
+
+            # add the mean value of one occurance to the candidate
+            self.gradients_for_prediction[min_id] = self.gradients_for_prediction[min_id].add(-self.impact)
 
 
     def v3_prediction(self): #LLG- with dummies

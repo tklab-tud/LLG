@@ -40,9 +40,9 @@ def main():
     v3 = {"MNIST": "v3-zero", "CIFAR": "v3-one", "CELEB-A-male": "v3-zero", "SVHN": "v3-random"}
 
     if experiment_set == 0:
-        n=3
-        dataset = "CELEB-A-hair"
-        version = "v2"
+        n=100
+        dataset = "MNIST"
+        version = ["v2", "experimental"]
         model = "LeNet"
 
     if experiment_set in [1, 2, 3, 4]:
@@ -107,13 +107,15 @@ def main():
 
     if job == "experiment":
         dataloader = Dataloader()
+        if isinstance(version, str):
+            version = [version]
         for noise_multiplier in noise_multipliers:
             for threshold in thresholds:
                 experiment(dataloader=dataloader,
                         list_datasets=[dataset],
                         list_bs=list_bs,
                         list_balanced=[balanced],
-                        list_versions=[version],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
+                        list_versions=version,   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
                         n=n,                     # Amount of attacks
                         extent="predict",        # "victim_side", "predict", "reconstruct"
                         trainsize=trainsize,             # Iterations per Trainstep
@@ -177,9 +179,12 @@ def main():
         #     visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True, model_id=i)
         #     visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False, model_id=i)
 
-        # Visualization Set 0
+        # Visualization Set 0 (Custom experiment)
         if experiment_set == 0:
             visualize_class_prediction_accuracy_vs_batchsize(run, path)
+            #magnitude_check(run, path, "original_gradients")
+            #magnitude_check(run, path, "adjusted_gradients")
+            #heatmap(run, path)
 
 
         # Visualization Set 1
