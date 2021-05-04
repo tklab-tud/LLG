@@ -6,6 +6,7 @@ from Graph import *
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename, asksaveasfile
 
+fontsize = 16
 
 # Hypothesis 1
 def negativ_value_check(run, path, dataset=None, balanced=None, version="v2", gradient_type="original_gradients"):
@@ -109,9 +110,9 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
 
     graphs = []
     for _ in meta["list_bs"]:
-        graphs.append(Graph("Label occurrences", "Gradient value", y_range=y_range))
+        graphs.append(Graph("Label occurrences", "Gradient value", y_range=y_range), fontsize=fontsize)
 
-    composed_graph = Graph("Label occurrences", "Gradient value", y_range=y_range)
+    composed_graph = Graph("Label occurrences", "Gradient value", y_range=y_range, fontsize=fontsize)
 
     print("loading {} from json".format(gradient_type))
     for i, setting in enumerate(run):
@@ -191,7 +192,7 @@ def heatmap(run, path, gradient_type="original_gradients", balanced=None, datase
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
-    graph = Graph("Label occurrences", "Gradient value", y_range=y_range)
+    graph = Graph("Label occurrences", "Gradient value", y_range=y_range, fontsize=fontsize)
 
     print("loading {} from json".format(gradient_type))
     for i, setting in enumerate(run):
@@ -231,7 +232,7 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
-    graph = Graph("Label occurrences", "Gradient value")
+    graph = Graph("Label occurrences", "Gradient value", fontsize=fontsize)
     result_string = ""
     result_list_original = []
     result_list_adjusted = []
@@ -271,7 +272,7 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
 def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels=""):
     run = run.copy()
 
-    graph = Graph("Batch size", "Label extraction accuracy (%)", y_range=[0,105])
+    graph = Graph("Batch size", "Attack success rate (%)", y_range=[0,105], fontsize=fontsize)
 
     if not isinstance(run, list):
         runs = [run]
@@ -376,7 +377,7 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
 def visualize_hellinger_vs_batchsize(run, path, balanced=None, dataset=None, version=None):
     run = run.copy()
 
-    graph = Graph("Batch Size", "Hellinger distance")
+    graph = Graph("Batch Size", "Hellinger distance", fontsize=fontsize)
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
@@ -422,7 +423,7 @@ def visualize_hellinger_vs_batchsize(run, path, balanced=None, dataset=None, ver
 def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None):
     run = run.copy()
 
-    graph = Graph("Batch Size", "Flawless label extraction share")
+    graph = Graph("Batch Size", "Flawless label extraction share", fontsize=fontsize)
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
@@ -473,7 +474,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
     else:
         runs = run
 
-    graph = Graph("Iterations (x100)", "Label extraction accuracy (%)", "Model accuracy (%)")
+    graph = Graph("Iterations (x100)", "Attack success rate (%)", "Model accuracy (%)", fontsize=fontsize)
 
     data2 = []
 
@@ -554,7 +555,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
 def visualize_good_fidelity(run, path, fidelitysteps, bs, balanced):
     run = run.copy()
 
-    graph = Graph("Fidelity Score", "Percentage of Samples")
+    graph = Graph("Fidelity Score", "Percentage of Samples", fontsize=fontsize)
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
