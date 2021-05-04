@@ -100,11 +100,8 @@ def main():
         noise_type = "normal"
         # noise_type = "laplace"
         # noise_type = "exponential"
-        noise_multipliers = [0.0, 0.1, 0.01, 0.001, 0.0001]
-        noise_multipliers = [noise_multipliers[1]]
-        # noise_multipliers = [0.0, 0.1] #, 0.25, 0.5, 1.0]
-        # version = "v1"
-        # version = v3[dataset]
+
+        noise_multipliers = [0.0, 0.01, 0.1, 1]
 
     # Set 7 generation
     if experiment_set == 7:
