@@ -76,7 +76,7 @@ class Graph:
             labels, handles, order = zip(*sorted(zip(labels, handles, order), key=lambda t: t[2]))
             plt.legend(handles, labels, prop={'size': self.fontsize}, loc=location, bbox_to_anchor=move)
         if skip_x_ticks:
-            plt.set_xticks(range(0, len(self.data), max(1, len(self.data) // 10)), fontsize=self.fontsize)
+            plt.set_xticks(range(0, len(self.data), max(1, len(self.data) // 10)))
 
     def plot_scatter(self, location="best", move=None, legend=True):
         if self.data == []:
@@ -103,7 +103,7 @@ class Graph:
             visible_label = str(label) + ", $\\rho = {:.5f}$".format(pearson_r[0])
             plt.scatter(l_x, l_y, label=visible_label, marker=style, edgecolors=color, facecolors="none")
 
-        plt.set_xticks(range(0, max_x + 1, max(1, max_x // 10)), fontsize=self.fontsize)
+        plt.set_xticks(range(0, max_x + 1, max(1, max_x // 10)))
         plt.margins(x=0)
 
         if legend:
@@ -139,7 +139,7 @@ class Graph:
             heat[x][heat_y] = min(heat[x][heat_y] + 1, 1000)
 
         heat = np.transpose(heat)
-        plt.xticks(range(0, x_max + 1, max(1, x_max // 10)), fontsize=self.fontsize)
+        plt.xticks(range(0, x_max + 1, max(1, x_max // 10)))
         if self.y_range is not None:
             plt.ylim(self.y_range[0], self.y_range[-1])
 
