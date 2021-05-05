@@ -213,19 +213,25 @@ def main():
 
         # Visualization Set 1
         elif experiment_set == 1:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True)
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, width=4.8)
 
         # Visualization Set 2
         elif experiment_set == 2:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False)
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8)
+
+        # Visualization Set 1 & 2
+        elif experiment_set == 12:
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, width=4.8)
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8)
+            # location="lower right"
 
         # Visualization Set 3
         elif experiment_set == 3:
-            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True)
+            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True, width=4.8)
 
         # Visualization Set 4
         elif experiment_set == 4:
-            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False)
+            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False, width=4.8)
 
         # Visualization Set 5
         elif experiment_set == 5:

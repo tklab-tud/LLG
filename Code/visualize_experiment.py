@@ -95,7 +95,7 @@ def same_sign_check(run, path, dataset=None, balanced=None):
 
 
 def magnitude_check(run, path, gradient_type="original_gradients", balanced=None, dataset=None, version=None,
-                    list_bs=None, trainstep=None, group_by="bs", y_range=None, legend_location="best"):
+                    list_bs=None, trainstep=None, group_by="bs", y_range=None, legend_location="best", width=6.4):
     if gradient_type == "adjusted_gradients" and run["meta"] == "victim_side":
         print("Adjusted gradients can not be made for a quick run (extend=victim_side)")
         return
@@ -110,9 +110,9 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
 
     graphs = []
     for _ in meta["list_bs"]:
-        graphs.append(Graph("Label occurrences", "Gradient value", y_range=y_range), fontsize=fontsize)
+        graphs.append(Graph("Label occurrences", "Gradient value", y_range=y_range), fontsize=fontsize, width=width)
 
-    composed_graph = Graph("Label occurrences", "Gradient value", y_range=y_range, fontsize=fontsize)
+    composed_graph = Graph("Label occurrences", "Gradient value", y_range=y_range, fontsize=fontsize, width=width)
 
     print("loading {} from json".format(gradient_type))
     for i, setting in enumerate(run):
@@ -181,7 +181,7 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
         graph.fig.clf()
 
 
-def heatmap(run, path, gradient_type="original_gradients", balanced=None, dataset=None, version=None, list_bs=None, y_range=None, trainstep=None):
+def heatmap(run, path, gradient_type="original_gradients", balanced=None, dataset=None, version=None, list_bs=None, y_range=None, trainstep=None, width=6.4):
 
     if list_bs is None:
         list_bs = run["meta"]["list_bs"]
@@ -192,7 +192,7 @@ def heatmap(run, path, gradient_type="original_gradients", balanced=None, datase
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
-    graph = Graph("Label occurrences", "Gradient value", y_range=y_range, fontsize=fontsize)
+    graph = Graph("Label occurrences", "Gradient value", y_range=y_range, fontsize=fontsize, width=width)
 
     print("loading {} from json".format(gradient_type))
     for i, setting in enumerate(run):
@@ -223,7 +223,7 @@ def heatmap(run, path, gradient_type="original_gradients", balanced=None, datase
     graph.fig.clf()
 
 
-def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=None):
+def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=None, width=6.4):
     if list_bs is None:
         list_bs = run["meta"]["list_bs"]
 
@@ -232,7 +232,7 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
-    graph = Graph("Label occurrences", "Gradient value", fontsize=fontsize)
+    graph = Graph("Label occurrences", "Gradient value", fontsize=fontsize, width=width)
     result_string = ""
     result_list_original = []
     result_list_adjusted = []
@@ -269,10 +269,10 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
 
 
 # Experiment 1.1
-def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels=""):
+def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels="", width=6.4):
     run = run.copy()
 
-    graph = Graph("Batch size", "Attack success rate (%)", y_range=[0,105], fontsize=fontsize)
+    graph = Graph("Batch size", "Attack success rate (%)", y_range=[0,105], fontsize=fontsize, width=width)
 
     if not isinstance(run, list):
         runs = [run]
@@ -364,10 +364,10 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
     graph.save(path, name)
 
 
-def visualize_hellinger_vs_batchsize(run, path, balanced=None, dataset=None, version=None):
+def visualize_hellinger_vs_batchsize(run, path, balanced=None, dataset=None, version=None, width=6.4):
     run = run.copy()
 
-    graph = Graph("Batch Size", "Hellinger distance", fontsize=fontsize)
+    graph = Graph("Batch Size", "Hellinger distance", fontsize=fontsize, width=width)
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
@@ -410,10 +410,10 @@ def visualize_hellinger_vs_batchsize(run, path, balanced=None, dataset=None, ver
 
 
 # Experiment 1.2
-def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None):
+def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, width=6.4):
     run = run.copy()
 
-    graph = Graph("Batch Size", "Flawless label extraction share", fontsize=fontsize)
+    graph = Graph("Batch Size", "Flawless label extraction share", fontsize=fontsize, width=width)
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
@@ -453,7 +453,7 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
 
 # Experiment 2
 def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, dataset=None, version=None, list_bs=None,
-                                                    train_step_stop=None, labels="", model_id=1):
+                                                    train_step_stop=None, labels="", model_id=1, width=6.4):
     run = run.copy()
 
     # if list_bs is None:
@@ -464,7 +464,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
     else:
         runs = run
 
-    graph = Graph("Iterations (x100)", "Attack success rate (%)", "Model accuracy (%)", fontsize=fontsize)
+    graph = Graph("Iterations (x100)", "Attack success rate (%)", "Model accuracy (%)", fontsize=fontsize, width=width)
 
     data2 = []
 
@@ -542,10 +542,10 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
 # It will evaluate the image similarity by plotting the percentage of samples that reach a mse below a threshold.
 # The threshold is plotted to the x axis.
 
-def visualize_good_fidelity(run, path, fidelitysteps, bs, balanced):
+def visualize_good_fidelity(run, path, fidelitysteps, bs, balanced, width=6.4):
     run = run.copy()
 
-    graph = Graph("Fidelity Score", "Percentage of Samples", fontsize=fontsize)
+    graph = Graph("Fidelity Score", "Percentage of Samples", fontsize=fontsize, width=width)
     meta = run["meta"].copy()
     run.__delitem__("meta")
 
