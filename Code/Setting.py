@@ -166,8 +166,10 @@ class Setting:
         # Check CUDA
         if torch.cuda.is_available():
             self.device = torch.device("cuda")
+            print("using cuda gpu: " + str(torch.cuda.current_device()))
         else:
             self.device = torch.device("cpu")
+            print("cuda unavailable using cpu")
 
     def load_model(self):
         if self.parameter["model"] == "LeNet":
