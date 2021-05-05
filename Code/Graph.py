@@ -15,7 +15,7 @@ class Graph:
         self.subplot.set_ylabel(ylabel, fontsize=self.fontsize)
         if ylabel2 is not None:
             self.subplot2 = self.subplot.twinx()
-            self.subplot2.set_ylabel(ylabel2)
+            self.subplot2.set_ylabel(ylabel2, fontsize=self.fontsize)
             self.fig.tight_layout()
         else:
             self.subplot2 = None
