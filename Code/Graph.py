@@ -44,7 +44,7 @@ class Graph:
         for dat in self.data:
             plt.bar(str(dat[0]), dat[1], 0.5, color=self.color(str(dat[0])))
 
-    def plot_line(self, alt_ax=False, location="lower right", move=None, legend=True, skip_x_ticks=False):
+    def plot_line(self, alt_ax=False, location="best", move=None, legend=True, skip_x_ticks=False):
         if alt_ax:
             plt = self.subplot2
         else:

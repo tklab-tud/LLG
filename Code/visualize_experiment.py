@@ -269,7 +269,7 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
 
 
 # Experiment 1.1
-def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels="", width=6.4):
+def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels="", width=6.4, location="best"):
     run = run.copy()
 
     graph = Graph("Batch size", "Attack success rate (%)", y_range=[0,105], fontsize=fontsize, width=width)
@@ -350,7 +350,7 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
 
                 graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"]*100, current_meta[1])
 
-    graph.plot_line()
+    graph.plot_line(location=location)
 
     # graph.show()
 
@@ -453,7 +453,7 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
 
 # Experiment 2
 def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, dataset=None, version=None, list_bs=None,
-                                                    train_step_stop=None, labels="", model_id=1, width=6.4):
+                                                    train_step_stop=None, labels="", model_id=1, width=6.4, location="best"):
     run = run.copy()
 
     # if list_bs is None:
@@ -520,7 +520,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
     print(len(model_accs))
 
     graph.data.append(["Model", 0, str(0)])
-    graph.plot_line(location="center right", move=(1, 0.4), skip_x_ticks=True)
+    graph.plot_line(location=location, move=(1, 0.4), skip_x_ticks=True)
     graph.data = data2
     graph.plot_line(True, legend=False, skip_x_ticks=True)
 
