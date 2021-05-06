@@ -50,18 +50,20 @@ class Graph:
         else:
             plt = self.subplot
 
+        max_x = 0
+
         self.take_average()
         # For every line
         for label in dict.fromkeys([label for (label, _, _) in self.data]):
-            l_x = [x.lstrip("0") for (l, y, x) in self.data if l == label]
+            l_x = [x for (l, y, x) in self.data if l == label]
             l_y = [y for (l, y, x) in self.data if l == label]
             color = self.color(label)
             style = self.style(label)
 
+            max_x = max(max_x, max(l_x))
             print("Min y: {} for label {}".format(str(min(l_y)), label))
             plt.plot(l_x, l_y, label=label, linestyle=style, color=color, linewidth=2.5)
 
-        # plt.ticklabel_format(scilimits=(0,3),useMathText=True)
         # plt.set_ylim(self.y_range)
         # plt.set_xlim([-5,105])
         plt.tick_params(axis='x', labelsize=self.fontsize)
@@ -76,7 +78,11 @@ class Graph:
             labels, handles, order = zip(*sorted(zip(labels, handles, order), key=lambda t: t[2]))
             plt.legend(handles, labels, prop={'size': self.fontsize}, loc=location, bbox_to_anchor=move)
         if skip_x_ticks:
-            plt.set_xticks(range(0, len(self.data), max(1, len(self.data) // 10)))
+            step = max(1, max_x // 10)
+            plt.set_xticks(range(0, max_x+step, step))
+
+        plt.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
+        plt.ticklabel_format(style='sci', axis='x', scilimits=(3,3), useMathText=True)
 
     def plot_scatter(self, location="best", move=None, legend=True):
         if self.data == []:

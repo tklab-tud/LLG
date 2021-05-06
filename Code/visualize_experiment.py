@@ -464,7 +464,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
     else:
         runs = run
 
-    graph = Graph("Iterations (x100)", "Attack success rate (%)", "Model accuracy (%)", fontsize=fontsize, width=width)
+    graph = Graph("Iterations", "Attack success rate (%)", "Model accuracy (%)", fontsize=fontsize, width=width) # (x100)
 
     data2 = []
 
@@ -501,13 +501,14 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                     elif label == "MLP":
                         label = "FCNN"
 
-                x_tick_name = str(int(current_meta[5])) # int(x)*meta["trainsize"] # combined iterations
+                x_tick_name = int(int(current_meta[5])*meta["trainsize"]) # int(x)*meta["trainsize"] # combined iterations
+                print(x_tick_name)
 
                 graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"]*100, x_tick_name)
                 # if id == model_id:
                 #     data2.append(["Model", run[run_name]["parameter"]["test_acc"], x_tick_name])
 
-                acc = float(run[run_name]["parameter"]["test_acc"])/4.0
+                acc = float(run[run_name]["parameter"]["test_acc"])/len(runs)
                 if x_tick_name in model_accs.keys():
                     acc += model_accs[x_tick_name]
 
@@ -519,7 +520,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
     print(len(data2))
     print(len(model_accs))
 
-    graph.data.append(["Model", 0, str(0)])
+    graph.data.append(["Model", 0, 0])
     graph.plot_line(location=location, skip_x_ticks=True)
     graph.data = data2
     graph.plot_line(True, legend=False, skip_x_ticks=True, location=location)
