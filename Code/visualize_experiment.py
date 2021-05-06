@@ -514,11 +514,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
 
                 model_accs.update({x_tick_name: acc})
 
-    print(model_accs)
     data2 = [["Model", val/len(model_accs), key] for key, val in model_accs.items()]
-    print(data2)
-    print(len(data2))
-    print(len(model_accs))
 
     graph.data.append(["Model", 0, 0])
     graph.plot_line(location=location, skip_x_ticks=True)
