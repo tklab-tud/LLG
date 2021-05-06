@@ -233,6 +233,11 @@ def main():
         elif experiment_set == 4:
             visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False, width=4.8)
 
+        # Visualization Set 3 & 4
+        elif experiment_set == 34:
+            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True, width=4.8)
+            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False, width=4.8)
+
         # Visualization Set 5
         elif experiment_set == 5:
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="model")
