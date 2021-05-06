@@ -520,9 +520,9 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
     print(len(model_accs))
 
     graph.data.append(["Model", 0, str(0)])
-    graph.plot_line(location=location, move=(1, 0.4), skip_x_ticks=True)
+    graph.plot_line(location=location, skip_x_ticks=True)
     graph.data = data2
-    graph.plot_line(True, legend=False, skip_x_ticks=True)
+    graph.plot_line(True, legend=False, skip_x_ticks=True, location=location)
 
     # graph.show()
 
