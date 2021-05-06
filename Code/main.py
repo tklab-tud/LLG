@@ -247,7 +247,7 @@ def main():
 
         # Visualization Set 7
         elif experiment_set == 7:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="threshold")
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="threshold")
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="threshold")
 
         # Visualization Set 8
