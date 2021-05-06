@@ -346,7 +346,7 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                     elif label == None:
                         label = "β = ∞"
                     else:
-                        label = "β = " + str(label)
+                        label = "β = " + str(int(label))
 
                 graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"]*100, current_meta[1])
 
