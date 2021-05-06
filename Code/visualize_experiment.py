@@ -342,11 +342,11 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                     elif run[run_name]["parameter"]["noise_multiplier"] == 0.0:
                         label = "No noise"
                     elif label == 0.0:
-                        label = "ϵ = 0"
+                        label = "β = 0"
                     elif label == None:
-                        label = "ϵ = ∞"
+                        label = "β = ∞"
                     else:
-                        label = "ϵ = " + str(label)
+                        label = "β = " + str(label)
 
                 graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"]*100, current_meta[1])
 
