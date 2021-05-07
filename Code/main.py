@@ -90,6 +90,9 @@ def main():
         # model = "ResNet"      # ResNet
         # model = "MLP"         # FCNN
 
+        version = "dlg"
+        # version ="v2"
+
     # TODO: You can use the old LeNet run form set 5 as a baseline for sets 5, 6, and 7
 
     # Set 6 generation
@@ -240,8 +243,8 @@ def main():
 
         # Visualization Set 5
         elif experiment_set == 5:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="model")
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="model")
+            #visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="model")
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels=["model", "version"], exponential_x=False)
 
         # Visualization Set 6
         elif experiment_set == 6:

@@ -44,7 +44,7 @@ class Graph:
         for dat in self.data:
             plt.bar(str(dat[0]), dat[1], 0.5, color=self.color(str(dat[0])))
 
-    def plot_line(self, alt_ax=False, location="best", move=None, legend=True, skip_x_ticks=False):
+    def plot_line(self, alt_ax=False, location="best", move=None, legend=True, skip_x_ticks=False, exponential_x=True):
         if alt_ax:
             plt = self.subplot2
         else:
@@ -60,7 +60,7 @@ class Graph:
             color = self.color(label)
             style = self.style(label)
 
-            max_x = max(max_x, max(l_x))
+            #max_x = max(max_x, max(l_x))
             print("Min y: {} for label {}".format(str(min(l_y)), label))
             plt.plot(l_x, l_y, label=label, linestyle=style, color=color, linewidth=2.5)
 
@@ -81,8 +81,9 @@ class Graph:
             step = max(1, max_x // 10)
             plt.set_xticks(range(0, max_x+step, step))
 
-        plt.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
-        plt.ticklabel_format(style='sci', axis='x', scilimits=(3,3), useMathText=True)
+        if exponential_x:
+            plt.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
+            plt.ticklabel_format(style='sci', axis='x', scilimits=(3,3), useMathText=True)
 
     def plot_scatter(self, location="best", move=None, legend=True):
         if self.data == []:

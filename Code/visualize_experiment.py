@@ -110,7 +110,7 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
 
     graphs = []
     for _ in meta["list_bs"]:
-        graphs.append(Graph("Label occurrences", "Gradient value", y_range=y_range), fontsize=fontsize, width=width)
+        graphs.append(Graph("Label occurrences", "Gradient value", y_range=y_range, fontsize=fontsize, width=width))
 
     composed_graph = Graph("Label occurrences", "Gradient value", y_range=y_range, fontsize=fontsize, width=width)
 
@@ -269,7 +269,7 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
 
 
 # Experiment 1.1
-def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels="", width=6.4, location="best"):
+def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels="", width=6.4, location="best", exponential_x=True):
     run = run.copy()
 
     graph = Graph("Batch size", "Attack success rate (%)", y_range=[0,105], fontsize=fontsize, width=width)
@@ -297,60 +297,68 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
 
                 # labels need to be one of the attack parameters
                 # e.g. "model", "threshold", "noise_multiplier"
-                if labels != "":
-                    label = run[run_name]["parameter"][labels]
-                if labels == "model":
-                    if label == "LeNet":
-                        label = "CNN"
-                    elif label == "LeNetNew":
-                        label = "OldLeNet"
-                    elif label == "NewNewLeNet":
-                        label = "LeNet"
-                    elif label == "MLP":
-                        label = "FCNN"
-                if labels == "threshold":
-                    if label == 0.1:
-                        label = "θ=10%"
+
+                merged_label = ""
+                if not isinstance(labels, list): labels = [labels]
+                for l in labels:
+                    if l != "":
+                        label = run[run_name]["parameter"][l]
+                    if l == "model":
+                        if label == "LeNet":
+                            label = "CNN"
+                        elif label == "LeNetNew":
+                            label = "OldLeNet"
+                        elif label == "NewNewLeNet":
+                            label = "LeNet"
+                        elif label == "MLP":
+                            label = "FCNN"
+                    if l == "threshold":
+                        if label == 0.1:
+                            label = "θ=10%"
+                            if run[run_name]["parameter"]["version"] == "random":
+                                label = "Random"
+                            elif run[run_name]["parameter"]["compression"] == False:
+                                label = "θ=0%"
+                            else:
+                                continue
+                        elif label == 0.2:
+                            label = "θ=20%"
+                        elif label == 0.4:
+                            label = "θ=40%"
+                        elif label == 0.8:
+                            label = "θ=80%"
+                        elif label == 0.0:
+                            label = "θ=0%"
+                    if l == "noise_multiplier":
                         if run[run_name]["parameter"]["version"] == "random":
                             label = "Random"
-                        elif run[run_name]["parameter"]["compression"] == False:
-                            label = "θ=0%"
+                        elif run[run_name]["parameter"]["differential_privacy"] == False:
+                            label = "No noise"
+                        elif label == 0.0:
+                            label = "No noise"
                         else:
-                            continue
-                    elif label == 0.2:
-                        label = "θ=20%"
-                    elif label == 0.4:
-                        label = "θ=40%"
-                    elif label == 0.8:
-                        label = "θ=80%"
-                    elif label == 0.0:
-                        label = "θ=0%"
-                if labels == "noise_multiplier":
-                    if run[run_name]["parameter"]["version"] == "random":
-                        label = "Random"
-                    elif run[run_name]["parameter"]["differential_privacy"] == False:
-                        label = "No noise"
-                    elif label == 0.0:
-                        label = "No noise"
-                    else:
-                        label = "σ² = " + str(label)
-                if labels == "max_norm":
-                    if run[run_name]["parameter"]["version"] == "random":
-                        label = "Random"
-                    elif run[run_name]["parameter"]["differential_privacy"] == False:
-                        label = "No noise"
-                    elif run[run_name]["parameter"]["noise_multiplier"] == 0.0:
-                        label = "No noise"
-                    elif label == 0.0:
-                        label = "β = 0"
-                    elif label == None:
-                        label = "β = ∞"
-                    else:
-                        label = "β = " + str(int(label))
+                            label = "σ² = " + str(label)
+                    if l == "max_norm":
+                        if run[run_name]["parameter"]["version"] == "random":
+                            label = "Random"
+                        elif run[run_name]["parameter"]["differential_privacy"] == False:
+                            label = "No noise"
+                        elif run[run_name]["parameter"]["noise_multiplier"] == 0.0:
+                            label = "No noise"
+                        elif label == 0.0:
+                            label = "β = 0"
+                        elif label == None:
+                            label = "β = ∞"
+                        else:
+                            label = "β = " + str(int(label))
 
-                graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"]*100, current_meta[1])
+                    merged_label = merged_label + label + ", "
+                merged_label = merged_label[:-2]
 
-    graph.plot_line(location=location)
+
+                graph.add_datapoint(merged_label, run[run_name]["prediction_results"]["accuracy"]*100, current_meta[1])
+
+    graph.plot_line(location=location, exponential_x=exponential_x)
 
     # graph.show()
 
