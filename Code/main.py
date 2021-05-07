@@ -1,17 +1,18 @@
 from experiments import *
 from visualize_experiment import *
 from Dataloader import Dataloader
+import time
 
 
 def main():
     ############## Build your attack here ######################
 
-    experiment_set = 1
+    experiment_set = 2
 
     # visualization parameters
     job = "visualize"
     # specify the number of json files you want to select for plotting
-    num_files = 1
+    num_files = 5
 
     # experiment parameters
     # FIXME: outcomment this line if you want the run the visualization
@@ -23,6 +24,7 @@ def main():
     differential_privacy = False
     noise_type = "normal"
     noise_multipliers = [0.0]
+    max_norms = [None]
     compression = False
     thresholds = [0.0]
     n = 100
@@ -37,12 +39,12 @@ def main():
     dataset = "MNIST"
     version = "v2"
 
-    v3 = {"MNIST": "v3-zero", "CIFAR": "v3-one", "CELEB-A-male": "v3-zero", "SVHN": "v3-random"}
+    v3 = {"MNIST": "v3-zero", "CIFAR": "v3-one", "CELEB-A-male": "v3-zero", "CELEB-A-hair": "v3-zero", "SVHN": "v3-random"}
 
     if experiment_set == 0:
-        n=100
-        dataset = "MNIST"
-        version = ["v2", "experimental"]
+        n=3
+        dataset = "CELEB-A-hair"
+        version = "v2"
         model = "LeNet"
 
     if experiment_set in [1, 2, 3, 4]:
@@ -50,6 +52,7 @@ def main():
         dataset = "MNIST"
         # dataset = "CIFAR"
         # dataset = "CELEB-A-male"
+        dataset = "CELEB-A-hair"
         # dataset = "SVHN"
         # versions in order of importance
         # TODO: run all VERSIONS separately per DATASET ("in parallel")
@@ -97,7 +100,8 @@ def main():
         noise_type = "normal"
         # noise_type = "laplace"
         # noise_type = "exponential"
-        noise_multipliers = [0.1, 0.01, 0.001, 0.0001]
+
+        noise_multipliers = [0.0, 0.01, 0.1, 1]
 
     # Set 7 generation
     if experiment_set == 7:
@@ -105,37 +109,60 @@ def main():
         compression = True
         thresholds = [0.1, 0.2, 0.4, 0.8]
 
+    # Set 8 generation
+    # differential privacy = clipping + noise
+    if experiment_set == 8:
+        defenses = ["dp"]
+        differential_privacy = True
+        # TODO: run all NOISE TYPES separately ("in parallel")
+        noise_type = "normal"
+        # noise_type = "laplace"
+        # noise_type = "exponential"
+
+        # variance = 1
+        noise_multipliers = [1]
+        # epsilon =   10, 1, 0.1
+        max_norms = [None, 0.1, 1, 10]
+
+    start = time.time()
+
     if job == "experiment":
         dataloader = Dataloader()
-        if isinstance(version, str):
-            version = [version]
         for noise_multiplier in noise_multipliers:
-            for threshold in thresholds:
-                experiment(dataloader=dataloader,
-                        list_datasets=[dataset],
-                        list_bs=list_bs,
-                        list_balanced=[balanced],
-                        list_versions=version,   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
-                        n=n,                     # Amount of attacks
-                        extent="predict",        # "victim_side", "predict", "reconstruct"
-                        trainsize=trainsize,             # Iterations per Trainstep
-                        trainsteps=trainsteps,           # Number of Attack&Train cycles
-                        train_lr=train_lr,
-                        path=None,
-                        model=model,
-                        store_individual_gradients=False, # Will store the ~500 gradients connected to one output node and not just their sum
-                        dlg_lr= 1, # learrate of (i)dlg image reconstruction
-                        dlg_iterations=100, # amount of (i)dlg reconstruction iterations
-                        log_interval=100000,  # Won't store each (i)dlg iteration's images but every n-th iteration's
-                        store_composed_image = False, # storing dlg output images as composed image
-                        store_separate_images = False, # storing dlg output images as seperate images
-                        defenses=defenses,
-                        differential_privacy=differential_privacy,
-                        noise_type=noise_type,
-                        noise_multiplier=noise_multiplier,
-                        compression=compression,
-                        threshold=threshold
-                        )
+            for max_norm in max_norms:
+                if max_norm != None and max_norm > 0:
+                    noise_multiplier = noise_multiplier/max_norm
+                for threshold in thresholds:
+                    experiment(dataloader=dataloader,
+                            list_datasets=[dataset],
+                            list_bs=list_bs,
+                            list_balanced=[balanced],
+                            list_versions=[version],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
+                            n=n,                     # Amount of attacks
+                            extent="predict",        # "victim_side", "predict", "reconstruct"
+                            trainsize=trainsize,             # Iterations per Trainstep
+                            trainsteps=trainsteps,           # Number of Attack&Train cycles
+                            train_lr=train_lr,
+                            path=None,
+                            model=model,
+                            store_individual_gradients=False, # Will store the ~500 gradients connected to one output node and not just their sum
+                            dlg_lr= 1, # learrate of (i)dlg image reconstruction
+                            dlg_iterations=100, # amount of (i)dlg reconstruction iterations
+                            log_interval=100000,  # Won't store each (i)dlg iteration's images but every n-th iteration's
+                            store_composed_image = False, # storing dlg output images as composed image
+                            store_separate_images = False, # storing dlg output images as seperate images
+                            defenses=defenses,
+                            differential_privacy=differential_privacy,
+                            noise_type=noise_type,
+                            noise_multiplier=noise_multiplier,
+                            max_norm=max_norm,
+                            compression=compression,
+                            threshold=threshold
+                            )
+
+        end = time.time()
+        duration = end - start
+        print(duration)
 
     elif job == "visualize":
 
@@ -179,29 +206,37 @@ def main():
         #     visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True, model_id=i)
         #     visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False, model_id=i)
 
-        # Visualization Set 0 (Custom experiment)
+        # Visualization Set 0
         if experiment_set == 0:
             visualize_class_prediction_accuracy_vs_batchsize(run, path)
-            #magnitude_check(run, path, "original_gradients")
-            #magnitude_check(run, path, "adjusted_gradients")
-            #heatmap(run, path)
 
 
         # Visualization Set 1
         elif experiment_set == 1:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True)
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, width=4.8)
 
         # Visualization Set 2
         elif experiment_set == 2:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False)
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8)
+
+        # Visualization Set 1 & 2
+        elif experiment_set == 12:
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, width=4.8)
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8)
+            # location="lower right"
 
         # Visualization Set 3
         elif experiment_set == 3:
-            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True)
+            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True, width=4.8)
 
         # Visualization Set 4
         elif experiment_set == 4:
-            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False)
+            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False, width=4.8)
+
+        # Visualization Set 3 & 4
+        elif experiment_set == 34:
+            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True, width=4.8)
+            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False, width=4.8)
 
         # Visualization Set 5
         elif experiment_set == 5:
@@ -210,15 +245,21 @@ def main():
 
         # Visualization Set 6
         elif experiment_set == 6:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_multiplier")
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_multiplier")
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_multiplier")
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_type")
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_type")
 
         # Visualization Set 7
         elif experiment_set == 7:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="threshold")
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="threshold")
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="threshold")
+
+        # Visualization Set 8
+        elif experiment_set == 8:
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="max_norm")
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_type")
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_type")
 
     else:
         print("Unknown job")

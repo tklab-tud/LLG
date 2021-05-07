@@ -7,14 +7,15 @@ import itertools
 
 
 class Graph:
-    def __init__(self, xlabel, ylabel, ylabel2=None, y_range=None):
+    def __init__(self, xlabel, ylabel, ylabel2=None, y_range=None, fontsize=14, width=6.4):
         self.data = []
-        self.fig, self.subplot = plt.subplots(1, 1) # figsize=(8,5)
-        self.subplot.set_xlabel(xlabel)
-        self.subplot.set_ylabel(ylabel)
+        self.fig, self.subplot = plt.subplots(1, 1, figsize=(width,4.8)) # figsize=(8,5)
+        self.fontsize = fontsize
+        self.subplot.set_xlabel(xlabel, fontsize=self.fontsize)
+        self.subplot.set_ylabel(ylabel, fontsize=self.fontsize)
         if ylabel2 is not None:
             self.subplot2 = self.subplot.twinx()
-            self.subplot2.set_ylabel(ylabel2)
+            self.subplot2.set_ylabel(ylabel2, fontsize=self.fontsize)
             self.fig.tight_layout()
         else:
             self.subplot2 = None
@@ -43,26 +44,30 @@ class Graph:
         for dat in self.data:
             plt.bar(str(dat[0]), dat[1], 0.5, color=self.color(str(dat[0])))
 
-    def plot_line(self, alt_ax=False, location="lower right", move=None, legend=True, skip_x_ticks=False):
+    def plot_line(self, alt_ax=False, location="best", move=None, legend=True, skip_x_ticks=False):
         if alt_ax:
             plt = self.subplot2
         else:
             plt = self.subplot
 
+        max_x = 0
+
         self.take_average()
         # For every line
         for label in dict.fromkeys([label for (label, _, _) in self.data]):
-            l_x = [x.lstrip("0") for (l, y, x) in self.data if l == label]
+            l_x = [x for (l, y, x) in self.data if l == label]
             l_y = [y for (l, y, x) in self.data if l == label]
             color = self.color(label)
             style = self.style(label)
 
+            max_x = max(max_x, max(l_x))
             print("Min y: {} for label {}".format(str(min(l_y)), label))
             plt.plot(l_x, l_y, label=label, linestyle=style, color=color, linewidth=2.5)
 
-        # plt.ticklabel_format(scilimits=(0,3),useMathText=True)
         # plt.set_ylim(self.y_range)
         # plt.set_xlim([-5,105])
+        plt.tick_params(axis='x', labelsize=self.fontsize)
+        plt.tick_params(axis='y', labelsize=self.fontsize)
 
         handles, labels = plt.get_legend_handles_labels()
 
@@ -71,9 +76,13 @@ class Graph:
             for label in labels:
                 order.append(self.order(label))
             labels, handles, order = zip(*sorted(zip(labels, handles, order), key=lambda t: t[2]))
-            plt.legend(handles, labels, prop={'size': 11}, loc=location, bbox_to_anchor=move)
+            plt.legend(handles, labels, prop={'size': self.fontsize}, loc=location, bbox_to_anchor=move)
         if skip_x_ticks:
-            plt.set_xticks(range(0, len(self.data), max(1, len(self.data) // 10)))
+            step = max(1, max_x // 10)
+            plt.set_xticks(range(0, max_x+step, step))
+
+        plt.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
+        plt.ticklabel_format(style='sci', axis='x', scilimits=(3,3), useMathText=True)
 
     def plot_scatter(self, location="best", move=None, legend=True):
         if self.data == []:
@@ -109,7 +118,7 @@ class Graph:
             for label in labels:
                 order.append(self.order(label.split(",")[0]))
             labels, handles, order = zip(*sorted(zip(labels, handles, order), key=lambda t: t[2]))
-            plt.legend(handles, labels, prop={'size': 11}, loc=location, bbox_to_anchor=move)
+            plt.legend(handles, labels, prop={'size': self.fontsize}, loc=location, bbox_to_anchor=move)
             if self.y_range is not None:
                 plt.set_ylim(self.y_range[0], self.y_range[-1])
 
@@ -183,11 +192,13 @@ class Graph:
     def save(self, path, name):
         if not os.path.exists(path):
             os.makedirs(path)
+        self.fig.tight_layout()
         self.fig.savefig(path + name, dpi=600, format='pdf')
 
     def save_f(self, f):
         if f is None:
             return
+        self.fig.tight_layout()
         self.fig.savefig(f.name, dpi=600, format='pdf')
 
     def color(self, s):
@@ -221,11 +232,25 @@ class Graph:
             "θ=80%": '#f58231',
 
             # noise multiplier
-            "var = 10⁻⁴": "#e6194B",
-            "var = 10⁻³": '#f032e6',
-            "var = 10⁻²": '#4363d8',
-            "var = 10⁻¹": '#277831',
-            "var = 0": "#4363d8",
+            "σ² = 0.01": '#e6194B',
+            "σ² = 0.1": '#f032e6',
+            "σ² = 1": '#4363d8',
+            "σ² = 10": '#277831',
+            "σ² = 0": "#4363d8",
+            "No noise": "#4363d8",
+            "basline": "#4363d8",
+            "1.0": "#e6194B",
+            "0.5": '#f032e6',
+            "0.25": '#4363d8',
+            "0.75": '#f032e6',
+            "1.5": "#e6194B",
+            "2.0": '#4363d8',
+
+            "β = 0.1": '#277831',
+            "β = 1": '#f032e6',
+            "β = 5": "#800000",
+            "β = 10": "#f58231",
+            "β = ∞": "#800000",
 
             # noise type
             "normal": "#e6194B",
@@ -288,11 +313,28 @@ class Graph:
             "θ=80%": ':',
 
             # noise multiplier
-            "var = 10⁻⁴": ':',
-            "var = 10⁻³": '-.',
-            "var = 10⁻²": (0, (3, 5, 1, 5, 1, 5)),
-            "var = 10⁻¹": (0, (1, 1, 1, 3)),
-            "var = 0": '-',
+            "σ² = 0.01": ':',
+            "σ² = 0.1": '-.',
+            "σ² = 1": (0, (3, 5, 1, 5, 1, 5)),
+            "σ² = 10": (0, (1, 1, 1, 3)),
+            "σ² = 0": '-',
+            "No noise": '-',
+            "basline": '-',
+            "1.0": ':',
+            "0.5": '-.',
+            "0.25": (0, (3, 5, 1, 5, 1, 5)),
+            "0.75": (0, (3, 5, 1, 5, 1, 5)),
+            "1.5": '-.',
+            "2.0": ':',
+
+            "β = inf": '-',
+            "β = 0": '-',
+            "β = 0.01": ':',
+            "β = 0.1": '-.',
+            "β = 1": (0, (3, 5, 1, 5, 1, 5)),
+            "β = 5": (0, (3, 10, 1, 10, 1, 10)),
+            "β = 10": (0, (1, 1, 1, 3)),
+            "β = ∞": (0, (3, 10, 1, 10, 1, 10)),
 
             # noise type
             "normal": "--",
@@ -342,11 +384,28 @@ class Graph:
             "θ=80%": 8,
 
             # noise multiplier
-            "var = 0": 0,
-            "var = 10⁻⁴": 1,
-            "var = 10⁻³": 2,
-            "var = 10⁻²": 3,
-            "var = 10⁻¹": 4,
+            "No noise": 0,
+            "σ² = 0": 0,
+            "σ² = 0.0001": 1,
+            "σ² = 0.001": 2,
+            "σ² = 0.01": 3,
+            "σ² = 0.1": 4,
+            "σ² = 1": 5,
+            "σ² = 10": 6,
+            "0.25": 5,
+            "0.5": 6,
+            "0.75": 7,
+            "1.0": 8,
+            "1.5": 9,
+            "2.0": 10,
+
+            "β = 0": 0,
+            "β = 0.01": 1,
+            "β = 0.1": 2,
+            "β = 10": 3,
+            "β = 5": 4,
+            "β = 1": 5,
+            "β = ∞": 100,
 
             # noise type
             "normal": 1,
