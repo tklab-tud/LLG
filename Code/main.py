@@ -248,8 +248,7 @@ def main():
         elif experiment_set == 5:
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="model")
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False,
-                                                             labels=["version", "model"], exponential_x=False,
-                                                             cut_zeroes=True)
+                                                             labels=["version", "model"])
 
         # Visualization Set 6
         elif experiment_set == 6:

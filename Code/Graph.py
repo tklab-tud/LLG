@@ -44,7 +44,7 @@ class Graph:
         for dat in self.data:
             plt.bar(str(dat[0]), dat[1], 0.5, color=self.color(str(dat[0])))
 
-    def plot_line(self, alt_ax=False, location="best", move=None, legend=True, skip_x_ticks=False, exponential_x=True, cut_zeroes=False):
+    def plot_line(self, alt_ax=False, location="best", move=None, legend=True, skip_x_ticks=False, useMathText=False):
         if alt_ax:
             plt = self.subplot2
         else:
@@ -55,18 +55,16 @@ class Graph:
         self.take_average()
         # For every line
         for label in dict.fromkeys([label for (label, _, _) in self.data]):
-            l_x = [x for (l, y, x) in self.data if l == label]
+            if useMathText:
+                l_x = [x for (l, y, x) in self.data if l == label]
+            else:
+                l_x = [x.lstrip("0") for (l, y, x) in self.data if l == label]
             l_y = [y for (l, y, x) in self.data if l == label]
             color = self.color(label)
             style = self.style(label)
 
-            if cut_zeroes:
-                tmp_l_x = l_x
-                l_x = []
-                for x in tmp_l_x:
-                    l_x.append(str(int(x)))
-
-            #max_x = max(max_x, max(l_x))
+            if useMathText:
+                max_x = max(max_x, max(l_x))
             print("Min y: {} for label {}".format(str(min(l_y)), label))
             plt.plot(l_x, l_y, label=label, linestyle=style, color=color, linewidth=2.5)
 
@@ -84,12 +82,13 @@ class Graph:
             labels, handles, order = zip(*sorted(zip(labels, handles, order), key=lambda t: t[2]))
             plt.legend(handles, labels, prop={'size': self.fontsize}, loc=location, bbox_to_anchor=move)
         if skip_x_ticks:
-            step = max(1, max_x // 10)
-            plt.set_xticks(range(0, max_x+step, step))
-
-        if exponential_x:
-            plt.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
-            plt.ticklabel_format(style='sci', axis='x', scilimits=(3,3), useMathText=True)
+            if useMathText:
+                step = max(1, max_x // 10)
+                plt.set_xticks(range(0, max_x+step, step))
+                plt.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
+                plt.ticklabel_format(style='sci', axis='x', scilimits=(3,3), useMathText=True)
+            else:
+                plt.set_xticks(range(0, len(self.data), max(1, len(self.data) // 10)))
 
     def plot_scatter(self, location="best", move=None, legend=True):
         if self.data == []:
