@@ -7,7 +7,7 @@ import time
 def main():
     ############## Build your attack here ######################
 
-    experiment_set = 2
+    experiment_set = 7
 
     # visualization parameters
     job = "visualize"
@@ -105,13 +105,13 @@ def main():
         # noise_type = "laplace"
         # noise_type = "exponential"
 
-        noise_multipliers = [0.0, 0.01, 0.1, 1]
+        noise_multipliers = [0.01, 0.1, 1]
 
     # Set 7 generation
     if experiment_set == 7:
         defenses = ["compression"]
         compression = True
-        thresholds = [0.1, 0.2, 0.4, 0.8]
+        thresholds = [0.2, 0.4, 0.8]
 
     # Set 8 generation
     # differential privacy = clipping + noise
