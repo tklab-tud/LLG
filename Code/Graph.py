@@ -225,6 +225,19 @@ class Graph:
             "FCNN": '#f032e6',
             "ResNet": "#e6194B",
 
+            #model x version
+            "CNN, LLG+": '#4363d8',
+            "LeNet, LLG+": '#277831',
+            "OldLeNet, LLG+": '#ff0044',
+            "FCNN, LLG+": '#f032e6',
+            "ResNet, LLG+": "#e6194B",
+
+            "CNN, DLG": '#F303d8',
+            "LeNet, DLG": '#F07831',
+            "OldLeNet, DLG": '#ff0F44',
+            "FCNN, DLG": '#0FF206',
+            "ResNet, DLG": "#e610FB",
+
             # compression threshold
             "θ=0%": "#4363d8",
             "θ=10%": "#ff0044",
@@ -305,6 +318,19 @@ class Graph:
             "OldLeNet": (0, (1, 1, 1, 3)),
             "FCNN": '-.',
             "ResNet": "--",
+
+            # model x version
+            "CNN, LLG+": '-',
+            "LeNet, LLG+": (0, (3, 5, 1, 5, 1, 5)),
+            "OldLeNet, LLG+": (0, (1, 1, 1, 3)),
+            "FCNN, LLG+": '-.',
+            "ResNet, LLG+": "--",
+
+            "CNN, DLG": '-',
+            "LeNet, DLG": (0, (3, 5, 1, 5, 1, 5)),
+            "OldLeNet, DLG": (0, (1, 1, 1, 3)),
+            "FCNN, DLG": '-.',
+            "ResNet, DLG": "--",
 
             # compression threshold
             "θ=0%": '-',

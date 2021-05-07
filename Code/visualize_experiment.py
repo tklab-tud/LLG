@@ -303,6 +303,16 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                 for l in labels:
                     if l != "":
                         label = run[run_name]["parameter"][l]
+                    if l == "version":
+                        if label == "v2":
+                            label = "LLG+"
+                        elif label =="dlg":
+                            label = "DLG"
+                        elif label == "v1":
+                            label = "LLG"
+                        elif label == "v3":
+                            label = "LLG*"
+
                     if l == "model":
                         if label == "LeNet":
                             label = "CNN"
