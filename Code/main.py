@@ -128,6 +128,12 @@ def main():
         # epsilon | beta
         max_norms = [1, 5, 10]
 
+    if experiment_set == -1:
+        n = 1000
+        versions = ["v2", "random"]
+    else:
+        versions = [version]
+
     start = time.time()
 
     if job == "experiment":
@@ -141,7 +147,7 @@ def main():
                                list_datasets=[dataset],
                                list_bs=list_bs,
                                list_balanced=[balanced],
-                               list_versions=[version],
+                               list_versions=versions,
                                # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
                                n=n,  # Amount of attacks
                                extent="predict",  # "victim_side", "predict", "reconstruct"
