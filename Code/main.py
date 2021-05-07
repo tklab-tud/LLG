@@ -124,9 +124,9 @@ def main():
         # noise_type = "exponential"
 
         # variance = 1
-        noise_multipliers = [1]
-        # epsilon =   10, 1, 0.1
-        max_norms = [None, 0.1, 1, 10]
+        noise_multipliers = [0.1]
+        # epsilon | beta
+        max_norms = [1, 5, 10]
 
     start = time.time()
 
