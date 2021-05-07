@@ -68,7 +68,7 @@ class Graph:
             print("Min y: {} for label {}".format(str(min(l_y)), label))
             plt.plot(l_x, l_y, label=label, linestyle=style, color=color, linewidth=2.5)
 
-        # plt.set_ylim(self.y_range)
+        plt.set_ylim(self.y_range)
         # plt.set_xlim([-5,105])
         plt.tick_params(axis='x', labelsize=self.fontsize)
         plt.tick_params(axis='y', labelsize=self.fontsize)
