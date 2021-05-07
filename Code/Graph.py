@@ -452,6 +452,19 @@ class Graph:
             "iDLG (non-IID)": 9,
             "DLG (non-IID)": 7,
 
+             # model x version
+            "CNN, LLG+": 1,
+            "LeNet, LLG+": 2,
+            "OldLeNet, LLG+": 3,
+            "FCNN, LLG+": 4,
+            "ResNet, LLG+": 5,
+
+            "CNN, DLG": 11,
+            "LeNet, DLG": 12,
+            "OldLeNet, DLG": 13,
+            "FCNN, DLG": 14,
+            "ResNet, DLG": 15,
+
             "Model": 100
 
         }
