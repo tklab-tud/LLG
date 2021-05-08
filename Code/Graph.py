@@ -44,7 +44,7 @@ class Graph:
         for dat in self.data:
             plt.bar(str(dat[0]), dat[1], 0.5, color=self.color(str(dat[0])))
 
-    def plot_line(self, alt_ax=False, location="best", move=None, legend=True, skip_x_ticks=False, exponential_x=True):
+    def plot_line(self, alt_ax=False, location="best", move=None, legend=True, skip_x_ticks=False, exponential_x=True, cut_zeroes=False):
         if alt_ax:
             plt = self.subplot2
         else:
@@ -59,6 +59,12 @@ class Graph:
             l_y = [y for (l, y, x) in self.data if l == label]
             color = self.color(label)
             style = self.style(label)
+
+            if cut_zeroes:
+                tmp_l_x = l_x
+                l_x = []
+                for x in tmp_l_x:
+                    l_x.append(str(int(x)))
 
             #max_x = max(max_x, max(l_x))
             print("Min y: {} for label {}".format(str(min(l_y)), label))
@@ -225,18 +231,20 @@ class Graph:
             "FCNN": '#f032e6',
             "ResNet": "#e6194B",
 
-            #model x version
-            "CNN, LLG+": '#4363d8',
-            "LeNet, LLG+": '#277831',
-            "OldLeNet, LLG+": '#ff0044',
-            "FCNN, LLG+": '#f032e6',
-            "ResNet, LLG+": "#e6194B",
+            # version x model
+            "LLG+, CNN": '#bada55',
+            "LLG+, LeNet": '#7fe5f0',
+            "LLG+, OldLeNet": '#ff0044',
+            "LLG+, FCNN": '#f032e6',
+            "LLG+, ResNet": "#ff0000",
 
-            "CNN, DLG": '#F303d8',
-            "LeNet, DLG": '#F07831',
-            "OldLeNet, DLG": '#ff0F44',
-            "FCNN, DLG": '#0FF206',
-            "ResNet, DLG": "#e610FB",
+
+            "DLG, CNN": '#ff80ed',
+            "DLG, LeNet": '#407294',
+            "DLG, OldLeNet": '#ffF000',
+            "DLG, FCNN": '#f0F200',
+            "DLG, ResNet": "#420420",
+
 
             # compression threshold
             "θ=0%": "#4363d8",
@@ -319,18 +327,18 @@ class Graph:
             "FCNN": '-.',
             "ResNet": "--",
 
-            # model x version
-            "CNN, LLG+": '-',
-            "LeNet, LLG+": (0, (3, 5, 1, 5, 1, 5)),
-            "OldLeNet, LLG+": (0, (1, 1, 1, 3)),
-            "FCNN, LLG+": '-.',
-            "ResNet, LLG+": "--",
+            # version x model
+            "LLG+, CNN": '-',
+            "LLG+, LeNet": (0, (3, 5, 1, 5, 1, 5)),
+            "LLG+, OldLeNet": (0, (1, 1, 1, 3)),
+            "LLG+, FCNN": '-.',
+            "LLG+, ResNet": "--",
 
-            "CNN, DLG": '-',
-            "LeNet, DLG": (0, (3, 5, 1, 5, 1, 5)),
-            "OldLeNet, DLG": (0, (1, 1, 1, 3)),
-            "FCNN, DLG": '-.',
-            "ResNet, DLG": "--",
+            "DLG, CNN": '-',
+            "DLG, LeNet": (0, (3, 5, 1, 5, 1, 5)),
+            "DLG, OldLeNet": (0, (1, 1, 1, 3)),
+            "DLG, FCNN": '-.',
+            "DLG, ResNet": "--",
 
             # compression threshold
             "θ=0%": '-',
@@ -452,18 +460,18 @@ class Graph:
             "iDLG (non-IID)": 9,
             "DLG (non-IID)": 7,
 
-             # model x version
-            "CNN, LLG+": 1,
-            "LeNet, LLG+": 2,
-            "OldLeNet, LLG+": 3,
-            "FCNN, LLG+": 4,
-            "ResNet, LLG+": 5,
+            # version x model
+            "LLG+, CNN": 0,
+            "LLG+, FCNN": 2,
+            "LLG+, LeNet": 4,
+            "LLG+, OldLeNet": 6,
+            "LLG+, ResNet": 8,
 
-            "CNN, DLG": 11,
-            "LeNet, DLG": 12,
-            "OldLeNet, DLG": 13,
-            "FCNN, DLG": 14,
-            "ResNet, DLG": 15,
+            "DLG, CNN": 10,
+            "DLG, FCNN": 12,
+            "DLG, LeNet": 14,
+            "DLG, OldLeNet": 16,
+            "DLG, ResNet": 18,
 
             "Model": 100
 

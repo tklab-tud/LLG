@@ -269,7 +269,7 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
 
 
 # Experiment 1.1
-def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels="", width=6.4, location="best", exponential_x=True):
+def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels="", width=6.4, location="best", exponential_x=True, cut_zeroes=False):
     run = run.copy()
 
     graph = Graph("Batch size", "Attack success rate (%)", y_range=[0,105], fontsize=fontsize, width=width)
@@ -368,7 +368,7 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
 
                 graph.add_datapoint(merged_label, run[run_name]["prediction_results"]["accuracy"]*100, current_meta[1])
 
-    graph.plot_line(location=location, exponential_x=exponential_x)
+    graph.plot_line(location=location, exponential_x=exponential_x, cut_zeroes=cut_zeroes)
 
     # graph.show()
 
