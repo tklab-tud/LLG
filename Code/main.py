@@ -274,12 +274,13 @@ def main():
 
         # Gradient Plots
         if experiment_set == 9:
+            y_range = [-330, 300]
             magnitude_check(run, path, gradient_type="original_gradients", balanced="True", dataset="MNIST",
-                            version="v2", list_bs=[2, 8, 32, 128], group_by="bs")
+                            version="v2", list_bs=[2, 8, 32, 128], group_by="bs", y_range=y_range)
             magnitude_check(run, path, gradient_type="adjusted_gradients", balanced="True", dataset="MNIST",
-                            version="v2", list_bs=[2, 8, 32, 128], group_by="bs")
+                            version="v2", list_bs=[2, 8, 32, 128], group_by="bs", y_range=y_range)
             heatmap(run, path, gradient_type="original_gradients", balanced="True", dataset="MNIST",
-                    list_bs=[2, 8, 32, 128])
+                    list_bs=[2, 8, 32, 128], y_range=y_range)
 
     else:
         print("Unknown job")
