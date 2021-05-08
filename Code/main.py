@@ -39,10 +39,11 @@ def main():
     dataset = "MNIST"
     version = "v2"
 
-    v3 = {"MNIST": "v3-zero", "CIFAR": "v3-one", "CELEB-A-male": "v3-zero", "CELEB-A-hair": "v3-zero", "SVHN": "v3-random"}
+    v3 = {"MNIST": "v3-zero", "CIFAR": "v3-one", "CELEB-A-male": "v3-zero", "CELEB-A-hair": "v3-zero",
+          "SVHN": "v3-random"}
 
     if experiment_set == 0:
-        n=3
+        n = 3
         dataset = "CELEB-A-hair"
         version = "v2"
         model = "LeNet"
@@ -65,7 +66,7 @@ def main():
         # version = "dlg"
 
     # with exception of set 3 and 4 all sets use all batch sizes and don't train
-    list_bs = [1,2,4,8,16,32,64,128]
+    list_bs = [1, 2, 4, 8, 16, 32, 64, 128]
     trainsize = 0
     trainsteps = 0
 
@@ -134,34 +135,37 @@ def main():
         for noise_multiplier in noise_multipliers:
             for max_norm in max_norms:
                 if max_norm != None and max_norm > 0:
-                    noise_multiplier = noise_multiplier/max_norm
+                    noise_multiplier = noise_multiplier / max_norm
                 for threshold in thresholds:
                     experiment(dataloader=dataloader,
-                            list_datasets=[dataset],
-                            list_bs=list_bs,
-                            list_balanced=[balanced],
-                            list_versions=[version],   # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
-                            n=n,                     # Amount of attacks
-                            extent="predict",        # "victim_side", "predict", "reconstruct"
-                            trainsize=trainsize,             # Iterations per Trainstep
-                            trainsteps=trainsteps,           # Number of Attack&Train cycles
-                            train_lr=train_lr,
-                            path=None,
-                            model=model,
-                            store_individual_gradients=False, # Will store the ~500 gradients connected to one output node and not just their sum
-                            dlg_lr= 1, # learrate of (i)dlg image reconstruction
-                            dlg_iterations=100, # amount of (i)dlg reconstruction iterations
-                            log_interval=100000,  # Won't store each (i)dlg iteration's images but every n-th iteration's
-                            store_composed_image = False, # storing dlg output images as composed image
-                            store_separate_images = False, # storing dlg output images as seperate images
-                            defenses=defenses,
-                            differential_privacy=differential_privacy,
-                            noise_type=noise_type,
-                            noise_multiplier=noise_multiplier,
-                            max_norm=max_norm,
-                            compression=compression,
-                            threshold=threshold
-                            )
+                               list_datasets=[dataset],
+                               list_bs=list_bs,
+                               list_balanced=[balanced],
+                               list_versions=[version],
+                               # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
+                               n=n,  # Amount of attacks
+                               extent="predict",  # "victim_side", "predict", "reconstruct"
+                               trainsize=trainsize,  # Iterations per Trainstep
+                               trainsteps=trainsteps,  # Number of Attack&Train cycles
+                               train_lr=train_lr,
+                               path=None,
+                               model=model,
+                               store_individual_gradients=False,
+                               # Will store the ~500 gradients connected to one output node and not just their sum
+                               dlg_lr=1,  # learrate of (i)dlg image reconstruction
+                               dlg_iterations=100,  # amount of (i)dlg reconstruction iterations
+                               log_interval=100000,
+                               # Won't store each (i)dlg iteration's images but every n-th iteration's
+                               store_composed_image=False,  # storing dlg output images as composed image
+                               store_separate_images=False,  # storing dlg output images as seperate images
+                               defenses=defenses,
+                               differential_privacy=differential_privacy,
+                               noise_type=noise_type,
+                               noise_multiplier=noise_multiplier,
+                               max_norm=max_norm,
+                               compression=compression,
+                               threshold=threshold
+                               )
 
         end = time.time()
         duration = end - start
@@ -174,7 +178,7 @@ def main():
         run, path = load_json()
         _, meta = get_meta(run)
 
-        for i in range(num_files-1):
+        for i in range(num_files - 1):
             run2, path2 = load_json()
             run2, meta2 = get_meta(run2, cut_meta=True)
 
@@ -189,15 +193,14 @@ def main():
         # Grads before summing up, after summing up and after adjustment
         # magnitude_check(run, path, gradient_type="individual_gradients", group_by="class")
 
-
         # negativ_value_check partitions the gradients into 4 categories: (non)present x sign
         # gradient_type: "individual_gradients", "original_gradients", "adjusted_gradients"
         #
-        #negativ_value_check(run, path, gradient_type = "individual_gradients")
+        # negativ_value_check(run, path, gradient_type = "individual_gradients")
 
         # same_sign_check(run, path, dataset=None, balanced=None)
         # checks the split gradient_sum_sign x individual_grad_sign
-        #same_sign_check(run, path)
+        # same_sign_check(run, path)
 
         # Comparing accuracies
 
@@ -243,30 +246,43 @@ def main():
 
         # Visualization Set 5
         elif experiment_set == 5:
-            #visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="model")
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels=["version", "model"], exponential_x=False, cut_zeroes = True)
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="model")
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False,
+                                                             labels=["version", "model"], exponential_x=False,
+                                                             cut_zeroes=True)
 
         # Visualization Set 6
         elif experiment_set == 6:
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_multiplier")
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_multiplier")
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False,
+                                                             labels="noise_multiplier")
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_type")
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_type")
 
         # Visualization Set 7
         elif experiment_set == 7:
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="threshold")
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="threshold")
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False,
+                                                             labels="threshold")
 
         # Visualization Set 8
         elif experiment_set == 8:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="max_norm")
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False,
+                                                             labels="max_norm")
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_type")
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_type")
 
+        # Gradient Plots
+        if experiment_set == 9:
+            magnitude_check(run, path, gradient_type="original_gradients", balanced="True", dataset="MNIST",
+                            version="v2", list_bs=[2, 8, 32, 128], group_by="bs")
+            magnitude_check(run, path, gradient_type="adjusted_gradients", balanced="True", dataset="MNIST",
+                            version="v2", list_bs=[2, 8, 32, 128], group_by="bs")
+            heatmap(run, path, gradient_type="original_gradients", balanced="True", dataset="MNIST",
+                    list_bs=[2, 8, 32, 128])
+
     else:
         print("Unknown job")
-
 
     ############################################################
     print("Run finished")
