@@ -518,7 +518,6 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                         label = "FCNN"
 
                 x_tick_name = int(int(current_meta[5])*meta["trainsize"]) # int(x)*meta["trainsize"] # combined iterations
-                print(x_tick_name)
 
                 graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"]*100, x_tick_name)
                 # if id == model_id:
