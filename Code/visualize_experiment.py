@@ -323,14 +323,12 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                         elif label == "MLP":
                             label = "FCNN"
                     if l == "threshold":
-                        if label == 0.1:
+                        if run[run_name]["parameter"]["version"] == "random":
+                            label = "Random"
+                        elif run[run_name]["parameter"]["compression"] == False:
+                            label = "θ=0%"
+                        elif label == 0.1:
                             label = "θ=10%"
-                            if run[run_name]["parameter"]["version"] == "random":
-                                label = "Random"
-                            elif run[run_name]["parameter"]["compression"] == False:
-                                label = "θ=0%"
-                            else:
-                                continue
                         elif label == 0.2:
                             label = "θ=20%"
                         elif label == 0.4:
