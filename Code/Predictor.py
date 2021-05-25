@@ -147,6 +147,7 @@ class Predictor:
         # create a new setting for impact / offset calculation
         tmp_setting = self.setting.copy()
         tmp_setting.model = self.setting.model
+        tmp_setting.configure(local_iterations=1)
         impact = 0
         acc_impact = 0
         acc_offset = np.zeros(parameter["num_classes"])
@@ -173,7 +174,7 @@ class Predictor:
             impact /= (parameter["num_classes"] * parameter["batch_size"])
             acc_impact += impact
 
-        self.impact = (acc_impact / n) * (1 + 1/parameter["num_classes"])
+        self.impact = (acc_impact / n) * (1 + 1/parameter["num_classes"]) / parameter["local_iterations"]
 
         acc_offset = np.divide(acc_offset, n*(parameter["num_classes"]-1))
         self.offset = torch.Tensor(acc_offset).to(self.setting.device)
