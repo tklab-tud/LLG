@@ -47,7 +47,10 @@ class Predictor:
 
     def update_accuracy(self):
         # analyse prediction
-        orig_label = self.setting.parameter["orig_label"].tolist()
+        orig_label = []
+        for it in range(self.setting.parameter["local_iterations"]):
+            orig_label += self.setting.parameter["orig_label"][it].tolist()
+
         self.correct = 0
         self.false = 0
         for p in self.prediction:
@@ -118,7 +121,7 @@ class Predictor:
 
 
         # predict the rest
-        for _ in range(parameter["batch_size"] - len(self.prediction)):
+        for _ in range(parameter["batch_size"]*parameter["local_iterations"] - len(self.prediction)):
             # add minimal candidate, likely to be doubled, to prediction
             min_id = torch.argmin(self.gradients_for_prediction).item()
             self.prediction.append(min_id)
@@ -184,7 +187,7 @@ class Predictor:
             self.gradients_for_prediction[i_c] = self.gradients_for_prediction[i_c].add(-self.impact)
 
         # predict the rest
-        for _ in range(parameter["batch_size"] - len(self.prediction)):
+        for _ in range(parameter["batch_size"]*parameter["local_iterations"] - len(self.prediction)):
             # add minimal candidat, likely to be present, to prediction
             min_id = torch.argmin(self.gradients_for_prediction).item()
             self.prediction.append(min_id)

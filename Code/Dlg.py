@@ -14,51 +14,58 @@ class Dlg:
         self.dummy_label = None
 
     def victim_side(self):
-         # calculate orig gradients
-        self.setting.parameter["orig_data"], self.setting.parameter["orig_label"] = \
-            self.setting.dataloader.get_batch(self.setting.parameter["dataset"], self.setting.parameter["targets"], self.setting.parameter["batch_size"])
+        para = self.setting.parameter
 
-        self.setting.parameter["orig_data"] = self.setting.parameter["orig_data"].to(self.setting.device)
-        self.setting.parameter["orig_label"] = self.setting.parameter["orig_label"].to(self.setting.device)
+        para["orig_data"] = [None]*para["local_iterations"]
+        para["orig_label"] = [None]*para["local_iterations"]
 
-        orig_out = self.setting.model(self.setting.parameter["orig_data"])
-        y = self.criterion(orig_out, self.setting.parameter["orig_label"])
-        grad = torch.autograd.grad(y, self.setting.model.parameters())
+        # calculate orig gradients
+        for i in range(para["local_iterations"]):
+            para["orig_data"][i], para["orig_label"][i] = \
+                self.setting.dataloader.get_batch(para["dataset"], para["targets"], para["batch_size"])
+            para["orig_data"][i] = para["orig_data"][i].to(self.setting.device)
+            para["orig_label"][i] = para["orig_label"][i].to(self.setting.device)
+            orig_out = self.setting.model(para["orig_data"][i])
+            y = self.criterion(orig_out, para["orig_label"][i])
+            grad = torch.autograd.grad(y, self.setting.model.parameters())
 
-        # Noisy Gradients
-        if self.setting.parameter["differential_privacy"]:
-            clipping = True if self.setting.parameter["max_norm"] != None else False
-            adp.apply_noise(grad, self.setting.parameter["batch_size"], self.setting.parameter["max_norm"], self.setting.parameter["noise_multiplier"], self.setting.parameter["noise_type"], self.setting.device, loss_reduction="none", clipping=clipping)
 
-        # Gradient Compression
-        if self.setting.parameter["compression"]:
-            values = torch.sum(grad[-2], dim=-1).clone()
-            magnitudes = [torch.abs(value) for value in values]
-            magnitudes_sorted = sorted(magnitudes)
+            # Noisy Gradients
+            if para["differential_privacy"]:
+                clipping = True if self.setting.parameter["max_norm"] != None else False
+                adp.apply_noise(grad, para["batch_size"], para["max_norm"], para["noise_multiplier"], para["noise_type"], self.setting.device, loss_reduction="none", clipping=clipping)
 
-            threshold = int(len(magnitudes_sorted) * self.setting.parameter["threshold"]) - 1
-            max_magnitude = magnitudes_sorted[threshold]
-            max_mag_count = 1
-            first_idx = threshold
-            for i, mag in enumerate(magnitudes_sorted):
-                if mag == max_magnitude:
-                    first_idx = i
-            max_mag_count = threshold - first_idx
+            # Gradient Compression
+            if self.setting.parameter["compression"]:
+                values = torch.sum(grad[-2], dim=-1).clone()
+                magnitudes = [torch.abs(value) for value in values]
+                magnitudes_sorted = sorted(magnitudes)
 
-            count = 0
-            for magnitude, tens in zip(magnitudes, grad):
-                if magnitude < max_magnitude:
-                    tens.zero_()
-                elif magnitude == max_magnitude:
-                    if count <= max_mag_count:
+                threshold = int(len(magnitudes_sorted) * self.setting.parameter["threshold"]) - 1
+                max_magnitude = magnitudes_sorted[threshold]
+                max_mag_count = 1
+                first_idx = threshold
+                for i, mag in enumerate(magnitudes_sorted):
+                    if mag == max_magnitude:
+                        first_idx = i
+                max_mag_count = threshold - first_idx
+
+                count = 0
+                for magnitude, tens in zip(magnitudes, grad):
+                    if magnitude < max_magnitude:
                         tens.zero_()
-                    else:
+                    elif magnitude == max_magnitude:
+                        if count <= max_mag_count:
+                            tens.zero_()
+                        else:
+                            continue
+                        count += 1
+                    elif magnitude > max_magnitude:
                         continue
-                    count += 1
-                elif magnitude > max_magnitude:
-                    continue
 
         self.gradient = list((_.detach().clone() for _ in grad))
+
+        #todo averaging
 
 
     def reconstruct(self):

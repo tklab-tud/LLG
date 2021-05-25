@@ -42,8 +42,8 @@ class Setting:
         self.predictor = Predictor(self)
         self.dlg = Dlg(self)
         self.result = Result(self)
-        self.parameter["orig_data"] = []
-        self.parameter["orig_label"] = []
+        self.parameter["orig_data"] = [[]]
+        self.parameter["orig_label"] = [[]]
 
 
         # Some arguments need some special treatment, everything else will be just an parameter update
@@ -123,6 +123,7 @@ class Setting:
             "dataset": "MNIST",
             "targets": [],
             "batch_size": 2,
+            "local_iterations": 1,
             "model": "LeNet",
             "log_interval": 10,
             "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
@@ -146,8 +147,8 @@ class Setting:
             "dlg_lr": 1,
             "dlg_iterations": 50,
             "version": "v2",
-            "orig_data": [],
-            "orig_label": [],
+            "orig_data": [[]],
+            "orig_label": [[]],
             "shape_img": (28, 28),
             "num_classes": 10,
             "channel": 1,
@@ -220,7 +221,7 @@ class Setting:
 
         tmp_parameter = self.parameter.copy()
         tmp_parameter.pop("orig_data", None)
-        tmp_parameter["orig_label"] = self.parameter["orig_label"].cpu().detach().numpy().tolist()
+        tmp_parameter["orig_label"] = list(x.cpu().detach().numpy().tolist() for x in self.parameter["orig_label"])
 
         adjusted_gradients = self.dlg.gradient[-2].sum(-1) - self.predictor.offset
         adjusted_gradients = adjusted_gradients.cpu().detach().numpy().tolist()
@@ -248,6 +249,7 @@ class Setting:
 
         if store_individual_gradients:
             data_dic["prediction_results"].update({"individual_gradients": self.dlg.gradient[-2].cpu().detach().numpy().tolist()})
+            data_dic["prediction_results"].update({"seperate_gradients": self.dlg.seperate_gradients[-2].cpu().detach().numpy().tolist()})
 
         return data_dic
 

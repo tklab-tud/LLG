@@ -7,7 +7,7 @@ import time
 def main():
     ############## Build your attack here ######################
 
-    experiment_set = 7
+    experiment_set = 0
 
     # visualization parameters
     job = "visualize"
@@ -39,12 +39,20 @@ def main():
     dataset = "MNIST"
     version = "v2"
 
+    # with exception of set 3 and 4 all sets use all batch sizes and don't train
+    list_bs = [1, 2, 4, 8, 16, 32, 64, 128]
+    trainsize = 0
+    trainsteps = 0
+    local_iterations =1
+
     v3 = {"MNIST": "v3-zero", "CIFAR": "v3-one", "CELEB-A-male": "v3-zero", "CELEB-A-hair": "v3-zero",
           "SVHN": "v3-random"}
 
     if experiment_set == 0:
-        n = 3
-        dataset = "CELEB-A-hair"
+        local_iterations = 2
+        n = 10
+        list_bs = [8]
+        dataset = "MNIST"
         version = "v2"
         model = "LeNet"
 
@@ -65,10 +73,7 @@ def main():
         # FIXME: don't run this for set 3&4 (trained) only for 1&2 (untrained)
         # version = "dlg"
 
-    # with exception of set 3 and 4 all sets use all batch sizes and don't train
-    list_bs = [1, 2, 4, 8, 16, 32, 64, 128]
-    trainsize = 0
-    trainsteps = 0
+
 
     # Set 3 and 4 generation
     if experiment_set in [3, 4]:
@@ -170,7 +175,8 @@ def main():
                                noise_multiplier=noise_multiplier,
                                max_norm=max_norm,
                                compression=compression,
-                               threshold=threshold
+                               threshold=threshold,
+                               local_iterations = local_iterations
                                )
 
         end = time.time()
