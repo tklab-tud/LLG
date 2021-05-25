@@ -148,9 +148,9 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
                         gradient = [gradient]
 
                     for grad_val in gradient:
-                        g.add_datapoint(row, grad_val, run[setting]["parameter"]["orig_label"].count(label))
-                        composed_graph.add_datapoint(row, grad_val,
-                                                     run[setting]["parameter"]["orig_label"].count(label))
+                        occurrences = sum(x.count(label) for x in run[setting]["parameter"]["orig_label"])
+                        g.add_datapoint(row, grad_val, occurrences)
+                        composed_graph.add_datapoint(row, grad_val,occurrences)
 
     graphs.append(composed_graph)
 
