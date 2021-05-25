@@ -246,7 +246,7 @@ class Predictor:
             self.gradients_for_prediction[i_c] = self.gradients_for_prediction[i_c].add(-self.impact)
 
         # predict the rest
-        for _ in range(parameter["batch_size"] - len(self.prediction)):
+        for _ in range(parameter["batch_size"]*parameter["local_iterations"] - len(self.prediction)):
             # add minimal candidat, likely to be present, to prediction
             min_id = torch.argmin(self.gradients_for_prediction).item()
             self.prediction.append(min_id)
