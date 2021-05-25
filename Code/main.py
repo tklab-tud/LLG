@@ -149,7 +149,7 @@ def main():
                     noise_multiplier = noise_multiplier / max_norm
                 for threshold in thresholds:
                     experiment(dataloader=dataloader,
-                               list_datasets=[dataset],
+                               list_datasets=dataset if isinstance(dataset, list) else [dataset],
                                list_bs=list_bs,
                                list_balanced=[balanced],
                                list_versions=versions,
