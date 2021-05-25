@@ -112,7 +112,7 @@ class Predictor:
                 impact_acc += class_gradient.item()
 
         # mean value
-        self.impact = (impact_acc / parameter["batch_size"]) * (1 + 1 / parameter["num_classes"])
+        self.impact = (impact_acc / parameter["batch_size"]) * (1 + 1 / parameter["num_classes"])/ parameter["local_iterations"]
 
         # save predictions
         for (i_c, _) in h1_extraction:
