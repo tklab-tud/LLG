@@ -249,7 +249,7 @@ class Setting:
 
         if store_individual_gradients:
             data_dic["prediction_results"].update({"individual_gradients": self.dlg.gradient[-2].cpu().detach().numpy().tolist()})
-            data_dic["prediction_results"].update({"seperate_gradients": self.dlg.seperate_gradients[-2].cpu().detach().numpy().tolist()})
+
 
         return data_dic
 

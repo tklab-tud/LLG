@@ -12,12 +12,16 @@ class Dlg:
         self.gradient = None
         self.dummy_data = None
         self.dummy_label = None
+        self.seperated_gradients = []
 
     def victim_side(self):
         para = self.setting.parameter
 
         para["orig_data"] = [None]*para["local_iterations"]
         para["orig_label"] = [None]*para["local_iterations"]
+
+        self.seperated_gradients = []
+
 
         # calculate orig gradients
         for i in range(para["local_iterations"]):
@@ -63,10 +67,18 @@ class Dlg:
                     elif magnitude > max_magnitude:
                         continue
 
-        self.gradient = list((_.detach().clone() for _ in grad))
+            self.seperated_gradients.append(list((_.detach().clone() for _ in grad)))
 
-        #todo averaging
+        #list of Tensors
+        aggregated = list(x.zero_() for x in grad)
 
+        #go for current local iteration
+        for i in self.seperated_gradients:
+            #there go through all of bs * list of tensors
+            for i_g,g in enumerate(i):
+                aggregated[i_g] = torch.add(aggregated[i_g], g)
+
+        self.gradient = list(torch.div(x, para["local_iterations"]) for x in aggregated)
 
     def reconstruct(self):
         # abbreviations
