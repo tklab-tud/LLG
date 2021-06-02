@@ -12,11 +12,11 @@ def main():
     # visualization parameters
     job = "visualize"
     # specify the number of json files you want to select for plotting
-    num_files = 5
+    num_files = 4
 
     # experiment parameters
     # FIXME: outcomment this line if you want the run the visualization
-    job = "experiment"
+    #job = "experiment"
 
     # defaults to fill vars, when unused
     train_lr = 0.1
@@ -49,10 +49,11 @@ def main():
           "SVHN": "v3-random"}
 
     if experiment_set == 0:
-        local_iterations = 2
+        local_iterations = 1000
         n = 10
-        list_bs = [8]
+        list_bs = [1, 2, 4, 8, 16, 32, 64, 128]
         dataset = "MNIST"
+        balanced = True
         version = "v2"
         model = "LeNet"
 
@@ -226,7 +227,9 @@ def main():
 
         # Visualization Set 0
         if experiment_set == 0:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path)
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, labels=["local_iterations"], y_range=[90,100])
+            #magnitude_check(run, path, gradient_type="original_gradients", group_by="bs")
+            #magnitude_check(run, path, gradient_type="adjusted_gradients", group_by="bs")
 
 
         # Visualization Set 1

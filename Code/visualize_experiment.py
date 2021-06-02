@@ -269,10 +269,10 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
 
 
 # Experiment 1.1
-def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels="", width=6.4, location="best"):
+def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels="", width=6.4, location="best", y_range=[0,105]):
     run = run.copy()
 
-    graph = Graph("Batch size", "Attack success rate (%)", y_range=[0,105], fontsize=fontsize, width=width)
+    graph = Graph("Batch size", "Attack success rate (%)", y_range=y_range, fontsize=fontsize, width=width)
 
     if not isinstance(run, list):
         runs = [run]
@@ -359,6 +359,9 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                             label = "β = ∞"
                         else:
                             label = "β = " + str(int(label))
+                    if l == "local_iterations":
+                        label = "FedAvg-Iterations: "+str(run[run_name]["parameter"]["local_iterations"])
+
 
                     merged_label = merged_label + label + ", "
                 merged_label = merged_label[:-2]

@@ -297,7 +297,12 @@ class Graph:
             "LLG-RANDOM (non-IID)": "#ffbf00",
 
 
-            "Model": '#000000' #"#FF0F0F"
+            "Model": '#000000', #"#FF0F0F"
+
+            "FedAvg-Iterations: 1": "#e6194B",
+            "FedAvg-Iterations: 10": "#277831",
+            "FedAvg-Iterations: 100": "#4363d8",
+            "FedAvg-Iterations: 1000": "#800000"
 
         }
 
