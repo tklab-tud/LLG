@@ -12,6 +12,7 @@ from Predictor import Predictor
 from Result import Result
 from model import *
 from train import train, test
+import copy
 
 
 class Setting:
@@ -26,6 +27,7 @@ class Setting:
         self.result = None
         self.dlg = None
         self.device = None
+        self.model_backup = None
         self.check_cuda()
 
         self.configure(**kwargs)
@@ -192,21 +194,35 @@ class Setting:
         model.apply(weights_init)
         return model.to(self.device)
 
+    def backup_model(self):
+        self.model_backup = copy.deepcopy(self.model)
+
+    def restore_model(self):
+        self.model = self.model_backup
+
 
     def attack(self, extent):
+        # Creating a model backup
+        self.backup_model()
+
         # Victim side gradients will be calculated in any run
         self.dlg.victim_side()
         if extent == "victim_side": # End after this if extent is victim side
+            self.restore_model()
             return
 
         # In case of v1, v2, v3 ... do the prediction; dlg's prediction is done at reconstruction step
         if not self.parameter["version"] == "dlg":
             self.predictor.predict()
             if extent == "predict": # If we only want prediction stop here
+                self.restore_model()
                 return
 
         # In case of dlg prediction or full reconstruction, the image reconstruction is needed.
         self.dlg.reconstruct()
+        self.restore_model()
+
+
 
     def copy(self):
         kwargs = {}
