@@ -161,7 +161,9 @@ class Predictor:
                 tmp_setting.configure(targets=[i] * parameter["batch_size"],
                                       compression=False,
                                       differential_privacy=False,
-                                      dropout=False)
+                                      dropout=False,
+                                      local_training=False,
+                                      local_iterations=1)
                 tmp_setting.dlg.victim_side()
                 tmp_gradients = torch.sum(tmp_setting.dlg.gradient[-2], dim=-1).cpu().detach().numpy()
                 impact += torch.sum(tmp_setting.dlg.gradient[-2], dim=-1)[i].item()
@@ -280,13 +282,16 @@ class Predictor:
             impact = 0
             for i in range(parameter["num_classes"]):
                 if parameter["version"] == "v3-zero":
-                    tmp_setting.configure(targets=[i] * parameter["batch_size"], dataset="DUMMY-ZERO")
+                    dataset="DUMMY-ZERO"
                 elif parameter["version"] == "v3-one":
-                    tmp_setting.configure(targets=[i] * parameter["batch_size"], dataset="DUMMY-ONE")
+                    dataset="DUMMY-ONE"
                 elif parameter["version"] == "v3-random":
-                    tmp_setting.configure(targets=[i] * parameter["batch_size"], dataset="DUMMY-RANDOM")
+                    dataset="DUMMY-RANDOM"
                 else:
                     exit("v3 called with wrong version")
+
+                tmp_setting.configure(targets=[i] * parameter["batch_size"], dataset=dataset,local_training=False,
+                                      local_iterations=1)
 
 
                 tmp_setting.dlg.victim_side()
