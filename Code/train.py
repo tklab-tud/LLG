@@ -31,13 +31,13 @@ def test(setting):
 
     test_acc = 100. * correct / (parameter["test_size"] * parameter["batch_size"])
 
-    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-        test_loss, correct, parameter["test_size"] * parameter["batch_size"], test_acc))
+    #print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+    #    test_loss, correct, parameter["test_size"] * parameter["batch_size"], test_acc))
 
     setting.parameter["test_loss"], setting.parameter["test_acc"] = test_loss, test_acc
 
 
-def train(setting, train_size):
+def train(setting, train_size, batch=None):
     # some abbreviations
     parameter = setting.parameter
     device = setting.device
@@ -45,7 +45,6 @@ def train(setting, train_size):
 
     model.train()
 
-    print("Training for {} batches".format(train_size))
 
     dataloader = setting.dataloader
 
@@ -72,8 +71,11 @@ def train(setting, train_size):
         def closure():
             optimizer.zero_grad()
 
-            data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"],
-                                                setting.parameter["batch_size"])
+            if batch is None:
+                data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"],
+                                                    setting.parameter["batch_size"])
+            else:
+                data, target = batch
 
             data, target = data.to(device), target.to(device)
 
@@ -85,5 +87,6 @@ def train(setting, train_size):
 
         optimizer.step(closure)
 
-
-    test(setting)
+    # Dont need test for local training
+    if batch is None:
+        test(setting)

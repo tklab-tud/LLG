@@ -69,6 +69,10 @@ class Dlg:
 
             self.seperated_gradients.append(list((_.detach().clone() for _ in grad)))
 
+            # local train iteration
+            if self.setting.parameter["local_training"]:
+                self.setting.train(1, [para["orig_data"][i], para["orig_label"][i]])
+
         #list of Tensors
         aggregated = list(x.zero_() for x in grad)
 
@@ -138,7 +142,7 @@ class Dlg:
         if self.setting.parameter["version"] == "dlg":
             self.setting.predictor.prediction = [self.dummy_label[x].argmax().item() for x in range(parameter["batch_size"])]
             self.setting.predictor.update_accuracy()
-            #res.update_figures()
+            #res.update_figures(),
 
 
         self.setting.result = res

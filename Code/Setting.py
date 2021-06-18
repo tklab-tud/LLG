@@ -132,6 +132,7 @@ class Setting:
             "run_name": "",
             "set_size": None,
             "dummy" : False,
+            "local_training": False,
 
             # Differential Privacy settings
             "differential_privacy": False,
@@ -203,6 +204,7 @@ class Setting:
 
     def attack(self, extent):
         # Creating a model backup
+        print("backup model")
         self.backup_model()
 
         # Victim side gradients will be calculated in any run
@@ -215,11 +217,13 @@ class Setting:
         if not self.parameter["version"] == "dlg":
             self.predictor.predict()
             if extent == "predict": # If we only want prediction stop here
+                print("restore model")
                 self.restore_model()
                 return
 
         # In case of dlg prediction or full reconstruction, the image reconstruction is needed.
         self.dlg.reconstruct()
+
         self.restore_model()
 
 
@@ -272,6 +276,6 @@ class Setting:
     def reinit_weights(self):
         weights_init(self.model)
 
-    def train(self, train_size):
-        train(self, train_size)
+    def train(self, train_size, batch=None):
+        train(self, train_size, batch)
         print("Training finished, loss = {}, acc = {}".format(self.parameter["test_loss"], self.parameter["test_acc"]))

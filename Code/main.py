@@ -12,7 +12,7 @@ def main():
     # visualization parameters
     job = "visualize"
     # specify the number of json files you want to select for plotting
-    num_files = 4
+    num_files = 2
 
     # experiment parameters
     # FIXME: outcomment this line if you want the run the visualization
@@ -28,6 +28,7 @@ def main():
     compression = False
     thresholds = [0.0]
     n = 100
+    local_training = False
 
     # with exception of set 1 and 3 all sets use non-IID
     balanced = False
@@ -43,19 +44,20 @@ def main():
     list_bs = [1, 2, 4, 8, 16, 32, 64, 128]
     trainsize = 0
     trainsteps = 0
-    local_iterations =1
+    local_iterations = 1
 
     v3 = {"MNIST": "v3-zero", "CIFAR": "v3-one", "CELEB-A-male": "v3-zero", "CELEB-A-hair": "v3-zero",
           "SVHN": "v3-random"}
 
     if experiment_set == 0:
-        local_iterations = 1000
+        local_iterations = 4
         n = 10
-        list_bs = [1, 2, 4, 8, 16, 32, 64, 128]
+        list_bs = [1, 2, 4, 8, 16]
         dataset = "MNIST"
         balanced = True
         version = "v2"
         model = "LeNet"
+        local_training = False
 
     if experiment_set in [1, 2, 3, 4]:
         # TODO: run all DATASETS separately ("in parallel")
@@ -74,8 +76,6 @@ def main():
         # FIXME: don't run this for set 3&4 (trained) only for 1&2 (untrained)
         # version = "dlg"
 
-
-
     # Set 3 and 4 generation
     if experiment_set in [3, 4]:
         list_bs = [8]
@@ -93,7 +93,7 @@ def main():
     if experiment_set == 5:
         # TODO: run all MODELS separately ("in parallel")
         # model = "LeNet"       # old LeNet = ConvNet
-        model = "NewNewLeNet"   # new LeNet = LeNet
+        model = "NewNewLeNet"  # new LeNet = LeNet
         # model = "ResNet"      # ResNet
         # model = "MLP"         # FCNN
 
@@ -177,7 +177,8 @@ def main():
                                max_norm=max_norm,
                                compression=compression,
                                threshold=threshold,
-                               local_iterations = local_iterations
+                               local_iterations=local_iterations,
+                               local_training=local_training
                                )
 
         end = time.time()
@@ -227,7 +228,7 @@ def main():
 
         # Visualization Set 0
         if experiment_set == 0:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, labels=["local_iterations"], y_range=[90,100])
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, labels=["version"])
             #magnitude_check(run, path, gradient_type="original_gradients", group_by="bs")
             #magnitude_check(run, path, gradient_type="adjusted_gradients", group_by="bs")
 
@@ -252,7 +253,8 @@ def main():
 
         # Visualization Set 4
         elif experiment_set == 4:
-            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False, width=4.8) # , location="lower right"
+            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False,
+                                                            width=4.8)  # , location="lower right"
             # visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False) #, width=4.8) # , location="lower right"
 
         # Visualization Set 3 & 4
