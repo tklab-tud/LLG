@@ -166,14 +166,16 @@ class Setting:
             "test_acc": 0
         }
 
-    def check_cuda(self):
+    def check_cuda(self, verbose=False):
         # Check CUDA
         if torch.cuda.is_available():
             self.device = torch.device("cuda")
-            print("using cuda gpu: " + str(torch.cuda.current_device()))
+            if verbose:
+                print("using cuda gpu: " + str(torch.cuda.current_device()))
         else:
             self.device = torch.device("cpu")
-            print("cuda unavailable using cpu")
+            if verbose:
+                print("cuda unavailable using cpu")
 
     def load_model(self):
         if self.parameter["model"] == "LeNet":
@@ -204,7 +206,6 @@ class Setting:
 
     def attack(self, extent):
         # Creating a model backup
-        print("backup model")
         self.backup_model()
 
         # Victim side gradients will be calculated in any run
@@ -274,6 +275,8 @@ class Setting:
     def reinit_weights(self):
         weights_init(self.model)
 
-    def train(self, train_size, batch=None):
+    def train(self, train_size, batch=None, verbose=False):
         train(self, train_size, batch)
-        print("Training finished, loss = {}, acc = {}".format(self.parameter["test_loss"], self.parameter["test_acc"]))
+
+        if verbose:
+            print("Training finished, loss = {}, acc = {}".format(self.parameter["test_loss"], self.parameter["test_acc"]))
