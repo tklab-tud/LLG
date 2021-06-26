@@ -306,7 +306,7 @@ class Predictor:
             impact /= (parameter["num_classes"] * parameter["batch_size"])
             acc_impact += impact
 
-        self.impact = (acc_impact / n) * (1 + 1/parameter["num_classes"])
+        self.impact = (acc_impact / n) * (1 + 1/parameter["num_classes"]) / parameter["local_iterations"]
 
         acc_offset = np.divide(acc_offset, n*(parameter["num_classes"]-1))
         self.offset = torch.Tensor(acc_offset).to(self.setting.device)
@@ -320,7 +320,7 @@ class Predictor:
             self.gradients_for_prediction[i_c] = self.gradients_for_prediction[i_c].add(-self.impact)
 
         # predict the rest
-        for _ in range(parameter["batch_size"] - len(self.prediction)):
+        for _ in range(parameter["batch_size"] * parameter["local_iterations"] - len(self.prediction)):
             # add minimal candidat, likely to be doubled, to prediction
             min_id = torch.argmin(self.gradients_for_prediction).item()
             self.prediction.append(min_id)
