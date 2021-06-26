@@ -76,6 +76,16 @@ def main():
         # FIXME: don't run this for set 3&4 (trained) only for 1&2 (untrained)
         # version = "dlg"
 
+
+        # FedAvg
+        fedAvg = False
+        if fedAvg:
+            local_training = True
+            local_iterations = 10
+        else:
+            local_training = False
+            local_iterations = 1
+
     # Set 3 and 4 generation
     if experiment_set in [3, 4]:
         list_bs = [8]
@@ -239,7 +249,7 @@ def main():
 
         # Visualization Set 2
         elif experiment_set == 2:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8)
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8, labels=["version", "local_training"], fontsize=10)
 
         # Visualization Set 1 & 2
         elif experiment_set == 12:
