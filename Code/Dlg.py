@@ -73,16 +73,20 @@ class Dlg:
             if self.setting.parameter["local_training"]:
                 self.setting.train(1, [para["orig_data"][i], para["orig_label"][i]])
 
-        #list of Tensors
+        #Copy the structure of a grad, but make it zeroes
         aggregated = list(x.zero_() for x in grad)
 
-        #go for current local iteration
+        #iterate over the gradients for each local iteration
         for i in self.seperated_gradients:
-            #there go through all of bs * list of tensors
+            #there iterate through the gradients and add to the aggregator
             for i_g,g in enumerate(i):
                 aggregated[i_g] = torch.add(aggregated[i_g], g)
 
-        self.gradient = list(torch.div(x, para["local_iterations"]) for x in aggregated)
+
+        self.gradient = list(torch.div(x, 1) for x in aggregated)
+        #Might also take the average instead of the sum
+        #self.gradient = list(torch.div(x, para["local_iterations"]) for x in aggregated)
+
 
     def reconstruct(self):
         # abbreviations
