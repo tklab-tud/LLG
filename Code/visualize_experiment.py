@@ -269,7 +269,7 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
 
 
 # Experiment 1.1
-def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels="", width=6.4, location="best", y_range=[0,105]):
+def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels="", width=6.4, location="best", y_range=[0,105], fontsize=None):
     run = run.copy()
 
     graph = Graph("Batch size", "Attack success rate (%)", y_range=y_range, fontsize=fontsize, width=width)
@@ -312,6 +312,8 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                             label = "LLG"
                         elif label == "v3":
                             label = "LLG*"
+                        elif label == "random":
+                            label = "Random"
 
                     if l == "model":
                         if label == "LeNet":
@@ -361,9 +363,15 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                             label = "β = " + str(int(label))
                     if l == "local_iterations":
                         label = "FedAvg-Iterations: "+str(run[run_name]["parameter"]["local_iterations"])
+                    if l == "local_training":
+                        if run[run_name]["parameter"]["local_training"]:
+                            label = "FedAvg({} iterations)".format(run[run_name]["parameter"]["local_iterations"])
+                        else:
+                            label = "no FedAvg"
 
 
-                    merged_label = merged_label + label + ", "
+
+                    merged_label = merged_label + str(label) + ", "
                 merged_label = merged_label[:-2]
 
 
@@ -472,7 +480,7 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
 
 # Experiment 2
 def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, dataset=None, version=None, list_bs=None,
-                                                    train_step_stop=None, labels="", model_id=1, width=6.4, location="best"):
+                                                    train_step_stop=None, labels="", model_id=1, width=6.4, location="best", fontsize=None):
     run = run.copy()
 
     # if list_bs is None:
@@ -508,31 +516,56 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
 
                 # labels need to be one of the attack parameters
                 # e.g. "model", "threshold", "noise_multiplier"
-                if labels != "":
-                    label = run[run_name]["parameter"][labels]
-                if labels == "model":
-                    if label == "LeNet":
-                        label = "CNN"
-                    elif label == "LeNetNew":
-                        label = "OldLeNet"
-                    elif label == "NewNewLeNet":
-                        label = "LeNet"
-                    elif label == "MLP":
-                        label = "FCNN"
+                merged_label = ""
+                if not isinstance(labels, list): labels = [labels]
+                for l in labels:
+                    if l != "":
+                        label = run[run_name]["parameter"][l]
+                    if l == "version":
+                        if label == "v2":
+                            label = "LLG+"
+                        elif label =="dlg":
+                            label = "DLG"
+                        elif label == "v1":
+                            label = "LLG"
+                        elif label == "v3":
+                            label = "LLG*"
+                        elif label == "random":
+                            label = "Random"
+                    if l == "model":
+                        if label == "LeNet":
+                            label = "CNN"
+                        elif label == "LeNetNew":
+                            label = "OldLeNet"
+                        elif label == "NewNewLeNet":
+                            label = "LeNet"
+                        elif label == "MLP":
+                            label = "FCNN"
+                    if l == "local_iterations":
+                        label = "FedAvg-Iterations: " + str(run[run_name]["parameter"]["local_iterations"])
+                    if l == "local_training":
+                        if run[run_name]["parameter"]["local_training"]:
+                            label = "FedAvg({} iterations)".format(run[run_name]["parameter"]["local_iterations"])
+                        else:
+                            label = "no FedAvg"
+
+
+                    merged_label = merged_label + str(label) + ", "
+                merged_label = merged_label[:-2]
 
                 x_tick_name = int(int(current_meta[5])*meta["trainsize"]) # int(x)*meta["trainsize"] # combined iterations
 
-                graph.add_datapoint(label, run[run_name]["prediction_results"]["accuracy"]*100, x_tick_name)
+                graph.add_datapoint(merged_label, run[run_name]["prediction_results"]["accuracy"]*100, x_tick_name)
                 # if id == model_id:
                 #     data2.append(["Model", run[run_name]["parameter"]["test_acc"], x_tick_name])
 
-                acc = float(run[run_name]["parameter"]["test_acc"])/len(runs)
+                acc = float(run[run_name]["parameter"]["test_acc"])
                 if x_tick_name in model_accs.keys():
-                    acc += model_accs[x_tick_name]
+                    model_accs.update({x_tick_name: model_accs[x_tick_name].__add__([acc])})
+                else:
+                   model_accs.update({x_tick_name: [acc]})
 
-                model_accs.update({x_tick_name: acc})
-
-    data2 = [["Model", val/len(model_accs), key] for key, val in model_accs.items()]
+    data2 = [["Model", np.average(val) , key] for key, val in model_accs.items()]
 
     graph.data.append(["Model", 0, 0])
     graph.plot_line(location=location, skip_x_ticks=True, useMathText=True)
