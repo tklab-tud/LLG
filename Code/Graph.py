@@ -297,7 +297,17 @@ class Graph:
             "LLG-RANDOM (non-IID)": "#ffbf00",
 
 
-            "Model": '#000000' #"#FF0F0F"
+            "Model": '#000000', #"#FF0F0F"
+
+            "FedAvg-Iterations: 1": "#e6194B",
+            "FedAvg-Iterations: 10": "#277831",
+            "FedAvg-Iterations: 100": "#4363d8",
+            "FedAvg-Iterations: 1000": "#800000",
+
+            "Random, no FedAvg": "#e6194B",
+            "Random, FedAvg(10 iterations)": "#277831",
+            "LLG+, no FedAvg": "#4363d8",
+            "LLG+, FedAvg(10 iterations)": "#800000"
 
         }
 
@@ -387,7 +397,13 @@ class Graph:
             "iDLG (non-IID)": (0, (1, 4, 10, 1)),
             "DLG (non-IID)": (0, (1, 1, 1, 3)),
 
-            "Model": "solid"
+            "Model": "solid",
+
+            "Random, no FedAvg": "--",
+            "Random, FedAvg(10 iterations)": (0, (3, 5, 1, 5, 1, 5)),
+            "LLG+, no FedAvg": '-',
+            "LLG+, FedAvg(10 iterations)": ':',
+
 
         }
         return style[s] if style.__contains__(s) else "-"
@@ -472,7 +488,12 @@ class Graph:
             "DLG, OldLeNet": 16,
             "DLG, ResNet": 18,
 
-            "Model": 100
+            "Model": 100,
+
+            "Random, no FedAvg": 3,
+            "Random, FedAvg(10 iterations)": 4,
+            "LLG+, no FedAvg": 1,
+            "LLG+, FedAvg(10 iterations)": 2,
 
         }
 
