@@ -13,7 +13,8 @@ result_path = "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%
 
 
 ################## Completely Configurable ###################
-def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions, extent, n, trainsize=100, trainsteps=0, path=None, model="LeNet", store_individual_gradients= False,
+def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions, extent, n, trainsize=100, trainsteps=0,
+               federated=False, num_users=1, path=None, model="LeNet", store_individual_gradients= False,
                differential_privacy: bool=False, alphas: list=[], noise_multiplier: float=1.0, max_norm: float=1.0, noise_type: str="gauss",
                defenses=[], dropout: float=0.0, compression: bool=False, threshold: float=0.1,
                store_composed_image=False, store_separate_images=False, **more_args):
@@ -43,7 +44,7 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
 
     setting = Setting(dataloader, result_path=path, model=model, differential_privacy=differential_privacy, alphas=alphas,
                       noise_multiplier=noise_multiplier, max_norm=max_norm, noise_type=noise_type, train_size=trainsize,
-                      dropout=dropout, compression=compression, threshold=threshold)
+                      dropout=dropout, compression=compression, threshold=threshold, federated=federated, num_users=num_users)
 
     progress = 0
     todo = len(list_datasets)* len(list_bs)* len(list_balanced)*len(list_versions)*len(defenses)*n*(trainsteps+1)
@@ -88,6 +89,8 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
                                                   compression=compression,
                                                   differential_privacy=differential_privacy,
                                                   dropout=dropout,
+                                                  federated=federated,
+                                                  num_users=num_users,
                                                   **more_args)
 
                                 if pre_run_test:
