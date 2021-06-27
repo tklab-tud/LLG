@@ -1,3 +1,4 @@
+import copy
 import torch
 
 import aDPtorch.privacy_engine_xl as adp
@@ -90,3 +91,110 @@ def train(setting, train_size, batch=None):
     # Dont need test for local training
     if batch is None:
         test(setting)
+
+
+def update_weights(model, setting):
+    device = setting.device
+    parameter = setting.parameter
+    train_size = setting.parameter["train_size"]
+
+    # Set mode to train model
+    model.train()
+    epoch_loss = []
+
+    dataloader = setting.dataloader
+
+    optimizer = torch.optim.SGD(model.parameters(), lr=parameter["train_lr"])
+    #optimizer = torch.optim.LBFGS(model.parameters(), lr=parameter["train_lr"])
+
+    criterion = torch.nn.CrossEntropyLoss().to(device)
+
+    # Differential Privacy
+    # if parameter["differential_privacy"]:
+    #     privacy_engine = adp.PrivacyEngineXL(
+    #         model,
+    #         batch_size=parameter["batch_size"],
+    #         sample_size=len(dataloader.train_dataset),
+    #         alphas=parameter["alphas"],
+    #         noise_multiplier=parameter["noise_multiplier"],
+    #         secure_rng=True, # Note: this is not yet implemented in aDPtorch, it is set to avoid warning spamming
+    #         max_grad_norm=parameter["max_norm"],
+    #         noise_type=parameter["noise_type"]
+    #     )
+    #     privacy_engine.attach(optimizer)
+
+    for i in range(train_size):
+        batch_loss = []
+        def closure():
+            optimizer.zero_grad()
+            # FIXME: should we zero the gradients? where is the difference?
+            # model.zero_grad()
+
+            # FIXME: dataloader? batch_idx?
+            # TODO: batch per user
+            data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"],
+                                                setting.parameter["batch_size"])
+
+            data, target = data.to(device), target.to(device)
+
+            output = model(data)
+
+            loss = criterion(output, target)
+            loss.backward()
+            return loss
+
+        loss = optimizer.step(closure)
+        # FIXME: loss does not get tracked constantely
+        # I assume we just take the last loss instead of average like (H)FL code
+        # logger.add_scalar('loss', loss.item())
+        batch_loss.append(loss.item())
+    epoch_loss.append(sum(batch_loss)/len(batch_loss))
+
+    return model.state_dict(), sum(epoch_loss) / len(epoch_loss)
+
+
+def average_weights(w, num_users):
+    """
+    Returns the average of the weights.
+    """
+
+    percentage = 1/num_users
+
+    w_avg = copy.deepcopy(w[0])
+    for key in w_avg.keys():
+        w_avg[key] = 0
+        for i in range(0, len(w)):
+            w_avg[key] += w[i][key] * percentage
+    return w_avg
+
+
+def train_federated(setting):
+    # some abbreviations
+    parameter = setting.parameter
+    device = setting.device
+    global_model = setting.model
+    train_size = setting.parameter["train_size"]
+    num_users = setting.parameter["num_users"]
+
+    global_model.train()
+
+    print("Training for {} batches".format(train_size))
+
+    # m = min(int(len(keylist_cluster)), num_users_per_epoch)
+    # idxs_users = np.random.choice(keylist_cluster, m, replace=False)
+
+    local_weights = []
+    local_losses = []
+
+    for i in range(num_users):
+        w, loss = update_weights(copy.deepcopy(global_model), setting)
+        local_weights.append(copy.deepcopy(w))
+        local_losses.append(copy.deepcopy(loss))
+
+    # Averaging local client weights to get global weights
+    global_weights = average_weights(local_weights, num_users)
+
+    # update global weights
+    global_model.load_state_dict(global_weights)
+
+    test(setting)
