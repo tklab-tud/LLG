@@ -7,7 +7,7 @@ import time
 def main():
     ############## Build your attack here ######################
 
-    experiment_set = 2
+    experiment_set = 9
 
     # visualization parameters
     job = "visualize"
@@ -29,6 +29,8 @@ def main():
     thresholds = [0.0]
     n = 100
     local_training = False
+    federated = False
+    num_users = 1
 
     # with exception of set 1 and 3 all sets use non-IID
     balanced = False
@@ -144,6 +146,19 @@ def main():
         # epsilon | beta
         max_norms = [1, 5, 10]
 
+    if experiment_set == 9:
+        list_bs = [8]
+        trainsize = 10
+        trainsteps = 10
+        federated = True
+        num_users = 10
+        local_training = True
+        local_iterations = 1
+        # defenses = ["dp"]
+        # differential_privacy = True
+        # noise_type = "normal"
+        # noise_multipliers = [0.01, 0.1, 1]
+
     if experiment_set == -1:
         n = 1000
         versions = ["v2", "random"]
@@ -172,6 +187,8 @@ def main():
                                trainsize=trainsize,  # Iterations per Trainstep
                                trainsteps=trainsteps,  # Number of Attack&Train cycles
                                train_lr=train_lr,
+                               federated=federated,
+                               num_users=num_users,
                                path=None,
                                model=model,
                                store_individual_gradients=False,
@@ -307,7 +324,7 @@ def main():
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_type")
 
         # Gradient Plots
-        if experiment_set == 9:
+        if experiment_set == -1:
             y_range = [-330, 300]
             magnitude_check(run, path, gradient_type="original_gradients", balanced="True", dataset="MNIST",
                             version="v2", list_bs=[2, 8, 32, 128], group_by="bs", y_range=y_range)
