@@ -163,7 +163,11 @@ class Setting:
             "train_size": 1000,
             "train_lr": 0.1,
             "test_loss": -1,
-            "test_acc": 0
+            "test_acc": 0,
+
+            # federated learning
+            "federated": False,
+            "num_users": 1
         }
 
     def check_cuda(self, verbose=False):
