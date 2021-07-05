@@ -304,9 +304,9 @@ class Graph:
             "FedAvg-Iterations: 100": "#4363d8",
             "FedAvg-Iterations: 1000": "#800000",
 
-            "Random, no FedAvg": "#e6194B",
+            "Random, FedSGD": "#e6194B",
             "Random, FedAvg(10 iterations)": "#277831",
-            "LLG+, no FedAvg": "#4363d8",
+            "LLG+, FedSGD": "#4363d8",
             "LLG+, FedAvg(10 iterations)": "#800000"
 
         }
@@ -399,9 +399,9 @@ class Graph:
 
             "Model": "solid",
 
-            "Random, no FedAvg": "--",
+            "Random, FedSGD": "--",
             "Random, FedAvg(10 iterations)": (0, (3, 5, 1, 5, 1, 5)),
-            "LLG+, no FedAvg": '-',
+            "LLG+, FedSGD": '-',
             "LLG+, FedAvg(10 iterations)": ':',
 
 
@@ -490,9 +490,9 @@ class Graph:
 
             "Model": 100,
 
-            "Random, no FedAvg": 3,
+            "Random, FedSGD": 3,
             "Random, FedAvg(10 iterations)": 4,
-            "LLG+, no FedAvg": 1,
+            "LLG+, FedSGD": 1,
             "LLG+, FedAvg(10 iterations)": 2,
 
         }

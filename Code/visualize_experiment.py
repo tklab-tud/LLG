@@ -367,7 +367,7 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                         if run[run_name]["parameter"]["local_training"]:
                             label = "FedAvg({} iterations)".format(run[run_name]["parameter"]["local_iterations"])
                         else:
-                            label = "no FedAvg"
+                            label = "FedSGD"
 
 
 
@@ -547,7 +547,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                         if run[run_name]["parameter"]["local_training"]:
                             label = "FedAvg({} iterations)".format(run[run_name]["parameter"]["local_iterations"])
                         else:
-                            label = "no FedAvg"
+                            label = "FedSGD"
 
 
                     merged_label = merged_label + str(label) + ", "

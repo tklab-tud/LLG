@@ -12,7 +12,7 @@ def main():
     # visualization parameters
     job = "visualize"
     # specify the number of json files you want to select for plotting
-    num_files = 2
+    num_files = 1
 
     # experiment parameters
     # FIXME: outcomment this line if you want the run the visualization
@@ -51,12 +51,13 @@ def main():
 
     if experiment_set == 0:
         local_iterations = 4
-        n = 10
-        list_bs = [1, 2, 4, 8, 16]
+        n = 1
+        list_bs = [1,4,8]
         dataset = "MNIST"
         balanced = True
-        version = "v2"
-        model = "LeNet"
+        #version = ["v1", "v2", v3[dataset], "dlg", "random"]
+        version = ["v2", "dlg"]
+        model = ["ResNet"]
         local_training = False
 
     if experiment_set in [1, 2, 3, 4]:
@@ -68,13 +69,13 @@ def main():
         # dataset = "SVHN"
         # versions in order of importance
         # TODO: run all VERSIONS separately per DATASET ("in parallel")
-        version = "v2"
+        # version = "v2"
         # version = "random"
         # version = "v1"
         # version = v3[dataset]
         # TODO: this will take forever, only run when absolutely necessary
         # FIXME: don't run this for set 3&4 (trained) only for 1&2 (untrained)
-        # version = "dlg"
+        version = "dlg"
 
 
         # FedAvg
@@ -102,8 +103,8 @@ def main():
     # Set 5 generation
     if experiment_set == 5:
         # TODO: run all MODELS separately ("in parallel")
-        # model = "LeNet"       # old LeNet = ConvNet
-        model = "NewNewLeNet"  # new LeNet = LeNet
+        model = "LeNet"       # old LeNet = ConvNet
+        # model = "NewNewLeNet"  # new LeNet = LeNet
         # model = "ResNet"      # ResNet
         # model = "MLP"         # FCNN
 
@@ -147,6 +148,8 @@ def main():
     if experiment_set == -1:
         n = 1000
         versions = ["v2", "random"]
+    elif isinstance(version, list):
+        versions = version
     else:
         versions = [version]
 
@@ -238,7 +241,7 @@ def main():
 
         # Visualization Set 0
         if experiment_set == 0:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, labels=["version"])
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, labels=["version", "model"])
             #magnitude_check(run, path, gradient_type="original_gradients", group_by="bs")
             #magnitude_check(run, path, gradient_type="adjusted_gradients", group_by="bs")
 
