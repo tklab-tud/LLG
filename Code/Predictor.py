@@ -46,10 +46,14 @@ class Predictor:
 
 
     def update_accuracy(self):
-        # analyse prediction
+         # analyse prediction
         orig_label = []
         for it in range(self.setting.parameter["local_iterations"]):
             orig_label += self.setting.parameter["orig_label"][it].tolist()
+
+        if not self.setting.parameter["batch_size"] * self.setting.parameter["local_iterations"] == len(self.prediction):
+            exit("Prediction did not produce the correct amount of class labels.")
+
 
         self.correct = 0
         self.false = 0

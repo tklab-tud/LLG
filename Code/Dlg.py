@@ -97,10 +97,10 @@ class Dlg:
 
 
         self.dummy_data = torch.randn(
-            (setting.parameter["batch_size"], setting.parameter["channel"], setting.parameter["shape_img"][0],
+            (parameter["batch_size"]*parameter["local_iterations"], setting.parameter["channel"], setting.parameter["shape_img"][0],
              setting.parameter["shape_img"][1])).to(
             setting.device).requires_grad_(True)
-        self.dummy_label = torch.randn((setting.parameter["batch_size"], setting.parameter["num_classes"])).to(
+        self.dummy_label = torch.randn((parameter["batch_size"]*parameter["local_iterations"], setting.parameter["num_classes"])).to(
             setting.device).requires_grad_(True)
         self.dummy_pred = None
 
@@ -111,7 +111,7 @@ class Dlg:
             optimizer = torch.optim.LBFGS([self.dummy_data, ], lr=parameter["dlg_lr"])
             # predict label of dummy gradient
             pred = torch.Tensor(self.setting.predictor.prediction).long().to(device).reshape(
-                    (parameter["batch_size"],)).requires_grad_(False)
+                    (parameter["batch_size"]*parameter["local_iterations"],)).requires_grad_(False)
 
         # Prepare Result Object
         res = Result(self.setting)
@@ -144,7 +144,7 @@ class Dlg:
                 res.add_snapshot(self.dummy_data.cpu().detach().numpy())
 
         if self.setting.parameter["version"] == "dlg":
-            self.setting.predictor.prediction = [self.dummy_label[x].argmax().item() for x in range(parameter["batch_size"])]
+            self.setting.predictor.prediction = [self.dummy_label[x].argmax().item() for x in range(parameter["batch_size"]*parameter["local_iterations"])]
             self.setting.predictor.update_accuracy()
             #res.update_figures(),
 

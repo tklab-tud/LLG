@@ -33,7 +33,7 @@ class Result:
         self.unprocessed = True
 
     def calc_mse(self):
-        self.mses = np.zeros((len(self.snapshots), self.setting.parameter["batch_size"]))
+        self.mses = np.zeros((len(self.snapshots), self.setting.parameter["batch_size"]*self.setting.parameter["local_iterations"]))
         for i_s, s in enumerate(self.snapshots):
             self.mses[i_s] = self.mse(self.origin_data, s).sum(1)
 
@@ -58,25 +58,25 @@ class Result:
 
     def fix_snapshot_order(self):
         # fill the mse matrix
-        err = [[1 for x in range(self.parameter["batch_size"])] for x in range(self.parameter["batch_size"])]
+        err = [[1 for x in range(self.parameter["batch_size"]*self.setting.parameter["local_iterations"])] for x in range(self.parameter["batch_size"]*self.setting.parameter["local_iterations"])]
         for i_o, orig in enumerate(self.origin_data):
-            for i_b in range(self.parameter["batch_size"]):
+            for i_b in range(self.parameter["batch_size"]*self.setting.parameter["local_iterations"]):
                 err[i_o][i_b] = np.sum(self.mse(orig, self.snapshots[-1][i_b]))
 
-        alignment = [1 for x in range(self.parameter["batch_size"])]
+        alignment = [1 for x in range(self.parameter["batch_size"]*self.setting.parameter["local_iterations"])]
 
-        for _ in range(self.parameter["batch_size"]):
+        for _ in range(self.parameter["batch_size"]*self.setting.parameter["local_iterations"]):
             # find best alignment
-            max_orig = np.argmin(err) // self.parameter["batch_size"]
-            max_reco = np.argmin(err) % self.parameter["batch_size"]
+            max_orig = np.argmin(err) // (self.parameter["batch_size"]*self.setting.parameter["local_iterations"])
+            max_reco = np.argmin(err) % (self.parameter["batch_size"]*self.setting.parameter["local_iterations"])
             alignment[max_orig] = max_reco
 
             # purge column
-            for orig in range(self.parameter["batch_size"]):
+            for orig in range(self.parameter["batch_size"]*self.setting.parameter["local_iterations"]):
                 err[orig][max_reco] = [2**32]
 
             # purge row
-            for reco in range(self.parameter["batch_size"]):
+            for reco in range(self.parameter["batch_size"]*self.setting.parameter["local_iterations"]):
                 err[max_orig][reco] = [2**32]
 
         self.realign_snapshops(alignment)
@@ -125,13 +125,13 @@ class Result:
             self.calc_mse()
 
             # initialise composed fig
-            self.composed_fig, self.composed_subplots = plt.subplots(self.parameter["batch_size"],
+            self.composed_fig, self.composed_subplots = plt.subplots(self.parameter["batch_size"]*self.setting.parameter["local_iterations"],
                                                                      len(self.snapshots) + 1)
             self.composed_fig.set_size_inches((len(self.snapshots) + 1) * self.parameter["shape_img"][0] / 10,
                                               len(self.origin_data) * self.parameter["shape_img"][1] / 10)
 
             # fix subplots returning obj instead of array at bs = 1
-            if self.parameter["batch_size"] == 1:
+            if self.parameter["batch_size"]*self.setting.parameter["local_iterations"] == 1:
                 self.composed_subplots = [self.composed_subplots]
 
             # Generate Images
