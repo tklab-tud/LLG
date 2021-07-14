@@ -172,7 +172,8 @@ def train_federated(setting):
     # some abbreviations
     parameter = setting.parameter
     device = setting.device
-    global_model = setting.model
+    global_model = setting.model_backup
+    victim_model = setting.model
     train_size = setting.parameter["train_size"]
     num_users = setting.parameter["num_users"]
 
@@ -186,10 +187,13 @@ def train_federated(setting):
     local_weights = []
     local_losses = []
 
-    for i in range(num_users):
+    for i in range(num_users-1):
         w, loss = update_weights(copy.deepcopy(global_model), setting)
         local_weights.append(copy.deepcopy(w))
         local_losses.append(copy.deepcopy(loss))
+
+    victim_weights = victim_model.state_dict()
+    local_weights.append(victim_weights)
 
     # Averaging local client weights to get global weights
     global_weights = average_weights(local_weights, num_users)
