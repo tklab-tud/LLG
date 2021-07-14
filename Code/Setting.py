@@ -204,13 +204,15 @@ class Setting:
         self.model = self.model_backup
 
 
-    def attack(self, extent):
+    def attack(self, extent, keep: bool=False):
         # Creating a model backup
         self.backup_model()
 
         # Victim side gradients will be calculated in any run
         self.dlg.victim_side()
-        self.restore_model()
+
+        if not keep:
+            self.restore_model()
 
         if extent == "victim_side": # End after this if extent is victim side
             return

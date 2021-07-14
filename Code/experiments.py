@@ -99,8 +99,9 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
                                     test(setting)
                                     pre_run_test = False
 
+                                keep = trainsteps != 0 and i == n-1 and setting.parameter["local_training"]
                                 # run the attack
-                                setting.attack(extent)
+                                setting.attack(extent, keep)
 
                                 if store_composed_image:
                                     setting.result.store_composed_image() #saves the (i)dlg reconstructed images composed
