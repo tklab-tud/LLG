@@ -93,7 +93,7 @@ def train(setting, train_size, batch=None):
         test(setting)
 
 
-def update_weights(model, setting):
+def update_weights(model, setting, victim: bool=False):
     device = setting.device
     parameter = setting.parameter
     train_size = setting.parameter["train_size"]
@@ -133,7 +133,7 @@ def update_weights(model, setting):
             # FIXME: dataloader? batch_idx?
             # TODO: batch per user
             data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"],
-                                                setting.parameter["batch_size"])
+                                                setting.parameter["batch_size"], random=(not victim))
 
             data, target = data.to(device), target.to(device)
 
@@ -195,7 +195,7 @@ def train_federated(setting):
     if parameter["local_training"]:
         victim_weights = victim_model.state_dict()
     else:
-        victim_weights, victim_loss = update_weights(copy.deepcopy(victim_model), setting)
+        victim_weights, victim_loss = update_weights(copy.deepcopy(victim_model), setting, victim=True)
     local_weights.append(copy.deepcopy(victim_weights))
 
     # Averaging local client weights to get global weights
