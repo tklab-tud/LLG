@@ -89,10 +89,13 @@ class Dataloader():
         print("Finished loading dataset")
 
     # returns label and data of batch size. Will take targeted classes and fills it with random classes.
-    def get_batch(self, dataset, targets, bs):
+    def get_batch(self, dataset, targets, bs, random=False):
         # update dataset if necessary
         if self.currently_loaded != dataset:
             self.load_dataset(dataset)
+
+        if random:
+            targets = self.get_random_targets(bs)
 
         # remove additional targets or fill up
         targets = targets[:bs]
