@@ -80,12 +80,7 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
                                 if balanced:
                                     target = []
                                 else:
-                                    # we define unbalanced as 50% class a, 25% class b, 25% random
-                                    choice1 = np.random.choice(dataloader.num_classes)
-                                    choice2 = np.random.choice(
-                                        np.setdiff1d(range(dataloader.num_classes), choice1)).item()
-                                    target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
-                                    target = target[:bs]
+                                    target = dataloader.get_random_targets(bs)
 
                                 # configure the setting
                                 setting.configure(dataset=dataset, batch_size=bs, version=version,

@@ -125,3 +125,12 @@ class Dataloader():
 
 
         return data, labels
+
+    def get_random_targets(self, bs: int):
+        # we define unbalanced as 50% class a, 25% class b, 25% random
+        choice1 = np.random.choice(self.num_classes)
+        choice2 = np.random.choice(
+            np.setdiff1d(range(self.num_classes), choice1)).item()
+        target = (bs // 2) * [choice1] + (bs // 4) * [choice2]
+        target = target[:bs]
+        return target
