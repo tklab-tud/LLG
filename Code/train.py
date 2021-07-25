@@ -97,7 +97,8 @@ def update_weights(model, setting, victim: bool=False):
     device = setting.device
     parameter = setting.parameter
     local_iterations = setting.parameter["local_iterations"]
-    if victim:
+    local_training = setting.parameter["local_training"]
+    if victim or not local_training:
         local_iterations = 1
 
     # Set mode to train model
