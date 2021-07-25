@@ -130,8 +130,7 @@ def update_weights(model, setting, victim: bool=False):
             # FIXME: should we zero the gradients? where is the difference?
             # model.zero_grad()
 
-            # FIXME: dataloader? batch_idx?
-            # TODO: batch per user
+            # TODO: HFL data distribution?
             data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"],
                                                 setting.parameter["batch_size"], random=(not victim))
 
