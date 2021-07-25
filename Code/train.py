@@ -96,7 +96,9 @@ def train(setting, train_size, batch=None):
 def update_weights(model, setting, victim: bool=False):
     device = setting.device
     parameter = setting.parameter
-    train_size = setting.parameter["train_size"]
+    local_iterations = setting.parameter["local_iterations"]
+    if victim:
+        local_iterations = 1
 
     # Set mode to train model
     model.train()
@@ -123,7 +125,7 @@ def update_weights(model, setting, victim: bool=False):
     #     )
     #     privacy_engine.attach(optimizer)
 
-    for i in range(train_size):
+    for i in range(local_iterations):
         batch_loss = []
         def closure():
             optimizer.zero_grad()
