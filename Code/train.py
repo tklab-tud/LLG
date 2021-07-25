@@ -175,34 +175,33 @@ def train_federated(setting):
     device = setting.device
     global_model = setting.model_backup
     victim_model = setting.model
-    train_size = setting.parameter["train_size"]
+    global_iterations = setting.parameter["train_size"]
+    local_iterations = setting.parameter["local_iterations"]
     num_users = setting.parameter["num_users"]
 
     global_model.train()
 
-    print("Training for {} batches".format(train_size))
+    print("Training for {} global and {} local iterations".format(global_iterations, local_iterations))
 
     # m = min(int(len(keylist_cluster)), num_users_per_epoch)
     # idxs_users = np.random.choice(keylist_cluster, m, replace=False)
 
-    local_weights = []
-    local_losses = []
+    for i in range(global_iterations):
+        local_weights = []
+        local_losses = []
 
-    for i in range(num_users-1):
-        w, loss = update_weights(copy.deepcopy(global_model), setting)
-        local_weights.append(copy.deepcopy(w))
-        local_losses.append(copy.deepcopy(loss))
+        for i in range(num_users-1):
+            w, loss = update_weights(copy.deepcopy(global_model), setting)
+            local_weights.append(copy.deepcopy(w))
+            local_losses.append(copy.deepcopy(loss))
 
-    if parameter["local_training"]:
-        victim_weights = victim_model.state_dict()
-    else:
         victim_weights, victim_loss = update_weights(copy.deepcopy(victim_model), setting, victim=True)
-    local_weights.append(copy.deepcopy(victim_weights))
+        local_weights.append(copy.deepcopy(victim_weights))
 
-    # Averaging local client weights to get global weights
-    global_weights = average_weights(local_weights, num_users)
+        # Averaging local client weights to get global weights
+        global_weights = average_weights(local_weights, num_users)
 
-    # update global weights
-    global_model.load_state_dict(global_weights)
+        # update global weights
+        global_model.load_state_dict(global_weights)
 
     test(setting)
