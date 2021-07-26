@@ -327,6 +327,15 @@ def main():
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_type")
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_type")
 
+        # Visualization Set 9
+        elif experiment_set == 9:
+            # visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False,
+            #                                                 labels=["num_users"], width=4.8)
+            # visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False,
+            #                                                 labels=["local_iterations"], width=4.8)
+            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False,
+                                                            labels=["noise_multiplier"], width=4.8)
+
         # Gradient Plots
         if experiment_set == -1:
             y_range = [-330, 300]
