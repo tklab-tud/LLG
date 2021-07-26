@@ -547,6 +547,15 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                             label = "LeNet"
                         elif label == "MLP":
                             label = "FCNN"
+                    if l == "noise_multiplier":
+                        if run[run_name]["parameter"]["version"] == "random":
+                            label = "Random"
+                        elif run[run_name]["parameter"]["differential_privacy"] == False:
+                            label = "No noise"
+                        elif label == 0.0:
+                            label = "No noise"
+                        else:
+                            label = "σ² = " + str(label)
                     if l == "local_iterations":
                         label = "FedAvg-Iterations: " + str(run[run_name]["parameter"]["local_iterations"])
                     if l == "local_training":
