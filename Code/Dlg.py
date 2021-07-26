@@ -33,6 +33,9 @@ class Dlg:
             y = self.criterion(orig_out, para["orig_label"][i])
             grad = torch.autograd.grad(y, self.setting.model.parameters())
 
+            # local train iteration
+            if self.setting.parameter["local_training"]:
+                self.setting.train(1, [para["orig_data"][i], para["orig_label"][i]])
 
             # Noisy Gradients
             if para["differential_privacy"]:
@@ -68,10 +71,6 @@ class Dlg:
                         continue
 
             self.seperated_gradients.append(list((_.detach().clone() for _ in grad)))
-
-            # local train iteration
-            if self.setting.parameter["local_training"]:
-                self.setting.train(1, [para["orig_data"][i], para["orig_label"][i]])
 
         #Copy the structure of a grad, but make it zeroes
         aggregated = list(x.zero_() for x in grad)
