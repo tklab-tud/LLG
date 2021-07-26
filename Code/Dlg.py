@@ -35,7 +35,7 @@ class Dlg:
 
             # local train iteration
             if self.setting.parameter["local_training"]:
-                self.setting.train(1, [para["orig_data"][i], para["orig_label"][i]])
+                self.setting.train(1, [para["orig_data"][i], para["orig_label"][i]], victim=True)
 
             # Noisy Gradients
             if para["differential_privacy"]:

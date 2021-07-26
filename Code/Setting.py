@@ -11,7 +11,7 @@ from Dlg import Dlg
 from Predictor import Predictor
 from Result import Result
 from model import *
-from train import train, test
+from train import train, test, train_federated
 import copy
 
 
@@ -277,8 +277,11 @@ class Setting:
     def reinit_weights(self):
         weights_init(self.model)
 
-    def train(self, train_size, batch=None, verbose=False):
-        train(self, train_size, batch)
+    def train(self, train_size, batch=None, verbose=False, victim=False):
+        if self.parameter["federated"] and not victim:
+            train_federated(self)
+        else:
+            train(self, train_size, batch)
 
         if verbose:
             print("Training finished, loss = {}, acc = {}".format(self.parameter["test_loss"], self.parameter["test_acc"]))
