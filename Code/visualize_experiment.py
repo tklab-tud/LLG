@@ -522,7 +522,9 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                     if l != "":
                         label = run[run_name]["parameter"][l]
                     if l == "version":
-                        if label == "v2":
+                        if run[run_name]["parameter"]["federated"]:
+                            label = "FL"
+                        elif label == "v2":
                             label = "LLG+"
                         elif label =="dlg":
                             label = "DLG"
