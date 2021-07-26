@@ -42,7 +42,7 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
         dropout = 0.0
 
     setting = Setting(dataloader, result_path=path, model=model, differential_privacy=differential_privacy, alphas=alphas,
-                      noise_multiplier=noise_multiplier, max_norm=max_norm, noise_type=noise_type,
+                      noise_multiplier=noise_multiplier, max_norm=max_norm, noise_type=noise_type, train_size=trainsize,
                       dropout=dropout, compression=compression, threshold=threshold)
 
     progress = 0
