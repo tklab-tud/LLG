@@ -532,6 +532,10 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                             label = "LLG*"
                         elif label == "random":
                             label = "Random"
+                    if l == "num_users":
+                        label = "N = " + str(run[run_name]["parameter"]["num_users"])
+                        if not run[run_name]["parameter"]["federated"]:
+                            label = "LLG+"
                     if l == "model":
                         if label == "LeNet":
                             label = "CNN"
