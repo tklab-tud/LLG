@@ -39,6 +39,7 @@ class Setting:
     def configure(self, **kwargs):
         old_parameter = self.parameter.copy()
         self.update_parameter(**kwargs)
+        self.check_cuda()
 
         # Invalidate old results
         self.predictor = Predictor(self)
@@ -134,6 +135,9 @@ class Setting:
             "dummy" : False,
             "local_training": False,
 
+            # device
+            "cuda_id": 0,
+
             # Differential Privacy settings
             "differential_privacy": False,
             "alphas": [],
@@ -173,7 +177,7 @@ class Setting:
     def check_cuda(self, verbose=False):
         # Check CUDA
         if torch.cuda.is_available():
-            self.device = torch.device("cuda")
+            self.device = torch.device("cuda:{}".format(self.parameter["cuda_id"]))
             if verbose:
                 print("using cuda gpu: " + str(torch.cuda.current_device()))
         else:

@@ -18,6 +18,9 @@ def main():
     # FIXME: outcomment this line if you want the run the visualization
     job = "experiment"
 
+    # device
+    cuda_id = 0
+
     # defaults to fill vars, when unused
     train_lr = 0.1
     defenses = ["none"]
@@ -199,6 +202,7 @@ def main():
                                # Won't store each (i)dlg iteration's images but every n-th iteration's
                                store_composed_image=False,  # storing dlg output images as composed image
                                store_separate_images=False,  # storing dlg output images as seperate images
+                               cuda_id=cuda_id,
                                defenses=defenses,
                                differential_privacy=differential_privacy,
                                noise_type=noise_type,
