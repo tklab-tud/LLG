@@ -49,6 +49,15 @@ def main():
     v3 = {"MNIST": "v3-zero", "CIFAR": "v3-one", "CELEB-A-male": "v3-zero", "CELEB-A-hair": "v3-zero",
           "SVHN": "v3-random"}
 
+    # FedAvg
+    fedAvg = False
+    if fedAvg:
+        local_training = True
+        local_iterations = 10
+    else:
+        local_training = False
+        local_iterations = 1
+
     if experiment_set == 0:
         local_iterations = 4
         n = 1
@@ -76,16 +85,6 @@ def main():
         # TODO: this will take forever, only run when absolutely necessary
         # FIXME: don't run this for set 3&4 (trained) only for 1&2 (untrained)
         version = "dlg"
-
-
-        # FedAvg
-        fedAvg = False
-        if fedAvg:
-            local_training = True
-            local_iterations = 10
-        else:
-            local_training = False
-            local_iterations = 1
 
     # Set 3 and 4 generation
     if experiment_set in [3, 4]:
