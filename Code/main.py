@@ -7,7 +7,7 @@ import time
 def main():
     ############## Build your attack here ######################
 
-    experiment_set = 9
+    experiment_set = 10
 
     # visualization parameters
     job = "visualize"
@@ -19,7 +19,7 @@ def main():
     job = "experiment"
 
     # device
-    cuda_id = 0
+    cuda_id = 4
 
     # defaults to fill vars, when unused
     train_lr = 0.1
@@ -170,6 +170,9 @@ def main():
     else:
         versions = [version]
 
+    if experiment_set == 10:
+        local_iterations_list = [1, 10, 100, 1000]
+
     start = time.time()
 
     if job == "experiment":
@@ -179,6 +182,8 @@ def main():
                 if max_norm != None and max_norm > 0:
                     noise_multiplier = noise_multiplier / max_norm
                 for threshold in thresholds:
+                # for local_iterations in local_iterations_list:
+                    # threshold = 0.0
                     experiment(dataloader=dataloader,
                                list_datasets=dataset if isinstance(dataset, list) else [dataset],
                                list_bs=list_bs,
