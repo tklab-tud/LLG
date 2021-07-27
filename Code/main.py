@@ -7,7 +7,7 @@ import time
 def main():
     ############## Build your attack here ######################
 
-    experiment_set = 0
+    experiment_set = 2
 
     # visualization parameters
     job = "visualize"
@@ -16,7 +16,7 @@ def main():
 
     # experiment parameters
     # FIXME: outcomment this line if you want the run the visualization
-    #job = "experiment"
+    job = "experiment"
 
     # defaults to fill vars, when unused
     train_lr = 0.1
@@ -50,7 +50,7 @@ def main():
           "SVHN": "v3-random"}
 
     # FedAvg
-    fedAvg = False
+    fedAvg = True
     if fedAvg:
         local_training = True
         local_iterations = 10
@@ -74,7 +74,7 @@ def main():
         dataset = "MNIST"
         # dataset = "CIFAR"
         # dataset = "CELEB-A-male"
-        dataset = "CELEB-A-hair"
+        # dataset = "CELEB-A-hair"
         # dataset = "SVHN"
         # versions in order of importance
         # TODO: run all VERSIONS separately per DATASET ("in parallel")
