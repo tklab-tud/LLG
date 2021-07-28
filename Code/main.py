@@ -78,13 +78,13 @@ def main():
         # dataset = "SVHN"
         # versions in order of importance
         # TODO: run all VERSIONS separately per DATASET ("in parallel")
-        # version = "v2"
+        version = "v2"
         # version = "random"
         # version = "v1"
         # version = v3[dataset]
         # TODO: this will take forever, only run when absolutely necessary
         # FIXME: don't run this for set 3&4 (trained) only for 1&2 (untrained)
-        version = "dlg"
+        # version = "dlg"
 
     # Set 3 and 4 generation
     if experiment_set in [3, 4]:
