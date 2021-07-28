@@ -251,7 +251,12 @@ def main():
 
         # Visualization Set 2
         elif experiment_set == 2:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8, labels=["version", "local_training"], fontsize=10)
+            # default set 2: attack versions
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8, labels=["version"])
+            # local iteration comparison
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8, labels=["local_training"])
+            # local iterations & attack versions
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8, labels=["version", "local_training"])
 
         # Visualization Set 1 & 2
         elif experiment_set == 12:
