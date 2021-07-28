@@ -22,6 +22,9 @@ class Dataloader():
         if dataset == "MNIST":
             self.train_dataset = datasets.MNIST('./datasets', train=True, download=True, transform=tt)
             self.num_classes = 10
+        elif dataset == "EMNIST":
+            self.train_dataset = datasets.EMNIST('./datasets', split="byclass", train=True, download=True, transform=tt)
+            self.num_classes = 62
         elif dataset == 'CIFAR':
             self.train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt)
             self.num_classes = 100

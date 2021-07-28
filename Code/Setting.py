@@ -57,6 +57,11 @@ class Setting:
                     self.parameter["num_classes"] = 10
                     self.parameter["channel"] = 1
                     self.parameter["hidden"] = 588
+                elif value == "EMNIST":
+                    self.parameter["shape_img"] = (28, 28)
+                    self.parameter["num_classes"] = 62
+                    self.parameter["channel"] = 1
+                    self.parameter["hidden"] = 588
                 elif value == 'CIFAR':
                     self.parameter["shape_img"] = (32, 32)
                     self.parameter["num_classes"] = 100
