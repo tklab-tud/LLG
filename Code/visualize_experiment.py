@@ -310,7 +310,7 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                             label = "DLG"
                         elif label == "v1":
                             label = "LLG"
-                        elif label == "v3":
+                        elif "v3" in label:
                             label = "LLG*"
                         elif label == "random":
                             label = "Random"
@@ -528,7 +528,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                             label = "DLG"
                         elif label == "v1":
                             label = "LLG"
-                        elif label == "v3":
+                        elif "v3" in label:
                             label = "LLG*"
                         elif label == "random":
                             label = "Random"
