@@ -65,6 +65,7 @@ class Graph:
 
             if useMathText:
                 max_x = max(max_x, max(l_x))
+                min_x = min(l_x)
             print("Min y: {} for label {}".format(str(min(l_y)), label))
             plt.plot(l_x, l_y, label=label, linestyle=style, color=color, linewidth=2.5)
 
@@ -86,7 +87,8 @@ class Graph:
                 step = max(1, max_x // 10)
                 plt.set_xticks(range(0, max_x+step, step))
                 plt.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
-                plt.ticklabel_format(style='sci', axis='x', scilimits=(3,3), useMathText=True)
+                exponant = len(str(min_x))-1
+                plt.ticklabel_format(style='sci', axis='x', scilimits=(exponant,exponant), useMathText=True)
             else:
                 plt.set_xticks(range(0, len(self.data), max(1, len(self.data) // 10)))
 
