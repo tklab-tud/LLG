@@ -280,6 +280,7 @@ class Setting:
     def train(self, train_size, batch=None, verbose=False, victim=False):
         if self.parameter["federated"] and not victim:
             train_federated(self)
+            self.restore_model()
         else:
             train(self, train_size, batch)
 
