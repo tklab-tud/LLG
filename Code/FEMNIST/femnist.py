@@ -4,7 +4,7 @@ import os
 import torch
 
 
-class FEMNIST(MNIST):
+class FEMNIST_digits(MNIST):
     """
     This dataset is derived from the Leaf repository
     (https://github.com/TalwalkarLab/leaf) pre-processing of the Extended MNIST
