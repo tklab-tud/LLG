@@ -181,7 +181,7 @@ def train_federated(setting):
 
     global_model.train()
 
-    print("Training for {} global and {} local iterations".format(global_iterations, local_iterations))
+    print("Training {} users for {} local and {} global iterations".format(num_users, local_iterations, global_iterations))
 
     # m = min(int(len(keylist_cluster)), num_users_per_epoch)
     # idxs_users = np.random.choice(keylist_cluster, m, replace=False)
