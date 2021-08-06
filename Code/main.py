@@ -1,10 +1,37 @@
 from experiments import *
 from visualize_experiment import *
 from Dataloader import Dataloader
+import argparse
 import time
 
 
+def args_parser():
+    parser = argparse.ArgumentParser(description="Arguments for LLG Experiment")
+
+    # required arguments
+    parser.add_argument('-s', '--set', type=int, default=2,
+                            help='experiment set')
+    parser.add_argument('-p', '--plot', type=int, default=None,
+                            help='number of files to be ploted')
+    parser.add_argument('-j', '--job', type=str, default='experiment',
+                            help='job to execute. either "experiment" or "visualize".')
+
+    # optional arguments
+    parser.add_argument('-g', '--gpu_id', type=int, default=0,
+                            help='cuda_id to use, if available')
+
+    args = parser.parse_args()
+
+    if args.plot != None:
+        args.job = "visualize"
+
+    return args
+
+
 def main():
+    # load parameters
+    # args = args_parser()
+
     ############## Build your attack here ######################
 
     experiment_set = 10
