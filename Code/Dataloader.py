@@ -47,7 +47,6 @@ class Dataloader():
             length = len(self.train_dataset.attr)
             self.train_dataset.targets = []
 
-
             for i, attr in enumerate(self.train_dataset.attr):
                 bald = attr[4]
                 black = attr[8]
@@ -62,10 +61,7 @@ class Dataloader():
 
                 self.train_dataset.targets.append(np.argmax([bald,black,blond,brown,gray,other])+1)
 
-
-
             print("done")
-
 
         elif dataset == 'SVHN':
             self.train_dataset = datasets.SVHN('./datasets', 'train', download=True, transform=tt)
@@ -110,9 +106,6 @@ class Dataloader():
                             self.train_dataset[0][0].shape[2])
         labels = torch.Tensor(bs).long()
 
-
-
-
         # fill data and labels
         for i_target, target in enumerate(targets):
             rnd = np.random.randint(len(self.samples[target]))
@@ -128,7 +121,6 @@ class Dataloader():
             data = data.zero_()
         elif dataset=="DUMMY-RANDOM":
             data = data.random_()
-
 
         return data, labels
 
