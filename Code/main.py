@@ -97,6 +97,9 @@ def main():
     if experiment_set in [1, 2, 3, 4]:
         # TODO: run all DATASETS separately ("in parallel")
         dataset = "MNIST"
+        # dataset = "EMNIST"
+        dataset = "FEMNIST"
+        # dataset = "FEMNIST-digits"
         # dataset = "CIFAR"
         # dataset = "CELEB-A-male"
         # dataset = "CELEB-A-hair"
