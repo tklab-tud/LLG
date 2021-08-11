@@ -3,6 +3,7 @@ import torch
 import torchvision
 from torchvision import datasets, transforms
 
+import FEMNIST.femnist as femnist
 
 class Dataloader():
     def __init__(self):
@@ -25,6 +26,12 @@ class Dataloader():
         elif dataset == "EMNIST":
             self.train_dataset = datasets.EMNIST('./datasets', split="byclass", train=True, download=True, transform=tt)
             self.num_classes = 62
+        elif dataset == "FEMNIST":
+            self.train_dataset = femnist.FEMNIST('./datasets', train=True, download=True, transform=tt)
+            self.num_classes = 62
+        elif dataset == "FEMNIST-digits":
+            self.train_dataset = femnist.FEMNIST_digits('./datasets', train=True, download=True, transform=tt)
+            self.num_classes = 10
         elif dataset == 'CIFAR':
             self.train_dataset = datasets.CIFAR100('./datasets', train=True, download=True, transform=tt)
             self.num_classes = 100
