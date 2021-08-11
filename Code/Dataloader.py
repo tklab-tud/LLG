@@ -94,12 +94,40 @@ class Dataloader():
 
         print("Finished loading dataset")
 
+    # get targets based on user_id for FEMNIST, FEMNIST-digits
+    def get_batch_user_targets(self, user_id, bs):
+        if user_id == None:
+            user_id = np.random.randint(len(self.train_dataset.users_index))
+        # user i owns samples from sum(users_index[0:i-1]) to sum(users_index[0:i])
+        num_samples = self.train_dataset.users_index[user_id]
+        index_start = sum(self.train_dataset.users_index[0:user_id-1])
+        index_end = sum(self.train_dataset.users_index[0:user_id])
+
+        samples = []
+        while len(samples) < bs:
+            index = index_start + np.random.randint(num_samples)
+            samples.append(index)
+
+        return samples
+
     # returns label and data of batch size. Will take targeted classes and fills it with random classes.
     def get_batch(self, dataset, targets, bs, random=False):
         # update dataset if necessary
         if self.currently_loaded != dataset:
             self.load_dataset(dataset)
 
+        # get user samples
+        if hasattr(self.train_dataset, 'users_index'):
+            data = []
+            labels = []
+            samples = self.get_batch_user_targets(targets, bs)
+            for sample in samples:
+                data.append(self.train_dataset.data[sample])
+                labels.append(self.train_dataset.targets[sample])
+
+            return torch.Tensor(data), torch.Tensor(labels)
+
+        # get random non-iid targets
         if random:
             targets = self.get_random_targets(bs)
 
@@ -132,6 +160,9 @@ class Dataloader():
         return data, labels
 
     def get_random_targets(self, bs: int):
+        # get random user index
+        if hasattr(self.train_dataset, 'users_index'):
+            return np.random.randint(len(self.train_dataset.users_index))
         # we define unbalanced as 50% class a, 25% class b, 25% random
         choice1 = np.random.choice(self.num_classes)
         choice2 = np.random.choice(
