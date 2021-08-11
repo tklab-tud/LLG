@@ -1,4 +1,5 @@
 import numpy as np
+import statistics as stats
 import torch
 import torchvision
 from torchvision import datasets, transforms
@@ -78,6 +79,31 @@ class Dataloader():
             exit()
 
         self.currently_loaded = dataset
+
+        # print dataset statistics
+        print("train dataset: ", self.train_dataset)
+        print("number of classes: ", self.num_classes)
+        print("number of targets: ", len(self.train_dataset.targets))
+        # print("target count:      ", self.train_dataset.targets.bincount())
+        print("train dataset: ", self.train_dataset)
+        # print("sample data: ", self.train_dataset.data[0])
+        # print("type: ", type(self.train_dataset.data[0]))
+        # print("lenx: ", len(self.train_dataset.data[0]))
+        # print("leny: ", len(self.train_dataset.data[0][0]))
+        print("sample target: ", self.train_dataset.targets[0])
+        print("type: ", type(self.train_dataset.targets[0]))
+        #print("len: ", len(self.train_dataset.targets[0]))
+
+        if hasattr(self.train_dataset, 'users_index'):
+            print("number of users:   ", len(self.train_dataset.users_index))
+            # users_index is not an index at all. it is the number of samples per user.
+            # user 0 owns samples from 0 to users_index[0]
+            # user i owns samples from sum(users_index[0:i-1]) to sum(users_index[0:i])
+            print("samples per user:")
+            print("min:   ", min(self.train_dataset.users_index))
+            print("max:   ", max(self.train_dataset.users_index))
+            print("mean:  ", stats.mean(self.train_dataset.users_index))
+            print("stdev: ", stats.stdev(self.train_dataset.users_index))
 
         # indexing with fix for CIFAR
         if dataset == "CIFAR" or dataset == "CIFAR-grey" or dataset == "SVHN":
