@@ -138,16 +138,19 @@ class Dataloader():
         if self.currently_loaded != dataset:
             self.load_dataset(dataset)
 
-        # get user samples
-        if hasattr(self.train_dataset, 'users_index'):
-            data = []
-            labels = []
-            samples = self.get_batch_user_targets(targets, bs)
-            for sample in samples:
-                data.append(self.train_dataset.data[sample])
-                labels.append(self.train_dataset.targets[sample])
+        # prepare data and label tensor
+        data = torch.Tensor(bs, self.train_dataset[0][0].shape[0], self.train_dataset[0][0].shape[1],
+                            self.train_dataset[0][0].shape[2])
+        labels = torch.Tensor(bs).long()
 
-            return torch.Tensor(data), torch.Tensor(labels)
+        # get user samples
+        if hasattr(self.train_dataset, 'users_index') and not isinstance(targets, list):
+            samples = self.get_batch_user_targets(targets, bs)
+            for i, sample in enumerate(samples):
+                data[i] = self.train_dataset.data[sample]
+                labels[i] = self.train_dataset.targets[sample]
+
+            return data, labels
 
         # get random non-iid targets
         if random:
@@ -157,11 +160,6 @@ class Dataloader():
         targets = targets[:bs]
         while len(targets) < bs:
             targets.append(np.random.randint(self.num_classes))
-
-        # prepare data and label tensor
-        data = torch.Tensor(bs, self.train_dataset[0][0].shape[0], self.train_dataset[0][0].shape[1],
-                            self.train_dataset[0][0].shape[2])
-        labels = torch.Tensor(bs).long()
 
         # fill data and labels
         for i_target, target in enumerate(targets):
