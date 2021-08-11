@@ -106,10 +106,7 @@ class Dataloader():
             print("stdev: ", stats.stdev(self.train_dataset.users_index))
 
         # indexing with fix for CIFAR
-        if dataset == "CIFAR" or dataset == "CIFAR-grey" or dataset == "SVHN":
-            self.samples = [[] for _ in range(max(self.train_dataset.targets) + 1)]
-        else:
-            self.samples = [[] for _ in range(max(self.train_dataset.targets).item()+1)]
+        self.samples = [[] for _ in range(self.num_classes)]
 
         for i, sample in enumerate(self.train_dataset.targets):
             if dataset == "CIFAR" or dataset == "CIFAR-grey" or dataset == "SVHN":
