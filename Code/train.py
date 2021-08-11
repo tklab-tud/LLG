@@ -29,7 +29,7 @@ def test(setting):
 
     test_loss /= parameter["test_size"]
 
-    test_acc = 100. * correct / (parameter["test_size"] * parameter["batch_size"] * parameter["local_iterations"])
+    test_acc = 100. * correct / (parameter["test_size"] * parameter["batch_size"])
 
     #print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
     #    test_loss, correct, parameter["test_size"] * parameter["batch_size"], test_acc))
