@@ -62,6 +62,16 @@ class Setting:
                     self.parameter["num_classes"] = 62
                     self.parameter["channel"] = 1
                     self.parameter["hidden"] = 588
+                elif value == "FEMNIST":
+                    self.parameter["shape_img"] = (28, 28)
+                    self.parameter["num_classes"] = 62
+                    self.parameter["channel"] = 1
+                    self.parameter["hidden"] = 588 # 7 * 7 * 64
+                elif value == "FEMNIST-digits":
+                    self.parameter["shape_img"] = (28, 28)
+                    self.parameter["num_classes"] = 10
+                    self.parameter["channel"] = 1
+                    self.parameter["hidden"] = 588
                 elif value == 'CIFAR':
                     self.parameter["shape_img"] = (32, 32)
                     self.parameter["num_classes"] = 100
