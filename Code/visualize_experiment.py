@@ -553,7 +553,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                     merged_label = merged_label + str(label) + ", "
                 merged_label = merged_label[:-2]
 
-                x_tick_name = int(int(current_meta[5])*meta["trainsize"]) # int(x)*meta["trainsize"] # combined iterations
+                x_tick_name = int(int(current_meta[5])*meta["trainsize"]*run[run_name]["parameter"]["local_iterations"]) # int(x)*meta["trainsize"] # combined iterations
 
                 graph.add_datapoint(merged_label, run[run_name]["prediction_results"]["accuracy"]*100, x_tick_name)
                 # if id == model_id:
