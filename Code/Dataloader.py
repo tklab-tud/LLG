@@ -126,8 +126,14 @@ class Dataloader():
         index_end = sum(self.train_dataset.users_index[0:user_id])
 
         samples = []
+        index = len(self.train_dataset.data)
+        i = 0
         while len(samples) < bs:
-            index = index_start + np.random.randint(num_samples)
+            while index >= len(self.train_dataset.data):
+                index = index_start + np.random.randint(num_samples)
+                if i >= 10 and index >= len(self.train_dataset.data):
+                    index = len(self.train_dataset.data)-1
+                i += 1
             samples.append(index)
 
         return samples
