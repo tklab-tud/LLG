@@ -7,7 +7,7 @@ import itertools
 
 
 class Graph:
-    def __init__(self, xlabel, ylabel, ylabel2=None, y_range=None, fontsize=14, width=6.4):
+    def __init__(self, xlabel, ylabel, ylabel2=None, y_range=None, fontsize=16, width=6.4):
         self.data = []
         self.fig, self.subplot = plt.subplots(1, 1, figsize=(width,4.8)) # figsize=(8,5)
         self.fontsize = fontsize

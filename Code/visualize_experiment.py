@@ -269,7 +269,7 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
 
 
 # Experiment 1.1
-def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels="", width=6.4, location="best", y_range=[0,105], fontsize=None):
+def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels="", width=6.4, location="best", y_range=[0,105], fontsize=16):
     run = run.copy()
 
     graph = Graph("Batch size", "Attack success rate (%)", y_range=y_range, fontsize=fontsize, width=width)
@@ -480,7 +480,7 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
 
 # Experiment 2
 def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, dataset=None, version=None, list_bs=None,
-                                                    train_step_stop=None, labels="", model_id=1, width=6.4, location="best", fontsize=None):
+                                                    train_step_stop=None, labels="", model_id=1, width=6.4, location="best", fontsize=16):
     run = run.copy()
 
     # if list_bs is None:
