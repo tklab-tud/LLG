@@ -30,23 +30,16 @@ def args_parser():
 
 def main():
     # load parameters
-    # args = args_parser()
-
-    ############## Build your attack here ######################
-
-    experiment_set = 10
+    args = args_parser()
+    job = args.job
 
     # visualization parameters
-    job = "visualize"
     # specify the number of json files you want to select for plotting
-    num_files = 1
+    num_files = args.plot
 
     # experiment parameters
-    # FIXME: outcomment this line if you want the run the visualization
-    job = "experiment"
-
-    # device
-    cuda_id = 4
+    experiment_set = args.set
+    cuda_id = args.gpu_id
 
     # defaults to fill vars, when unused
     train_lr = 0.1
