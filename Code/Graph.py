@@ -318,10 +318,10 @@ class Graph:
             "FedAvg-Iterations: 1000": "#277831",
 
             "FedSGD": "#4363d8",
-            "FedAvg(1 iterations)": "#f58231",
-            "FedAvg(10 iterations)": "#800000",
-            "FedAvg(100 iterations)": "#e6194B",
-            "FedAvg(1000 iterations)": "#277831",
+            "FedAvg (E=1)": "#f58231",
+            "FedAvg (E=10)": "#800000",
+            "FedAvg (E=100)": "#e6194B",
+            "FedAvg (E=1000)": "#277831",
 
             "Random, FedSGD": "#e6194B",
             "Random, FedAvg(10 iterations)": "#277831",
@@ -434,10 +434,10 @@ class Graph:
             "FedAvg-Iterations: 1000": (0, (3, 5, 1, 5, 1, 5)),
 
             "FedSGD": '-',
-            "FedAvg(1 iterations)": "--",
-            "FedAvg(10 iterations)": ':',
-            "FedAvg(100 iterations)": "--",
-            "FedAvg(1000 iterations)": (0, (3, 5, 1, 5, 1, 5)),
+            "FedAvg (E=1)": "--",
+            "FedAvg (E=10)": ':',
+            "FedAvg (E=100)": "--",
+            "FedAvg (E=1000)": (0, (3, 5, 1, 5, 1, 5)),
 
             "Random, FedSGD": "--",
             "Random, FedAvg(10 iterations)": (0, (3, 5, 1, 5, 1, 5)),
@@ -546,10 +546,10 @@ class Graph:
             "FedAvg-Iterations: 1000": 1000,
 
             "FedSGD": 0,
-            "FedAvg(1 iterations)": 1,
-            "FedAvg(10 iterations)": 10,
-            "FedAvg(100 iterations)": 100,
-            "FedAvg(1000 iterations)": 1000,
+            "FedAvg (E=1)": 1,
+            "FedAvg (E=10)": 10,
+            "FedAvg (E=100)": 100,
+            "FedAvg (E=1000)": 1000,
 
             "Random, FedSGD": 3,
             "Random, FedAvg(10 iterations)": 4,
