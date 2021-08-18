@@ -98,7 +98,7 @@ def main():
         # TODO: run all DATASETS separately ("in parallel")
         dataset = "MNIST"
         # dataset = "EMNIST"
-        dataset = "FEMNIST"
+        # dataset = "FEMNIST"
         # dataset = "FEMNIST-digits"
         # dataset = "CIFAR"
         # dataset = "CELEB-A-male"
