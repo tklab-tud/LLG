@@ -174,12 +174,10 @@ def main():
 
     if experiment_set == 9:
         list_bs = [8]
-        trainsize = 10
-        trainsteps = 10
+        trainsize = 1
+        trainsteps = 1000/local_iterations
         federated = True
-        num_users = 10
-        local_training = True
-        local_iterations = 1
+        num_users = 100
         # defenses = ["dp"]
         # differential_privacy = True
         # noise_type = "normal"
