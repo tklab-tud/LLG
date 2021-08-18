@@ -368,12 +368,14 @@ def main():
 
         # Visualization Set 9
         elif experiment_set == 9:
+            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False,
+                                                            width=4.8)
             # visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False,
             #                                                 labels=["num_users"], width=4.8)
             # visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False,
             #                                                 labels=["local_iterations"], width=4.8)
-            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False,
-                                                            labels=["noise_multiplier"], width=4.8)
+            # visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False,
+            #                                                 labels=["noise_multiplier"], width=4.8)
 
         elif experiment_set == 10:
             visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=False, width=4.8, labels=["dataset", "local_training"], fontsize=14)
