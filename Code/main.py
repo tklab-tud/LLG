@@ -314,7 +314,7 @@ def main():
             # default set 2: attack versions
             visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8, labels=["version"])
             # local iteration comparison
-            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8, labels=["local_training"])
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels=["local_training"])
             # local iterations & attack versions
             # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8, labels=["version", "local_training"])
 
