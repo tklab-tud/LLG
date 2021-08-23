@@ -105,6 +105,17 @@ class Dataloader():
             print("mean:  ", stats.mean(self.train_dataset.users_index))
             print("stdev: ", stats.stdev(self.train_dataset.users_index))
 
+            # min_samples = {8: 0, 16: 0, 32: 0, 64: 0, 128: 0}
+            # for num_samples in self.train_dataset.users_index:
+            #     for min_size in min_samples.keys():
+            #         if num_samples < min_size:
+            #             min_samples[min_size] += 1
+            #             break
+
+            # print(min_samples)
+            # print(len(self.train_dataset.users_index))
+            # exit()
+
         # indexing with fix for CIFAR
         self.samples = [[] for _ in range(self.num_classes)]
 
