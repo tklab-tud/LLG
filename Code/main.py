@@ -182,6 +182,19 @@ def main():
         # differential_privacy = True
         # noise_type = "normal"
         # noise_multipliers = [0.01, 0.1, 1]
+        version = "v2"
+        # version = "random"
+        # version = "v1"
+        # version = v3[dataset]
+        # version = "dlg"
+        dataset = "MNIST"
+        # dataset = "CIFAR"
+        # dataset = "CELEB-A-hair"
+        # dataset = "SVHN"
+        model = "LeNet"       # old LeNet = ConvNet
+        # model = "NewNewLeNet"  # new LeNet = LeNet
+        # model = "ResNet"      # ResNet
+        # model = "MLP"         # FCNN
 
     if experiment_set == -1:
         n = 1000
