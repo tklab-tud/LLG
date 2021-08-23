@@ -582,6 +582,9 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
 
     data2 = [["Model", np.average(val) , key] for key, val in model_accs.items()]
 
+    if len(data2) >= 1000:
+        data2 = [val for i, val in enumerate(data2) if i % 10 == 0]
+
     graph.data.append(["Model", 0, 0])
     graph.plot_line(location=location, skip_x_ticks=True, useMathText=True)
     graph.data = data2

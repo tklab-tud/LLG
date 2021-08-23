@@ -63,6 +63,10 @@ class Graph:
             color = self.color(label)
             style = self.style(label)
 
+            if len(l_x) >= 1000:
+                l_x = [val for i, val in enumerate(l_x) if i % 10 == 0]
+                l_y = [val for i, val in enumerate(l_y) if i % 10 == 0]
+
             if useMathText:
                 max_x = max(max_x, max(l_x))
             print("Min y: {} for label {}".format(str(min(l_y)), label))
