@@ -491,7 +491,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
     else:
         runs = run
 
-    graph = Graph("Iterations", "Attack success rate (%)", "Model accuracy (%)", fontsize=fontsize, width=width) # (x100)
+    graph = Graph("Iterations", "Attack success rate (%)", "Model accuracy (%)", y_range=[0,105], fontsize=fontsize, width=width) # (x100)
 
     data2 = []
 
