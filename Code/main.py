@@ -174,8 +174,8 @@ def main():
 
     if experiment_set == 9:
         list_bs = [8]
-        trainsize = 1
-        trainsteps = 1000/local_iterations
+        trainsize = int(10/local_iterations)
+        trainsteps = 100
         federated = True
         num_users = 100
         # defenses = ["dp"]
