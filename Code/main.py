@@ -187,8 +187,8 @@ def main():
         # version = "v1"
         # version = v3[dataset]
         # version = "dlg"
-        dataset = "MNIST"
-        # dataset = "CIFAR"
+        # dataset = "MNIST"
+        dataset = "CIFAR"
         # dataset = "CELEB-A-hair"
         # dataset = "SVHN"
         model = "LeNet"       # old LeNet = ConvNet
