@@ -570,6 +570,9 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
 
                 x_tick_name = int(int(current_meta[5])*meta["trainsize"]*run[run_name]["parameter"]["local_iterations"]) # int(x)*meta["trainsize"] # combined iterations
 
+                # if "DLG" in label:
+                #     x_tick_name = x_tick_name*10
+
                 graph.add_datapoint(merged_label, run[run_name]["prediction_results"]["accuracy"]*100, x_tick_name)
                 # if id == model_id:
                 #     data2.append(["Model", run[run_name]["parameter"]["test_acc"], x_tick_name])
