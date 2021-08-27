@@ -37,39 +37,6 @@ class Dlg:
             if self.setting.parameter["local_training"]:
                 self.setting.train(1, [para["orig_data"][i], para["orig_label"][i]], victim=True)
 
-            # Noisy Gradients
-            if para["differential_privacy"]:
-                clipping = True if self.setting.parameter["max_norm"] != None else False
-                adp.apply_noise(grad, para["batch_size"], para["max_norm"], para["noise_multiplier"], para["noise_type"], self.setting.device, loss_reduction="none", clipping=clipping)
-
-            # Gradient Compression
-            if self.setting.parameter["compression"]:
-                values = torch.sum(grad[-2], dim=-1).clone()
-                magnitudes = [torch.abs(value) for value in values]
-                magnitudes_sorted = sorted(magnitudes)
-
-                threshold = int(len(magnitudes_sorted) * self.setting.parameter["threshold"]) - 1
-                max_magnitude = magnitudes_sorted[threshold]
-                max_mag_count = 1
-                first_idx = threshold
-                for i, mag in enumerate(magnitudes_sorted):
-                    if mag == max_magnitude:
-                        first_idx = i
-                max_mag_count = threshold - first_idx
-
-                count = 0
-                for magnitude, tens in zip(magnitudes, grad):
-                    if magnitude < max_magnitude:
-                        tens.zero_()
-                    elif magnitude == max_magnitude:
-                        if count <= max_mag_count:
-                            tens.zero_()
-                        else:
-                            continue
-                        count += 1
-                    elif magnitude > max_magnitude:
-                        continue
-
             self.seperated_gradients.append(list((_.detach().clone() for _ in grad)))
 
         #Copy the structure of a grad, but make it zeroes
@@ -80,6 +47,39 @@ class Dlg:
             #there iterate through the gradients and add to the aggregator
             for i_g,g in enumerate(i):
                 aggregated[i_g] = torch.add(aggregated[i_g], g)
+
+        # Noisy Gradients
+        if para["differential_privacy"]:
+            clipping = True if self.setting.parameter["max_norm"] != None else False
+            adp.apply_noise(aggregated, para["batch_size"], para["max_norm"], para["noise_multiplier"], para["noise_type"], self.setting.device, loss_reduction="none", clipping=clipping)
+
+        # Gradient Compression
+        if self.setting.parameter["compression"]:
+            values = torch.sum(aggregated[-2], dim=-1).clone()
+            magnitudes = [torch.abs(value) for value in values]
+            magnitudes_sorted = sorted(magnitudes)
+
+            threshold = int(len(magnitudes_sorted) * self.setting.parameter["threshold"]) - 1
+            max_magnitude = magnitudes_sorted[threshold]
+            max_mag_count = 1
+            first_idx = threshold
+            for i, mag in enumerate(magnitudes_sorted):
+                if mag == max_magnitude:
+                    first_idx = i
+            max_mag_count = threshold - first_idx
+
+            count = 0
+            for magnitude, tens in zip(magnitudes, aggregated):
+                if magnitude < max_magnitude:
+                    tens.zero_()
+                elif magnitude == max_magnitude:
+                    if count <= max_mag_count:
+                        tens.zero_()
+                    else:
+                        continue
+                    count += 1
+                elif magnitude > max_magnitude:
+                    continue
 
 
         self.gradient = list(torch.div(x, 1) for x in aggregated)
