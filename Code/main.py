@@ -42,6 +42,7 @@ def main():
     cuda_id = args.gpu_id
 
     # defaults to fill vars, when unused
+    extent="predict"
     train_lr = 0.1
     defenses = ["none"]
     differential_privacy = False
@@ -174,6 +175,7 @@ def main():
 
     if experiment_set == 9:
         n=1
+        extent="victim_side"
         list_bs = [8]
         trainsize = int(10/local_iterations)
         trainsteps = 100
@@ -231,7 +233,7 @@ def main():
                                list_versions=versions,
                                # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
                                n=n,  # Amount of attacks
-                               extent="predict",  # "victim_side", "predict", "reconstruct"
+                               extent=extent,  # "victim_side", "predict", "reconstruct"
                                trainsize=trainsize,  # Iterations per Trainstep
                                trainsteps=trainsteps,  # Number of Attack&Train cycles
                                train_lr=train_lr,
