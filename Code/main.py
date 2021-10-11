@@ -182,14 +182,17 @@ def main():
         federated = True
         num_users = 100
         # TEMP: defense experiments with training
-        defenses = ["dp"]
-        differential_privacy = True
-        noise_type = "normal"
+        # defenses = ["dp"]
+        # differential_privacy = True
+        # noise_type = "normal"
         # noise_multipliers = [0.01, 0.1, 1]
-        noise_multipliers = [0.01]
+        # noise_multipliers = [0.01]
         # max_norms = [1, 5, 10]
         # max_norms = [1]
         # noise_multipliers = [0.1]
+        defenses = ["compression"]
+        compression = True
+        thresholds = [0.0, 0.2, 0.4, 0.8]
         version = "v2"
         # version = "random"
         # version = "v1"
