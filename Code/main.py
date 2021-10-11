@@ -330,8 +330,8 @@ def main():
 
         # Visualization Set 4
         elif experiment_set == 4:
-            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False,
-                                                            width=4.8)  # , location="lower right"
+            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False)
+                                                            # width=4.8)  # , location="lower right"
             # visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False) #, width=4.8) # , location="lower right"
 
         # Visualization Set 3 & 4
