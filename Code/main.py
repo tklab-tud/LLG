@@ -173,22 +173,28 @@ def main():
         max_norms = [1, 5, 10]
 
     if experiment_set == 9:
+        n=1
         list_bs = [8]
         trainsize = int(10/local_iterations)
         trainsteps = 100
         federated = True
         num_users = 100
-        # defenses = ["dp"]
-        # differential_privacy = True
-        # noise_type = "normal"
+        # TEMP: defense experiments with training
+        defenses = ["dp"]
+        differential_privacy = True
+        noise_type = "normal"
         # noise_multipliers = [0.01, 0.1, 1]
+        noise_multipliers = [0.01]
+        # max_norms = [1, 5, 10]
+        # max_norms = [1]
+        # noise_multipliers = [0.1]
         version = "v2"
         # version = "random"
         # version = "v1"
         # version = v3[dataset]
         # version = "dlg"
-        # dataset = "MNIST"
-        dataset = "CIFAR"
+        dataset = "MNIST"
+        # dataset = "CIFAR"
         # dataset = "CELEB-A-hair"
         # dataset = "SVHN"
         model = "LeNet"       # old LeNet = ConvNet
