@@ -84,7 +84,7 @@ class Graph:
             for label in labels:
                 order.append(self.order(label))
             labels, handles, order = zip(*sorted(zip(labels, handles, order), key=lambda t: t[2]))
-            plt.legend(handles, labels, prop={'size': self.fontsize}, loc=location, bbox_to_anchor=move)
+            plt.legend(handles, labels, prop={'size': self.fontsize}, loc=location, bbox_to_anchor=move) #, ncol=2)
         if skip_x_ticks:
             if useMathText:
                 step = max(1, max_x // 10)
