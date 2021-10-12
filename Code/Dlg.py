@@ -86,6 +86,21 @@ class Dlg:
         #Might also take the average instead of the sum
         #self.gradient = list(torch.div(x, para["local_iterations"]) for x in aggregated)
 
+        # print(type(self.setting.model.parameters()))
+        # print(len(self.setting.model.parameters()))
+        grad = self.seperated_gradients_def[-1]
+        for i_g, g in enumerate(self.setting.model.parameters()):
+            grad[i_g] = torch.add(grad[i_g], g)
+        state_dict = self.setting.model.state_dict()
+        # print(len(grad))
+        # print(state_dict.keys())
+        for i, (key, tens) in enumerate(state_dict.items()):
+            # print(len(grad[i]))
+            # print(len(state_dict[key]))
+            print(grad[i][0])
+            print(state_dict[key][0])
+            state_dict[key] = grad[i]
+        self.setting.model.load_state_dict(state_dict)
 
     def reconstruct(self):
         # abbreviations
