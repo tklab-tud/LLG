@@ -2,6 +2,7 @@ import copy
 import torch
 
 import aDPtorch.privacy_engine_xl as adp
+import defenses as defs
 
 
 def test(setting):
@@ -126,24 +127,32 @@ def update_weights(model, setting, victim: bool=False):
     #     )
     #     privacy_engine.attach(optimizer)
 
+    seperated_gradients = []
+
     for i in range(local_iterations):
         batch_loss = []
+        # TODO: HFL data distribution?
+        data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"],
+                                            setting.parameter["batch_size"], random=(not victim))
+
+        data, target = data.to(device), target.to(device)
+
+        output = model(data)
+
         def closure():
             optimizer.zero_grad()
             # FIXME: should we zero the gradients? where is the difference?
             # model.zero_grad()
-
-            # TODO: HFL data distribution?
-            data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"],
-                                                setting.parameter["batch_size"], random=(not victim))
-
-            data, target = data.to(device), target.to(device)
-
             output = model(data)
 
             loss = criterion(output, target)
             loss.backward()
             return loss
+
+        loss = criterion(output, target)
+
+        grad = torch.autograd.grad(loss, model.parameters(), retain_graph=True)
+        seperated_gradients.append(list((_.detach().clone() for _ in grad)))
 
         loss = optimizer.step(closure)
         # FIXME: loss does not get tracked constantely
@@ -151,6 +160,20 @@ def update_weights(model, setting, victim: bool=False):
         # logger.add_scalar('loss', loss.item())
         batch_loss.append(loss.item())
     epoch_loss.append(sum(batch_loss)/len(batch_loss))
+
+    #Copy the structure of a grad, but make it zeroes
+    aggregated = list(x.zero_() for x in grad)
+
+    #iterate over the gradients for each local iteration
+    for grad in seperated_gradients:
+        #there iterate through the gradients and add to the aggregator
+        for i_g,g in enumerate(grad):
+            aggregated[i_g] = torch.add(aggregated[i_g], g)
+
+    defs.apply(aggregated, setting)
+
+    if parameter["differential_privacy"] or parameter["compression"]:
+        defs.inject(seperated_gradients, aggregated, model)
 
     return model.state_dict(), sum(epoch_loss) / len(epoch_loss)
 
