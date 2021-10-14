@@ -503,7 +503,11 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
             if run_name == "meta":
                 meta = run["meta"].copy()
                 continue
+            run_name = run_name.replace("victim_side", "victimside")
             current_meta = run_name.split("_")
+            run_name = run_name.replace("victimside", "victim_side")
+            if current_meta[4] == "victimside":
+                current_meta[4] = "victim_side"
             if (balanced is None or current_meta[2] == str(balanced)) and (
                     dataset is None or current_meta[0] == dataset) and (
                     version is None or version == current_meta[3]) and (
