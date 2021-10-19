@@ -71,6 +71,7 @@ def main():
     trainsize = 0
     trainsteps = 0
     local_iterations = 1
+    id = "set_"+str(experiment_set)
 
     v3 = {"MNIST": "v3-zero", "CIFAR": "v3-one", "CELEB-A-male": "v3-zero", "CELEB-A-hair": "v3-zero",
           "SVHN": "v3-random"}
@@ -114,6 +115,7 @@ def main():
         # TODO: this will take forever, only run when absolutely necessary
         # FIXME: don't run this for set 3&4 (trained) only for 1&2 (untrained)
         # version = "dlg"
+        idx = dataset+"_"+version
 
     # Set 3 and 4 generation
     if experiment_set in [3, 4]:
@@ -138,6 +140,7 @@ def main():
 
         version = "dlg"
         # version ="v2"
+        idx = model+"_"+version
 
     # TODO: You can use the old LeNet run form set 5 as a baseline for sets 5, 6, and 7
 
@@ -151,12 +154,14 @@ def main():
         # noise_type = "exponential"
 
         noise_multipliers = [0.01, 0.1, 1]
+        idx = noise_multipliers[0]
 
     # Set 7 generation
     if experiment_set == 7:
         defenses = ["compression"]
         compression = True
         thresholds = [0.2, 0.4, 0.8]
+        idx = thresholds[0]
 
     # Set 8 generation
     # differential privacy = clipping + noise
@@ -171,7 +176,9 @@ def main():
         # variance = 1
         noise_multipliers = [0.1]
         # epsilon | beta
-        max_norms = [1, 5, 10]
+        # max_norms = [1, 5, 10]
+        max_norms = [10]
+        idx = max_norms[0]
 
     if experiment_set == 9:
         n=1
@@ -181,18 +188,27 @@ def main():
         trainsteps = 100
         federated = True
         num_users = 100
+        id = "base"
+        idx = "FedAvg" if local_training else "FedSGD"
         # TEMP: defense experiments with training
         # defenses = ["dp"]
         # differential_privacy = True
         # noise_type = "normal"
         # noise_multipliers = [0.01, 0.1, 1]
         # noise_multipliers = [0.01]
+        # id = "noise"
+        # idx = noise_multipliers[0]
         # max_norms = [1, 5, 10]
         # max_norms = [1]
         # noise_multipliers = [0.1]
+        # id = "dp"
+        # idx = max_norms[0]
         defenses = ["compression"]
         compression = True
-        thresholds = [0.0, 0.2, 0.4, 0.8]
+        # thresholds = [0.2, 0.4, 0.8]
+        thresholds = [0.2]
+        id = "comp"
+        idx = thresholds[0]
         version = "v2"
         # version = "random"
         # version = "v1"
@@ -242,7 +258,7 @@ def main():
                                train_lr=train_lr,
                                federated=federated,
                                num_users=num_users,
-                               path=None,
+                               path="results/{}/{}/{}/{}/".format("FedAvg" if local_training else "FedSGD", id, idx, str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
                                model=model,
                                store_individual_gradients=False,
                                # Will store the ~500 gradients connected to one output node and not just their sum
