@@ -59,12 +59,14 @@ def apply(grad, setting):
     #     for tens in grad:
     #         tens = self.m(tens)
 
-def inject(grad, grad_def, model):
+def inject(grads, grad_def, model):
     # print(type(setting.model.parameters()))
     # print(len(setting.model.parameters()))
     params = []
     for i_g, p in enumerate(model.parameters()):
-        params.append(torch.sub(p, grad[i_g]))
+        params.append(p)
+        for grad in grads:
+            params[i_g] = torch.sub(params[i_g], grad[i_g])
         params[i_g] = torch.add(params[i_g], grad_def[i_g])
     state_dict = model.state_dict()
     # print(len(grad))
