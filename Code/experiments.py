@@ -116,9 +116,61 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
                 print("\nTrainstep ", trainstep)
                 setting.train(trainsize)
 
+    # build file name using parameters
+    param_str = ""
+    beautify_keys = {
+        "train_steps": "global",
+        "train_size": "semi",           # unmonitored global
+        "local_iterations": "local",
+        "v1": "LLG",
+        "v2": "LLG+",
+        "v3": "LLG*",
+        "random": "RND",
+        "dlg": "DLG",
+    }
+
+    iterations = {
+        "train_steps": trainsteps,
+        "train_size": trainsize,
+        "local_iterations": setting.parameter["local_iterations"],
+    }
+
+    key_params = ["dataset", "model", "balanced", "version", "train_steps", "local_iterations", "num_users", "defenses"]
+    for key in key_params:
+        if key == "balanced":
+            for balanced in list_balanced:
+                param_str += "_IID" if balanced else "_nonIID"
+        elif key == "version":
+            if extent != "victim_side":
+                for version in list_versions:
+                    param_str += "_" + beautify_keys[version]
+        elif key == "defenses":
+            for defense in defenses:
+                if defense == "dp":
+                    noise_mult = setting.parameter["noise_multiplier"]
+                    max_norm = setting.parameter["max_norm"]
+                    if max_norm == None:
+                        param_str += "_noise[" + str(noise_mult) + "]"
+                    else:
+                        param_str += "_dp[" + str(noise_mult) + ", " + str(max_norm) + "]"
+                elif defense == "compression":
+                    param_str += "_comp[" + str(setting.parameter["threshold"]) + "]"
+        elif key in ["train_steps", "train_size", "local_iterations"]:
+            if key == "local_iterations" and not setting.parameter["local_training"]:
+                continue
+            if iterations[key] >= 1:
+                param_str += "_" + beautify_keys[key] + "[" + str(iterations[key]*iterations["train_size"]) + "]"
+        elif key == "num_users":
+            if setting.parameter["federated"]:
+                param_str += "_users[" + str(setting.parameter[key]) + "]"
+        else:
+            param_str += "_" + setting.parameter[key]
+
+    file_name = "dump" + param_str + ".json"
+
     # write the stored results
-    print("dumping results to: " + setting.parameter["result_path"] + "dump.json")
-    dump_to_json(run, setting.parameter["result_path"], "dump.json")
+    print("dumping results to: " + setting.parameter["result_path"] + file_name)
+    dump_to_json(run, setting.parameter["result_path"], file_name)
     return run
 
 
