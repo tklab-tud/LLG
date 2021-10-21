@@ -1,5 +1,6 @@
 import math
 from collections import OrderedDict
+import os, json
 
 from Setting import *
 from Graph import *
@@ -688,7 +689,30 @@ def merge_runs(run_meta, run):
 
     return run_meta
 
-def load_jsons():
+def load_jsons(path_to_json, num_files=1):
+    if path_to_json == None:
+        return load_jsons_old(num_files)
+    json_files = []
+    for folder in os.listdir(path_to_json):
+        for file_name in os.listdir(path_to_json+"/"+folder):
+            if ".json" in file_name:
+                file_path = path_to_json+"/"+folder+"/"+file_name
+                json_files.append(file_path)
+    runs = []
+    path = None
+    meta = None
+    for json_file in json_files:
+        run, path_tmp = open_json(json_file)
+        _, meta_tmp = get_meta(run)
+        if meta == None:
+            meta = meta_tmp
+        if path == None:
+            path = path_tmp
+        compare_meta(meta, meta_tmp)
+        runs = append_runs(runs, run)
+    return runs, path
+
+def load_jsons_old(num_files):
     run, path = load_json()
     _, meta = get_meta(run)
 
