@@ -708,6 +708,9 @@ def load_json():
     filename = askopenfilename(initialdir="./results", defaultextension='.json',
                                filetypes=[('Json', '*.json')])
 
+    return open_json(filename)
+
+def open_json(filename):
     with open(filename) as f:
         dump = OrderedDict(json.load(f))
 
