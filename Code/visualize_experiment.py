@@ -688,6 +688,21 @@ def merge_runs(run_meta, run):
 
     return run_meta
 
+def load_jsons():
+    run, path = load_json()
+    _, meta = get_meta(run)
+
+    for i in range(num_files - 1):
+        run2, path2 = load_json()
+        run2, meta2 = get_meta(run2, cut_meta=True)
+
+        compare_meta(meta, meta2)
+
+        # run = merge_runs(run, run2)
+        # for models
+        run = append_runs(run, run2)
+    return run, path
+
 def load_json():
     Tk().withdraw()
     filename = askopenfilename(initialdir="./results", defaultextension='.json',
