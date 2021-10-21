@@ -292,18 +292,7 @@ def main():
 
         ########### Load an existing json an create graphs from it ##########
 
-        run, path = load_json()
-        _, meta = get_meta(run)
-
-        for i in range(num_files - 1):
-            run2, path2 = load_json()
-            run2, meta2 = get_meta(run2, cut_meta=True)
-
-            compare_meta(meta, meta2)
-
-            # run = merge_runs(run, run2)
-            # for models
-            run = append_runs(run, run2)
+        run, path = load_jsons(args.dir, args.plot)
 
         # magnitude_check plots a scatterplot of the gradients of a run.
         # gradient_type: "individual_gradients", "original_gradients", "adjusted_gradients"
