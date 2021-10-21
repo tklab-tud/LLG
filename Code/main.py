@@ -15,6 +15,8 @@ def args_parser():
                             help='number of files to be ploted')
     parser.add_argument('-j', '--job', type=str, default='experiment',
                             help='job to execute. either "experiment" or "visualize".')
+    parser.add_argument('-d', '--dir', type=str, default=None,
+                            help='directory to plot from.')
 
     # optional arguments
     parser.add_argument('-g', '--gpu_id', type=int, default=0,
@@ -23,6 +25,8 @@ def args_parser():
     args = parser.parse_args()
 
     if args.plot != None:
+        args.job = "visualize"
+    if args.dir != None:
         args.job = "visualize"
 
     return args
