@@ -718,7 +718,6 @@ def open_json(filename):
 
     return dump, path + "/"
 
-
 def probability_distribution(v, n):
     distribution = np.zeros(n)
     for x in v:
