@@ -588,6 +588,8 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                    model_accs.update({x_tick_name: [acc]})
 
     data2 = [["Model", np.average(val) , key] for key, val in model_accs.items()]
+    print("list: ", model_accs[list(model_accs)[-1]])
+    print("average: ", np.average(model_accs[list(model_accs)[-1]]))
 
     if len(data2) >= 1000:
         data2 = [val for i, val in enumerate(data2) if i % 10 == 0]
