@@ -2,7 +2,6 @@ import copy
 import torch
 
 import aDPtorch.privacy_engine_xl as adp
-import defenses as defs
 
 
 def test(setting):
@@ -97,6 +96,7 @@ def train(setting, train_size, batch=None):
 def update_weights(model, setting, victim: bool=False):
     device = setting.device
     parameter = setting.parameter
+    defs = setting.defenses
     local_iterations = setting.parameter["local_iterations"]
     local_training = setting.parameter["local_training"]
     if victim or not local_training:
@@ -170,7 +170,7 @@ def update_weights(model, setting, victim: bool=False):
         for i_g,g in enumerate(grad):
             aggregated[i_g] = torch.add(aggregated[i_g], g)
 
-    defs.apply(aggregated, setting)
+    defs.apply(aggregated)
 
     if parameter["differential_privacy"] or parameter["compression"]:
         defs.inject(seperated_gradients, aggregated, model)

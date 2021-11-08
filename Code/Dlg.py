@@ -3,12 +3,11 @@ import torch
 import torch.nn as nn
 from Result import Result
 
-import defenses as defs
-
 
 class Dlg:
     def __init__(self, setting):
         self.setting = setting
+        self.defenses = setting.defenses
         self.criterion = nn.CrossEntropyLoss().to(setting.device)
         self.gradient = None
         self.dummy_data = None
@@ -49,14 +48,14 @@ class Dlg:
             for i_g,g in enumerate(grad):
                 aggregated[i_g] = torch.add(aggregated[i_g], g)
 
-        defs.apply(aggregated, self.setting)
+        self.defenses.apply(aggregated)
 
         self.gradient = list(torch.div(x, 1) for x in aggregated)
         #Might also take the average instead of the sum
         #self.gradient = list(torch.div(x, para["local_iterations"]) for x in aggregated)
 
         if para["differential_privacy"] or para["compression"]:
-            defs.inject(self.seperated_gradients, aggregated, self.setting.model)
+            self.defenses.inject(self.seperated_gradients, aggregated, self.setting.model)
 
     def reconstruct(self):
         # abbreviations

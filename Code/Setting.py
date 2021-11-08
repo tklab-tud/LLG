@@ -14,6 +14,8 @@ from model import *
 from train import train, test, train_federated
 import copy
 
+import defenses as defs
+
 
 class Setting:
     def __init__(self, dataloader, **kwargs):
@@ -28,6 +30,7 @@ class Setting:
         self.dlg = None
         self.device = None
         self.model_backup = None
+        self.defenses = None
         self.check_cuda()
 
         self.configure(**kwargs)
@@ -45,6 +48,7 @@ class Setting:
         self.predictor = Predictor(self)
         self.dlg = Dlg(self)
         self.result = Result(self)
+        self.defenses = defs.Defenses(self)
         self.parameter["orig_data"] = [[]]
         self.parameter["orig_label"] = [[]]
 
