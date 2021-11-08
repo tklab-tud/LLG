@@ -52,18 +52,22 @@ class Defenses:
             count = 0
             if self.comp_cache[id] == None:
                 self.comp_cache[id] = list(x.detach().clone().zero_() for x in grad)
-            for magnitude, tens in zip(magnitudes, grad):
+            for i, (magnitude, tens) in enumerate(zip(magnitudes, grad)):
                 if magnitude < max_magnitude:
-                    self.cache_gradient(tens, id)
+                    self.cache_gradient(tens, id, i, max_magnitude)
                 elif magnitude == max_magnitude and count <= max_mag_count:
-                    self.cache_gradient(tens, id)
+                    self.cache_gradient(tens, id, i, max_magnitude)
                     count += 1
                 elif magnitude > max_magnitude:
                     continue
 
-    def cache_gradient(self, tens, id):
-        self.comp_cache[id] = torch.add(self.comp_cache[id][i], tens)
-        tens.zero_()
+    def cache_gradient(self, tens, id, i, thresh):
+        self.comp_cache[id][i] = torch.add(self.comp_cache[id][i], tens)
+        if torch.abs(torch.sum(self.comp_cache[id][i])) >= thresh:
+            tens = self.comp_cache[id][i].detach().clone()
+            self.comp_cache[id][i] = self.comp_cache[id][i].zero_()
+        else:
+            tens = tens.zero_()
 
     def inject(self, grads, grad_def, model):
         params = []
