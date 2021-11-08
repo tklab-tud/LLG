@@ -16,11 +16,13 @@ class Defenses:
 
     def __init__(self, setting):
         self.setting = setting
+        self.device = setting.device
         self.parameter = setting.parameter
 
     def update_setting(self, setting):
         # Update setting
         self.setting = setting
+        self.device = setting.device
         self.parameter = setting.parameter
 
 def apply(grad, setting):
