@@ -93,7 +93,7 @@ def train(setting, train_size, batch=None):
         test(setting)
 
 
-def update_weights(model, setting, victim: bool=False):
+def update_weights(model, setting, id, victim: bool=False):
     device = setting.device
     parameter = setting.parameter
     defs = setting.defenses
@@ -170,7 +170,7 @@ def update_weights(model, setting, victim: bool=False):
         for i_g,g in enumerate(grad):
             aggregated[i_g] = torch.add(aggregated[i_g], g)
 
-    defs.apply(aggregated)
+    defs.apply(aggregated, id)
 
     if parameter["differential_privacy"] or parameter["compression"]:
         defs.inject(seperated_gradients, aggregated, model)
@@ -215,7 +215,7 @@ def train_federated(setting):
         local_losses = []
 
         for i in range(num_users-1):
-            w, loss = update_weights(copy.deepcopy(global_model), setting)
+            w, loss = update_weights(copy.deepcopy(global_model), setting, id=i)
             local_weights.append(copy.deepcopy(w))
             local_losses.append(copy.deepcopy(loss))
 

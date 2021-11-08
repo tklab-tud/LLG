@@ -48,7 +48,7 @@ class Dlg:
             for i_g,g in enumerate(grad):
                 aggregated[i_g] = torch.add(aggregated[i_g], g)
 
-        self.defenses.apply(aggregated)
+        self.defenses.apply(aggregated, para["num_users"]-1)
 
         self.gradient = list(torch.div(x, 1) for x in aggregated)
         #Might also take the average instead of the sum

@@ -20,13 +20,15 @@ class Defenses:
         self.device = setting.device
         self.parameter = setting.parameter
 
+        self.comp_cache = [None for i in range(self.parameter["num_users"])]
+
     def update_setting(self, setting):
         # Update setting
         self.setting = setting
         self.device = setting.device
         self.parameter = setting.parameter
 
-    def apply(self, grad):
+    def apply(self, grad, id):
         # Noisy Gradients
         if self.parameter["differential_privacy"]:
             clipping = True if self.parameter["max_norm"] != None else False
@@ -48,17 +50,23 @@ class Defenses:
             max_mag_count = threshold - first_idx
 
             count = 0
+            if self.comp_cache[id] == None:
+                self.comp_cache[id] = list(x.detach().clone().zero_() for x in grad)
             for magnitude, tens in zip(magnitudes, grad):
                 if magnitude < max_magnitude:
-                    tens.zero_()
+                    self.cache_gradient(tens, id)
                 elif magnitude == max_magnitude:
                     if count <= max_mag_count:
-                        tens.zero_()
+                        self.cache_gradient(tens, id)
                     else:
                         continue
                     count += 1
                 elif magnitude > max_magnitude:
                     continue
+
+    def cache_gradient(self, tens, id):
+        self.comp_cache[id] = torch.add(self.comp_cache[id][i], tens)
+        tens.zero_()
 
     def inject(self, grads, grad_def, model):
         params = []
