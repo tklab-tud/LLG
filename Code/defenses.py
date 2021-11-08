@@ -57,12 +57,6 @@ def apply(grad, setting):
             elif magnitude > max_magnitude:
                 continue
 
-    # # Dropout
-    # # https://pytorch.org/docs/stable/generated/torch.nn.Dropout.html
-    # if setting.parameter["dropout"]:
-    #     for tens in grad:
-    #         tens = self.m(tens)
-
 def inject(grads, grad_def, model):
     params = []
     for i_g, p in enumerate(model.parameters()):
