@@ -12,20 +12,16 @@ import aDPtorch.privacy_engine_xl as adp
 #    b) just use inject method with [] (empty list for grad param)
 
 
-# class Defenses:
+class Defenses:
 
-#     def __init__(self, setting):
-#         self.setting = setting
+    def __init__(self, setting):
+        self.setting = setting
+        self.parameter = setting.parameter
 
-#         # self.m = nn.Dropout(p=self.setting.parameter["dropout_prob"])
-
-#     def update_setting(self, setting):
-#         # Update setting
-#         self.setting = setting
-
-#         # # Update dropout probability
-#         # if self.setting.parameter["dropout_prob"] != self.setting.parameter["dropout_prob"]:
-#         #     self.m = nn.Dropout(p=self.setting.parameter["dropout_prob"])
+    def update_setting(self, setting):
+        # Update setting
+        self.setting = setting
+        self.parameter = setting.parameter
 
 def apply(grad, setting):
     # Noisy Gradients
