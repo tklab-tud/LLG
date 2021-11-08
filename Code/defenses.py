@@ -55,11 +55,8 @@ class Defenses:
             for magnitude, tens in zip(magnitudes, grad):
                 if magnitude < max_magnitude:
                     self.cache_gradient(tens, id)
-                elif magnitude == max_magnitude:
-                    if count <= max_mag_count:
-                        self.cache_gradient(tens, id)
-                    else:
-                        continue
+                elif magnitude == max_magnitude and count <= max_mag_count:
+                    self.cache_gradient(tens, id)
                     count += 1
                 elif magnitude > max_magnitude:
                     continue
