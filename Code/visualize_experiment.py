@@ -692,6 +692,16 @@ def merge_runs(run_meta, run):
 def load_jsons(path_to_json, num_files=1):
     if path_to_json == None:
         return load_jsons_old(num_files)
+    if "," in path_to_json:
+        paths_to_jsons = path_to_json.split(",")
+        json_files = []
+        for path_to_json in paths_to_jsons:
+            json_files.extend(fetch_jsons(path_to_json))
+    else:
+        json_files = fetch_jsons(path_to_json)
+    return parse_jsons(json_files, local_training)
+
+def fetch_jsons(path_to_json):
     if ".json" in path_to_json:
         json_files = [path_to_json]
     else:
@@ -701,7 +711,7 @@ def load_jsons(path_to_json, num_files=1):
                 if ".json" in file_name:
                     file_path = path_to_json+"/"+folder+"/"+file_name
                     json_files.append(file_path)
-    return parse_jsons(json_files, local_training)
+    return json_files
 
 def parse_jsons(json_files, local_training=None):
     runs = []
