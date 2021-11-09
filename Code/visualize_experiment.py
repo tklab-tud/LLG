@@ -707,6 +707,11 @@ def fetch_jsons(path_to_json):
     else:
         json_files = []
         for folder in os.listdir(path_to_json):
+            if ".json" in folder:
+                json_files = [path_to_json+"/"+folder]
+                continue
+            if not os.path.isdir(path_to_json+"/"+folder):
+                continue
             for file_name in os.listdir(path_to_json+"/"+folder):
                 if ".json" in file_name:
                     file_path = path_to_json+"/"+folder+"/"+file_name
