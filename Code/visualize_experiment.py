@@ -701,6 +701,9 @@ def load_jsons(path_to_json, num_files=1):
                 if ".json" in file_name:
                     file_path = path_to_json+"/"+folder+"/"+file_name
                     json_files.append(file_path)
+    return parse_jsons(json_files, local_training)
+
+def parse_jsons(json_files, local_training=None):
     runs = []
     path = None
     meta = None
