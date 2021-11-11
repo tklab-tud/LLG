@@ -378,7 +378,7 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
 
                 graph.add_datapoint(merged_label, run[run_name]["prediction_results"]["accuracy"]*100, current_meta[1])
 
-    graph.plot_line(location=location)
+    graph.plot_line(location=location, legend=False)
 
     # graph.show()
 
@@ -596,7 +596,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
         data2 = [val for i, val in enumerate(data2) if i % 10 == 0]
 
     graph.data.append(["Model", 0, 0])
-    graph.plot_line(location=location, skip_x_ticks=True, useMathText=True)
+    graph.plot_line(location=location, skip_x_ticks=True, useMathText=True, legend=False)
     graph.data = data2
     graph.plot_line(True, legend=False, skip_x_ticks=True, location=location, useMathText=True)
 
