@@ -273,7 +273,7 @@ def pearson_check(run, path, balanced=None, dataset=None, version=None, list_bs=
 def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, dataset=None, version=None, labels="", width=6.4, location="best", y_range=[0,105], fontsize=16):
     run = run.copy()
 
-    graph = Graph("Batch size", "Attack success rate (%)", y_range=y_range, fontsize=fontsize, width=width)
+    graph = Graph("Batch size (log2)", "Attack success rate (%)", y_range=y_range, fontsize=fontsize, width=width)
 
     if not isinstance(run, list):
         runs = [run]
