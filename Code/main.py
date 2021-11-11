@@ -315,8 +315,8 @@ def main():
         # visualize_class_prediction_accuracy_vs_training(run, path, dataset="CELEB-A-male")
         # visualize_class_prediction_accuracy_vs_training(run, path, dataset="SVHN")
         # for i in range(num_files):
-        #     visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True, model_id=i)
-        #     visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False, model_id=i)
+        #     visualize_class_prediction_accuracy_vs_training(run, path, balanced=True, model_id=i)
+        #     visualize_class_prediction_accuracy_vs_training(run, path, balanced=False, model_id=i)
 
         # Visualization Set 0
         if experiment_set == 0:
@@ -327,74 +327,74 @@ def main():
 
         # Visualization Set 1
         elif experiment_set == 1:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, width=4.8)
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=True, width=4.8)
 
         # Visualization Set 2
         elif experiment_set == 2:
             # default set 2: attack versions
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8, labels=["version"])
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=False, width=4.8, labels=["version"])
             # local iteration comparison
-            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels=["local_training"])
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=False, labels=["local_training"])
             # local iterations & attack versions
-            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8, labels=["version", "local_training"])
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=False, width=4.8, labels=["version", "local_training"])
 
         # Visualization Set 1 & 2
         elif experiment_set == 12:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, width=4.8)
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, width=4.8)
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=True, width=4.8)
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=False, width=4.8)
             # location="lower right"
 
         # Visualization Set 3
         elif experiment_set == 3:
-            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True, width=4.8)
+            visualize_class_prediction_accuracy_vs_training(run, path, balanced=True, width=4.8)
 
         # Visualization Set 4
         elif experiment_set == 4:
-            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False)
+            visualize_class_prediction_accuracy_vs_training(run, path, balanced=False)
                                                             # width=4.8)  # , location="lower right"
-            # visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False) #, width=4.8) # , location="lower right"
+            # visualize_class_prediction_accuracy_vs_training(run, path, balanced=False) #, width=4.8) # , location="lower right"
 
         # Visualization Set 3 & 4
         elif experiment_set == 34:
-            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=True, width=4.8)
-            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False, width=4.8)
+            visualize_class_prediction_accuracy_vs_training(run, path, balanced=True, width=4.8)
+            visualize_class_prediction_accuracy_vs_training(run, path, balanced=False, width=4.8)
 
         # Visualization Set 5
         elif experiment_set == 5:
-            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="model")
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False,
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=True, labels="model")
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=False,
                                                              labels=["version", "model"])
 
         # Visualization Set 6
         elif experiment_set == 6:
-            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_multiplier")
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False,
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=True, labels="noise_multiplier")
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=False,
                                                              labels="noise_multiplier")
-            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_type")
-            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_type")
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=True, labels="noise_type")
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=False, labels="noise_type")
 
         # Visualization Set 7
         elif experiment_set == 7:
-            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="threshold")
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False,
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=True, labels="threshold")
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=False,
                                                              labels="threshold")
 
         # Visualization Set 8
         elif experiment_set == 8:
-            visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False,
+            visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=False,
                                                              labels="max_norm")
-            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=True, labels="noise_type")
-            # visualize_class_prediction_accuracy_vs_batchsize(run, path, dataset=dataset, balanced=False, labels="noise_type")
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=True, labels="noise_type")
+            # visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=False, labels="noise_type")
 
         # Visualization Set 9
         elif experiment_set == 9:
-            visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False,
+            visualize_class_prediction_accuracy_vs_training(run, path, balanced=False,
                                                             width=4.8)
-            # visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False,
+            # visualize_class_prediction_accuracy_vs_training(run, path, balanced=False,
             #                                                 labels=["num_users"], width=4.8)
-            # visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False,
+            # visualize_class_prediction_accuracy_vs_training(run, path, balanced=False,
             #                                                 labels=["local_iterations"], width=4.8)
-            # visualize_class_prediction_accuracy_vs_training(run, path, dataset=dataset, balanced=False,
+            # visualize_class_prediction_accuracy_vs_training(run, path, balanced=False,
             #                                                 labels=["noise_multiplier"], width=4.8)
 
         elif experiment_set == 10:
