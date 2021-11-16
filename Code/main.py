@@ -203,9 +203,8 @@ def main():
         # id = "noise"
         # idx = noise_multipliers[0]
         # max_norms = [5, 25, 50]
-        max_norms = [5]
-        # noise_multipliers = [0.01, 0.1, 1]
-        noise_multipliers = [0.01]
+        max_norms = [10]
+        noise_multipliers = [0.1]
         id = "dp"
         idx = max_norms[0]
         # defenses = ["compression"]
