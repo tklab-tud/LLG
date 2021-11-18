@@ -46,7 +46,6 @@ def train(setting, train_size, batch=None):
 
     model.train()
 
-
     dataloader = setting.dataloader
 
     optimizer = torch.optim.SGD(model.parameters(), lr=parameter["train_lr"])
