@@ -89,7 +89,6 @@ def update_weights(model, setting, id, victim: bool=False):
 
     # Set mode to train model
     model.train()
-    epoch_loss = []
 
     dataloader = setting.dataloader
 
@@ -101,7 +100,6 @@ def update_weights(model, setting, id, victim: bool=False):
     seperated_gradients = []
 
     for i in range(local_iterations):
-        batch_loss = []
         # TODO: HFL data distribution?
         data, target = dataloader.get_batch(setting.parameter["dataset"], setting.parameter["targets"],
                                             setting.parameter["batch_size"], random=(not victim))
@@ -126,11 +124,6 @@ def update_weights(model, setting, id, victim: bool=False):
         seperated_gradients.append(list((_.detach().clone() for _ in grad)))
 
         loss = optimizer.step(closure)
-        # FIXME: loss does not get tracked constantely
-        # I assume we just take the last loss instead of average like (H)FL code
-        # logger.add_scalar('loss', loss.item())
-        batch_loss.append(loss.item())
-    epoch_loss.append(sum(batch_loss)/len(batch_loss))
 
     #Copy the structure of a grad, but make it zeroes
     aggregated = list(x.zero_() for x in grad)
@@ -146,7 +139,7 @@ def update_weights(model, setting, id, victim: bool=False):
     if parameter["differential_privacy"] or parameter["compression"]:
         defs.inject(seperated_gradients, aggregated, model)
 
-    return model.state_dict(), sum(epoch_loss) / len(epoch_loss)
+    return model.state_dict()
 
 
 def average_weights(w, num_users):
@@ -183,12 +176,10 @@ def train_federated(setting):
 
     for i in range(global_iterations):
         local_weights = []
-        local_losses = []
 
         for i in range(num_users-1):
-            w, loss = update_weights(copy.deepcopy(global_model), setting, id=i)
+            w = update_weights(copy.deepcopy(global_model), setting, id=i)
             local_weights.append(copy.deepcopy(w))
-            local_losses.append(copy.deepcopy(loss))
 
         victim_weights = victim_model.state_dict()
         local_weights.append(copy.deepcopy(victim_weights))
