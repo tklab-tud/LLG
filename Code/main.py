@@ -112,8 +112,8 @@ def main():
         # dataset = "SVHN"
         # versions in order of importance
         # TODO: run all VERSIONS separately per DATASET ("in parallel")
-        # version = "v2"
-        version = "random"
+        version = "v2"
+        # version = "random"
         # version = "v1"
         # version = v3[dataset]
         # TODO: this will take forever, only run when absolutely necessary
