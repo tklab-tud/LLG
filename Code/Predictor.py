@@ -52,7 +52,12 @@ class Predictor:
             orig_label += self.setting.parameter["orig_label"][it].tolist()
 
         if not self.setting.parameter["batch_size"] * self.setting.parameter["local_iterations"] == len(self.prediction):
-            exit("Prediction did not produce the correct amount of class labels.")
+            print("WARNING: Prediction did not produce the correct amount of class labels.")
+            print("predicted: {}; expected: {} (batch_size: {}, local_iterations: {})".format(
+                len(self.prediction),
+                self.setting.parameter["batch_size"]*self.setting.parameter["local_iterations"],
+                self.setting.parameter["batch_size"],
+                self.setting.parameter["local_iterations"]))
 
 
         self.correct = 0
