@@ -193,10 +193,14 @@ class Predictor:
         self.gradients_for_prediction -= self.offset
 
 
+        h1_extraction.sort(key=lambda y: y[1])
+
         # compensate h1 extraction
         for (i_c, _) in h1_extraction:
             self.prediction.append(i_c)
             self.gradients_for_prediction[i_c] = self.gradients_for_prediction[i_c].add(-self.impact)
+            if len(self.prediction) >= parameter["batch_size"]*parameter["local_iterations"]:
+                break
 
         # predict the rest
         for _ in range(parameter["batch_size"]*parameter["local_iterations"] - len(self.prediction)):
