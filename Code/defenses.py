@@ -3,15 +3,6 @@ import torch.nn as nn
 
 import aDPtorch.privacy_engine_xl as adp
 
-# TODO: fix gradient compression
-# gradients below threshold are accumulated until they reach said threshold
-# x 1. create a class for defenses
-# x 2. add cache for low_gradients
-# x    - cache per user???
-#   3. find way to reinject low_gradients into model
-#      a) separate from or added to aggregated_gradients from FedAvg?
-#      b) just use inject method with [] (empty list for grad param)
-
 
 class Defenses:
 
