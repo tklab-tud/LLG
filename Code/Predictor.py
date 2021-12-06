@@ -46,7 +46,7 @@ class Predictor:
 
 
     def update_accuracy(self):
-         # analyse prediction
+        # analyse prediction
         orig_label = []
         for it in range(self.setting.parameter["local_iterations"]):
             orig_label += self.setting.parameter["orig_label"][it].tolist()
