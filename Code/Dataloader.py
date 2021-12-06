@@ -38,7 +38,7 @@ class Dataloader():
             self.train_dataset.targets = self.train_dataset.identity
         elif dataset == 'CELEB-A-male':
             self.train_dataset = datasets.CelebA('./datasets', 'all', 'attr', download=True, transform=tt)
-            #filtering male from attributes and set it as target
+            # filtering male from attributes and set it as target
             length = len(self.train_dataset.attr)
             self.train_dataset.targets = torch.gather(self.train_dataset.attr, 1, torch.Tensor(length*[20]).long().view(-1, 1))
         elif dataset == 'CELEB-A-hair':
