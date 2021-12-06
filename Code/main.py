@@ -114,8 +114,6 @@ def main():
         # version = "random"
         # version = "v1"
         # version = v3[dataset]
-        # TODO: this will take forever, only run when absolutely necessary
-        # FIXME: don't run this for set 3&4 (trained) only for 1&2 (untrained)
         # version = "dlg"
         idx = dataset+"_"+version
 
