@@ -20,10 +20,6 @@ class Predictor:
         # clear prediction
         self.prediction = []
 
-        # run victim side
-        # self.setting.dlg.victim_side()
-
-
         # Run prediction strategie
         if parameter["version"] == "random":
             self.random_prediction()
