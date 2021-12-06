@@ -126,10 +126,6 @@ def main():
         list_bs = [8]
         trainsize = 100
         trainsteps = 100
-        # TODO: ask Aidmar about the LEARNING RATE
-        # we use 0.1 as the default, but we also ran some experiments with 0.01
-        # I don't remember which results we ended up using for the paper.
-        # train_lr = 0.01
 
     # with exception of set 5 all sets use the ConvNet model (old LeNet)
     model = "LeNet"
