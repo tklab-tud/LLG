@@ -86,6 +86,8 @@ class Predictor:
 
         print("Correct: {}, False: {}, Acc: {}".format(self.correct, self.false, self.acc))
 
+
+    # iDLG
     def simplified_prediction(self):
         # The algorithm from the paper splits the batch and evaluates the samples individually
         # It is mathematically proven to work 100%.
