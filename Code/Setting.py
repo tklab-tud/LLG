@@ -153,7 +153,8 @@ class Setting:
             "differential_privacy": False,
             "alphas": [],
             "noise_multiplier": 1.0,
-            "max_norm": None, # clip
+            # clip
+            "max_norm": None,
             "noise_type": "gauss",
 
             # Defenses
