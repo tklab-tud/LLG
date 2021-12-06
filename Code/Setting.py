@@ -19,7 +19,6 @@ import defenses as defs
 
 class Setting:
     def __init__(self, dataloader, **kwargs):
-
         # Parameter
         self.parameter = {}
         self.restore_default_parameter()
@@ -35,9 +34,6 @@ class Setting:
 
         self.configure(**kwargs)
 
-
-
-
     # The setting can be changed during a run with configure()
     def configure(self, **kwargs):
         old_parameter = self.parameter.copy()
@@ -51,7 +47,6 @@ class Setting:
         self.defenses = defs.Defenses(self)
         self.parameter["orig_data"] = [[]]
         self.parameter["orig_label"] = [[]]
-
 
         # Some arguments need some special treatment, everything else will be just an parameter update
         for key, value in kwargs.items():
@@ -124,9 +119,6 @@ class Setting:
 
         if self.model is None:
             self.model = self.load_model()
-
-
-
 
     def update_parameter(self, **kwargs):
         # update existing parameters
@@ -230,7 +222,6 @@ class Setting:
     def restore_model(self):
         self.model = self.model_backup
 
-
     def attack(self, extent, keep: bool=False):
         # Creating a model backup
         self.backup_model()
@@ -255,9 +246,6 @@ class Setting:
         # In case of dlg prediction or full reconstruction, the image reconstruction is needed.
         self.dlg.reconstruct()
 
-
-
-
     def copy(self):
         kwargs = {}
         kwargs.update(**self.parameter)
@@ -268,7 +256,6 @@ class Setting:
         return tmp_setting
 
     def get_backup(self, store_individual_gradients=False):
-
         tmp_parameter = self.parameter.copy()
         tmp_parameter.pop("orig_data", None)
         tmp_parameter["orig_label"] = list(x.cpu().detach().numpy().tolist() for x in self.parameter["orig_label"])
@@ -276,8 +263,6 @@ class Setting:
         adjusted_gradients = self.dlg.gradient[-2].sum(-1) - self.predictor.offset
         adjusted_gradients = adjusted_gradients.cpu().detach().numpy().tolist()
         original_gradients = self.dlg.gradient[-2].sum(-1).cpu().detach().numpy().tolist()
-
-
 
         data_dic = {
             "parameter": tmp_parameter,
@@ -298,7 +283,6 @@ class Setting:
 
         if store_individual_gradients:
             data_dic["prediction_results"].update({"individual_gradients": self.dlg.gradient[-2].cpu().detach().numpy().tolist()})
-
 
         return data_dic
 
