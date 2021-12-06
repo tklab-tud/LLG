@@ -162,7 +162,6 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
         print("Creating graph: " + str(filesuffix[id]))
         graph.sort()
         graph.plot_scatter(location=legend_location)
-        # graph.show()
         name = "Magnitude_BS_{}_{}_".format(filesuffix[id], gradient_type)
         if balanced is not None:
             name += "balanced" if balanced else "unbalanced"
@@ -178,7 +177,6 @@ def magnitude_check(run, path, gradient_type="original_gradients", balanced=None
             name += "_bs_colors"
         name += ".pdf"
         graph.save(path, name)
-        # graph.show()
         graph.fig.clf()
 
 
@@ -209,7 +207,6 @@ def heatmap(run, path, gradient_type="original_gradients", balanced=None, datase
     print("Creating graph")
     graph.sort()
     graph.plot_heatmap()
-    # graph.show()
     name = "Heatmap_BS_{}_".format( gradient_type)
     if list_bs is not None:
         name += str(list_bs)
@@ -293,10 +290,6 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                 label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
                     current_meta[3] == "random" else "LLG*" if current_meta[3] in ["v3-one",  "v3-zero", "v3-random"] else "DLG" if \
                     current_meta[3] == "dlg" else "iDLG" if current_meta[3] == "idlg" else "?"
-                    # current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
-                    # current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "DLG" if \
-                # label += " "
-                # label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
                 # labels need to be one of the attack parameters
                 # e.g. "model", "threshold", "noise_multiplier"
@@ -382,8 +375,6 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
 
     graph.plot_line(location=location, legend=False)
 
-    # graph.show()
-
     name = "class_prediction_accuracy_vs_batchsize_"
     if balanced is not None:
         name += "_balanced" if balanced else "_unbalanced"
@@ -434,8 +425,6 @@ def visualize_hellinger_vs_batchsize(run, path, balanced=None, dataset=None, ver
 
     graph.plot_line()
 
-    # graph.show()
-
     graph.save(path, "hellinger_vs_batchsize.pdf")
 
 
@@ -453,10 +442,6 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
         current_meta = run_name.split("_")
         label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
             current_meta[3] == "random" else "LLG*" if current_meta[3] in ["v3-one",  "v3-zero", "v3-random"] else "?"
-            # current_meta[3] == "random" else "LLG-ONE" if current_meta[3] == "v3-one" else "LLG-ZERO" if \
-            # current_meta[3] == "v3-zero" else "LLG-RANDOM" if current_meta[3] == "v3-random" else "?"
-        # label += " "
-        # label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
         if (balanced is None or current_meta[2] == str(balanced)) and (
                 dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
@@ -467,7 +452,6 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
                 graph.add_datapoint(label, 0, current_meta[1])
 
     graph.plot_line()
-    # graph.show()
 
     name = "flawless_class_prediction_accuracy_vs_batchsize"
     if balanced is not None:
@@ -485,9 +469,6 @@ def visualize_flawles_class_prediction_accuracy_vs_batchsize(run, path, balanced
 def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, dataset=None, version=None, list_bs=None,
                                                     train_step_stop=None, labels="", model_id=1, width=6.4, location="best", fontsize=16):
     run = run.copy()
-
-    # if list_bs is None:
-    #     list_bs = run["meta"]["list_bs"]
 
     if not isinstance(run, list):
         runs = [run]
@@ -520,8 +501,6 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                 label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
                     current_meta[3] == "random" else "LLG*" if current_meta[3] in ["v3-one",  "v3-zero", "v3-random"] else "DLG" if \
                     current_meta[3] == "dlg" else "iDLG" if current_meta[3] == "idlg" else "?"
-                # label += " "
-                # label += "(IID)" if current_meta[2] == "True" else "(non-IID)" if current_meta[2] == "False" else "?"
 
                 # labels need to be one of the attack parameters
                 # e.g. "model", "threshold", "noise_multiplier"
@@ -577,14 +556,12 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                     merged_label = merged_label + str(label) + ", "
                 merged_label = merged_label[:-2]
 
-                x_tick_name = int(int(current_meta[5])*meta["trainsize"]*run[run_name]["parameter"]["local_iterations"]) # int(x)*meta["trainsize"] # combined iterations
+                x_tick_name = int(int(current_meta[5])*meta["trainsize"]*run[run_name]["parameter"]["local_iterations"])
 
                 # if "DLG" in label:
                 #     x_tick_name = x_tick_name*10
 
                 graph.add_datapoint(merged_label, run[run_name]["prediction_results"]["accuracy"]*100, x_tick_name)
-                # if id == model_id:
-                #     data2.append(["Model", run[run_name]["parameter"]["test_acc"], x_tick_name])
 
                 acc = float(run[run_name]["parameter"]["test_acc"])
                 if x_tick_name in model_accs.keys():
@@ -603,8 +580,6 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
     graph.plot_line(location=location, skip_x_ticks=True, useMathText=True, legend=False)
     graph.data = data2
     graph.plot_line(True, legend=False, skip_x_ticks=True, location=location, useMathText=True)
-
-    # graph.show()
 
     name = "class_prediction_accuracy_vs_training"
     if balanced is not None:
@@ -659,7 +634,6 @@ def visualize_good_fidelity(run, path, fidelitysteps, bs, balanced, width=6.4):
             graph.add_datapoint(label, y, x)
 
     graph.plot_line()
-    # graph.show()
     graph.save(path, "good_fidelity.pdf")
 
 
@@ -746,8 +720,6 @@ def load_jsons_old(num_files):
 
         compare_meta(meta, meta2)
 
-        # run = merge_runs(run, run2)
-        # for models
         run = append_runs(run, run2)
     return run, path
 
