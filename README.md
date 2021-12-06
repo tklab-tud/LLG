@@ -42,3 +42,11 @@ After that the resulting json can be loaded with
 run, path = load_json()
 
 See visualize_experiment.py for some possible ways of generating graphs from it.
+
+## License
+
+This repository is licensed under the [MIT License](LICENSE.md).
+
+This repo contains a [markdown](LICENSE.md) and a [text](license.txt) version of the license.
+
+In case of any inconstancies refer to the [license's website](https://mit-license.org/).
