@@ -107,7 +107,8 @@ class Predictor:
             self.prediction.append(np.random.randint(0,  self.setting.parameter["num_classes"]))
 
 
-    def v1_prediction(self): #LLG
+    # LLG
+    def v1_prediction(self):
 
         parameter = self.setting.parameter
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
@@ -141,8 +142,8 @@ class Predictor:
         self.prediction.sort()
 
 
-
-    def v2_prediction(self): #LLG+
+    # LLG+
+    def v2_prediction(self):
         parameter = self.setting.parameter
 
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
@@ -211,7 +212,8 @@ class Predictor:
             # add the mean value of one occurance to the candidate
             self.gradients_for_prediction[min_id] = self.gradients_for_prediction[min_id].add(-self.impact)
 
-    def experimental_prediction(self):  # LLG+
+    # LLG+ (experimental)
+    def experimental_prediction(self):
         parameter = self.setting.parameter
 
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
@@ -270,7 +272,8 @@ class Predictor:
             self.gradients_for_prediction[min_id] = self.gradients_for_prediction[min_id].add(-self.impact)
 
 
-    def v3_prediction(self): #LLG- with dummies
+    # LLG* (using dummies)
+    def v3_prediction(self):
         parameter = self.setting.parameter
 
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
