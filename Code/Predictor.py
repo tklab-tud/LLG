@@ -97,10 +97,7 @@ class Predictor:
         self.prediction = [x.item() for x in self.prediction]
 
 
-
     def random_prediction(self):
-        # In order to compare strategies random prediction has been added.
-
         for _ in range( self.setting.parameter["batch_size"]*self.setting.parameter["local_iterations"]):
             self.prediction.append(np.random.randint(0,  self.setting.parameter["num_classes"]))
 
