@@ -102,11 +102,14 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
                                 setting.attack(extent, keep)
 
                                 if store_composed_image:
-                                    setting.result.store_composed_image() #saves the (i)dlg reconstructed images composed
+                                    # saves the (i)dlg reconstructed images composed
+                                    setting.result.store_composed_image()
                                 if store_separate_images:
-                                    setting.result.store_separate_images() #saves the (i)dlg reconstructed images seperatly
+                                    # saves the (i)dlg reconstructed images seperatly
+                                    setting.result.store_separate_images()
                                 if store_composed_image or store_separate_images:
-                                    setting.result.delete() #deletes the images in the memory, to safe resources.
+                                    # deletes the images in the memory, to safe resources.
+                                    setting.result.delete()
 
                                 # dump the current state of the attack
                                 run.update({run_name: setting.get_backup(store_individual_gradients)})
