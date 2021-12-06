@@ -9,6 +9,7 @@ from tkinter.filedialog import askopenfilename, asksaveasfile
 
 fontsize = 16
 
+
 # Hypothesis 1
 def negativ_value_check(run, path, dataset=None, balanced=None, version="v2", gradient_type="original_gradients"):
     run = run.copy()
@@ -92,9 +93,8 @@ def same_sign_check(run, path, dataset=None, balanced=None):
     text_file.write(result)
     text_file.close()
 
-    # Hypothesis 2
 
-
+# Hypothesis 2
 def magnitude_check(run, path, gradient_type="original_gradients", balanced=None, dataset=None, version=None,
                     list_bs=None, trainstep=None, group_by="bs", y_range=None, legend_location="best", width=6.4):
     if gradient_type == "adjusted_gradients" and run["meta"] == "victim_side":
@@ -621,7 +621,6 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
 # Instead of evaluating class prediction accuracy this experiment performs full recreation attacks.
 # It will evaluate the image similarity by plotting the percentage of samples that reach a mse below a threshold.
 # The threshold is plotted to the x axis.
-
 def visualize_good_fidelity(run, path, fidelitysteps, bs, balanced, width=6.4):
     run = run.copy()
 
