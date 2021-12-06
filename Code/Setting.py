@@ -241,13 +241,15 @@ class Setting:
         if not keep:
             self.restore_model()
 
-        if extent == "victim_side": # End after this if extent is victim side
+        # End after this if extent is victim side
+        if extent == "victim_side":
             return
 
         # In case of v1, v2, v3 ... do the prediction; dlg's prediction is done at reconstruction step
         if not self.parameter["version"] == "dlg":
             self.predictor.predict()
-            if extent == "predict": # If we only want prediction stop here
+            # If we only want prediction stop here
+            if extent == "predict":
                 return
 
         # In case of dlg prediction or full reconstruction, the image reconstruction is needed.
