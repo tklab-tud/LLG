@@ -223,7 +223,7 @@ class Graph:
             "LLG+": '#4363d8',
             "LLG*": '#f032e6',
             "iDLG": "#800000",
-            "DLG": '#277831', #'#3cb44b',
+            "DLG": '#277831',
             "FL": "#800000",
 
             "MNIST": '#4363d8',
@@ -283,7 +283,6 @@ class Graph:
             "N = 5": "#f58231",
             "N = 10": '#f032e6',
             "N = 25": "#800000",
-            # "N = ?": "#800000",
 
             # noise type
             "normal": "#e6194B",
@@ -309,7 +308,7 @@ class Graph:
             "LLG-RANDOM (non-IID)": "#ffbf00",
 
 
-            "Model": '#000000', #"#FF0F0F"
+            "Model": '#000000',
 
             "FedAvg-Iterations: 1": "#4363d8",
             "FedAvg-Iterations: 10": "#800000",
