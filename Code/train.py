@@ -125,12 +125,12 @@ def update_weights(model, setting, id, victim: bool=False):
 
         loss = optimizer.step(closure)
 
-    #Copy the structure of a grad, but make it zeroes
+    # Copy the structure of a grad, but make it zeroes
     aggregated = list(x.zero_() for x in grad)
 
-    #iterate over the gradients for each local iteration
+    # iterate over the gradients for each local iteration
     for grad in seperated_gradients:
-        #there iterate through the gradients and add to the aggregator
+        # there iterate through the gradients and add to the aggregator
         for i_g,g in enumerate(grad):
             aggregated[i_g] = torch.add(aggregated[i_g], g)
 
