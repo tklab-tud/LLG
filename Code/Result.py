@@ -42,7 +42,8 @@ class Result:
         if isinstance(b, torch.Tensor): b = b.cpu().detach().numpy()
         mse = (a - b)
         mse = mse ** 2
-        mse = mse.sum(-1).sum(-2)  # sum over the last 2 dimension accumulates pixel diff
+        # sum over the last 2 dimension accumulates pixel diff
+        mse = mse.sum(-1).sum(-2)
         mse = mse / (self.parameter["shape_img"][0] * self.parameter["shape_img"][1])
         return mse
 
