@@ -284,7 +284,6 @@ class Setting:
             "attack_results": {
                 "losses": self.result.losses,
                 "mses": self.result.mses.tolist(),
-                # "snapshots": list(map(lambda x: x.tolist(), self.result.snapshots))
             },
             "prediction_results": {
                 "correct": self.predictor.correct,
