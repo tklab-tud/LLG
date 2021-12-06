@@ -101,7 +101,6 @@ def main():
         local_training = False
 
     if experiment_set in [1, 2, 3, 4]:
-        # TODO: run all DATASETS separately ("in parallel")
         dataset = "MNIST"
         # dataset = "EMNIST"
         # dataset = "FEMNIST"
@@ -111,7 +110,6 @@ def main():
         # dataset = "CELEB-A-hair"
         # dataset = "SVHN"
         # versions in order of importance
-        # TODO: run all VERSIONS separately per DATASET ("in parallel")
         version = "v2"
         # version = "random"
         # version = "v1"
@@ -132,7 +130,6 @@ def main():
 
     # Set 5 generation
     if experiment_set == 5:
-        # TODO: run all MODELS separately ("in parallel")
         model = "LeNet"       # old LeNet = ConvNet
         # model = "NewNewLeNet"  # new LeNet = LeNet
         # model = "ResNet"      # ResNet
@@ -142,13 +139,10 @@ def main():
         # version ="v2"
         idx = model+"_"+version
 
-    # TODO: You can use the old LeNet run form set 5 as a baseline for sets 5, 6, and 7
-
     # Set 6 generation
     if experiment_set == 6:
         defenses = ["dp"]
         differential_privacy = True
-        # TODO: run all NOISE TYPES separately ("in parallel")
         noise_type = "normal"
         # noise_type = "laplace"
         # noise_type = "exponential"
@@ -168,7 +162,6 @@ def main():
     if experiment_set == 8:
         defenses = ["dp"]
         differential_privacy = True
-        # TODO: run all NOISE TYPES separately ("in parallel")
         noise_type = "normal"
         # noise_type = "laplace"
         # noise_type = "exponential"
