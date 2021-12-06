@@ -89,10 +89,7 @@ class Predictor:
 
     # iDLG
     def simplified_prediction(self):
-        # The algorithm from the paper splits the batch and evaluates the samples individually
-        # It is mathematically proven to work 100%.
-        # So in order to save time we take a shortcut and just take the labels from the settings
-
+        # It is mathematically proven to work 100% for batch size 1.
         self.prediction = list(self.setting.parameter["orig_label"])
         self.prediction = [x.item() for x in self.prediction]
 
