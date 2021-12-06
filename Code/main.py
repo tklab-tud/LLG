@@ -95,7 +95,7 @@ def main():
         list_bs = [1,4,8]
         dataset = "MNIST"
         balanced = True
-        #version = ["v1", "v2", v3[dataset], "dlg", "random"]
+        # version = ["v1", "v2", v3[dataset], "dlg", "random"]
         version = ["v2", "dlg"]
         model = ["ResNet"]
         local_training = False
@@ -321,8 +321,8 @@ def main():
         # Visualization Set 0
         if experiment_set == 0:
             visualize_class_prediction_accuracy_vs_batchsize(run, path, labels=["version", "model"])
-            #magnitude_check(run, path, gradient_type="original_gradients", group_by="bs")
-            #magnitude_check(run, path, gradient_type="adjusted_gradients", group_by="bs")
+            # magnitude_check(run, path, gradient_type="original_gradients", group_by="bs")
+            # magnitude_check(run, path, gradient_type="adjusted_gradients", group_by="bs")
 
 
         # Visualization Set 1
