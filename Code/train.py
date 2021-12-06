@@ -49,7 +49,6 @@ def train(setting, train_size, batch=None):
     dataloader = setting.dataloader
 
     optimizer = torch.optim.SGD(model.parameters(), lr=parameter["train_lr"])
-    #optimizer = torch.optim.LBFGS(model.parameters(), lr=parameter["train_lr"])
 
     criterion = torch.nn.CrossEntropyLoss().to(device)
 
@@ -93,7 +92,6 @@ def update_weights(model, setting, id, victim: bool=False):
     dataloader = setting.dataloader
 
     optimizer = torch.optim.SGD(model.parameters(), lr=parameter["train_lr"])
-    #optimizer = torch.optim.LBFGS(model.parameters(), lr=parameter["train_lr"])
 
     criterion = torch.nn.CrossEntropyLoss().to(device)
 
