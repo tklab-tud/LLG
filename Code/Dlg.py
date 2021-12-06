@@ -51,8 +51,6 @@ class Dlg:
         self.defenses.apply(aggregated, para["num_users"]-1)
 
         self.gradient = list(torch.div(x, 1) for x in aggregated)
-        #Might also take the average instead of the sum
-        #self.gradient = list(torch.div(x, para["local_iterations"]) for x in aggregated)
 
         if para["differential_privacy"] or para["compression"]:
             self.defenses.inject(self.seperated_gradients, aggregated, self.setting.model)
