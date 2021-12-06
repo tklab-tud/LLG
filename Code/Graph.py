@@ -9,7 +9,7 @@ import itertools
 class Graph:
     def __init__(self, xlabel, ylabel, ylabel2=None, y_range=None, fontsize=16, width=6.4):
         self.data = []
-        self.fig, self.subplot = plt.subplots(1, 1, figsize=(width,4.8)) # figsize=(8,5)
+        self.fig, self.subplot = plt.subplots(1, 1, figsize=(width,4.8))
         self.fontsize = fontsize
         self.subplot.set_xlabel(xlabel, fontsize=self.fontsize)
         self.subplot.set_ylabel(ylabel, fontsize=self.fontsize)
@@ -149,7 +149,8 @@ class Graph:
         heat = np.zeros((x_max + 1, 101))
 
         for _, y, x in self.data:
-            if not self.y_range[0] < y < self.y_range[1]: # a value outside of y_range
+            if not self.y_range[0] < y < self.y_range[1]:
+                # skipping value outside of y_range
                 print("Skipping {}, because its outside y_range [{}, {}]".format(y, self.y_range[0], self.y_range[1]))
                 continue
             heat_y = 100 - (int((y - y_min) // (y_span / 100)))
