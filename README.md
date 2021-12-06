@@ -2,6 +2,18 @@
 
 This framework implements the LLG attack.
 
+## Installation
+
+1. Setup a clean Python `3.7.9`¹ environment with the tool of your choice (conda, venv, etc.).
+2. Install required python libraries using: `pip install -r Code/requirements.txt`
+3. Initiate and update [aDPtorch](https://github.com/tklab-tud/aDPtorch) submodule: `git submodule init` and `git submodule update`
+
+¹ It is possible that the LLG code runs with newer python versions. However, don't use the most current, as `opacus` and `torchcsprng` tend to have a bit of a delay getting updated to work with newest python and/or torch versions.
+
+## Execution
+
+> TODO: needs updating as well
+
 From main.py you can start an attack like this:
 
 
