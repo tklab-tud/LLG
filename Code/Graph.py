@@ -188,13 +188,8 @@ class Graph:
                 dict.update({label: {x: {"value": y, "count": 1}}})
 
         # everything is in dict, reset data and fill again with averaged data
-
         self.data = []
-
-        # sorted(dict.items(), key = lambda kv: kv[1])
-
         for label in dict.keys():
-            # for x in sorted(dict[label]):
             for x in dict[label]:
                 self.data.append((label, dict[label][x]["value"] / dict[label][x]["count"], x))
 
