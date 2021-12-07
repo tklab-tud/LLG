@@ -350,10 +350,10 @@ def resnet20(parameter):
 
 ## new new LeNet
 ## source: https://pytorch.org/tutorials/beginner/blitz/neural_networks_tutorial.html
-class LeNetTut(nn.Module):
+class LeNet(nn.Module):
 
     def __init__(self, in_channel, num_classes):
-        super(LeNetTut, self).__init__()
+        super(LeNet, self).__init__()
         # 1 input image channel, 6 output channels, 3x3 square convolution
         # kernel
         self.conv1 = nn.Conv2d(in_channel, 6, in_channel)
@@ -382,7 +382,7 @@ class LeNetTut(nn.Module):
         return num_features
 
 def NewNewLeNet(parameter):
-    return LeNetTut(parameter["channel"], parameter["num_classes"])
+    return LeNet(parameter["channel"], parameter["num_classes"])
 
 
 ######################################################################
