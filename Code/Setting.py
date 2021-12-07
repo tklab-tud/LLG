@@ -203,7 +203,7 @@ class Setting:
         elif self.parameter["model"] == "LeNetNew":
             model = LeNet5(self.parameter)
         elif self.parameter["model"] == "NewNewLeNet":
-            model = NewNewLeNet(self.parameter)
+            model = LeNet(self.parameter)
         elif self.parameter["model"] == "ResNet":
             model = resnet20(self.parameter)
         elif self.parameter["model"] == "MLP":

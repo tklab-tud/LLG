@@ -348,7 +348,6 @@ def resnet20(parameter):
     return ResNet(BasicBlock, [3, 3, 3], num_classes=parameter["num_classes"], num_channels=parameter["channel"])
 
 
-## new new LeNet
 ## source: https://pytorch.org/tutorials/beginner/blitz/neural_networks_tutorial.html
 class LeNet(nn.Module):
 
@@ -381,7 +380,7 @@ class LeNet(nn.Module):
             num_features *= s
         return num_features
 
-def NewNewLeNet(parameter):
+def LeNet(parameter):
     return LeNet(parameter["channel"], parameter["num_classes"])
 
 
