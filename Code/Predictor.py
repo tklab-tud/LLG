@@ -24,13 +24,13 @@ class Predictor:
         if parameter["version"] == "random":
             self.random_prediction()
         elif parameter["version"] == "idlg":
-            self.simplified_prediction()
+            self.iDLG_prediction()
         elif parameter["version"] == "v1":#LLG
-            self.v1_prediction()
+            self.LLG_prediction()
         elif parameter["version"] == "v2":#LLG+
-            self.v2_prediction()
+            self.LLGp_prediction()
         elif parameter["version"] in ["v3-zero", "v3-one", "v3-random"]:
-            self.v3_prediction()
+            self.LLGs_prediction()
         elif parameter["version"] == "experimental":
             self.experimental_prediction()
         else:
@@ -88,7 +88,7 @@ class Predictor:
 
 
     # iDLG
-    def simplified_prediction(self):
+    def iDLG_prediction(self):
         # It is mathematically proven to work 100% for batch size 1.
         self.prediction = list(self.setting.parameter["orig_label"])
         self.prediction = [x.item() for x in self.prediction]
@@ -100,7 +100,7 @@ class Predictor:
 
 
     # LLG
-    def v1_prediction(self):
+    def LLG_prediction(self):
 
         parameter = self.setting.parameter
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
@@ -135,7 +135,7 @@ class Predictor:
 
 
     # LLG+
-    def v2_prediction(self):
+    def LLGp_prediction(self):
         parameter = self.setting.parameter
 
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
@@ -265,7 +265,7 @@ class Predictor:
 
 
     # LLG* (using dummies)
-    def v3_prediction(self):
+    def LLGs_prediction(self):
         parameter = self.setting.parameter
 
         self.gradients_for_prediction = torch.sum(self.setting.dlg.gradient[-2], dim=-1).clone()
