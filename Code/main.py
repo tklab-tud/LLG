@@ -375,7 +375,6 @@ def main():
     else:
         print("Unknown job")
 
-    ############################################################
     print("Run finished")
 
 
