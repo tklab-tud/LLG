@@ -138,7 +138,7 @@ class Setting:
             "targets": [],
             "batch_size": 2,
             "local_iterations": 1,
-            "model": "LeNet",
+            "model": "CNN",
             "log_interval": 10,
             "result_path": "results/{}/".format(str(datetime.datetime.now().strftime("%y_%m_%d_%H_%M_%S"))),
             "run_name": "",
@@ -198,11 +198,11 @@ class Setting:
                 print("cuda unavailable using cpu")
 
     def load_model(self):
-        if self.parameter["model"] == "LeNet":
+        if self.parameter["model"] == "CNN":
             model = CNN(self.parameter)
-        elif self.parameter["model"] == "LeNetNew":
+        elif self.parameter["model"] == "LeNet5":
             model = LeNet5(self.parameter)
-        elif self.parameter["model"] == "NewNewLeNet":
+        elif self.parameter["model"] == "LeNet":
             model = LeNet(self.parameter)
         elif self.parameter["model"] == "ResNet":
             model = resnet20(self.parameter)

@@ -123,15 +123,15 @@ def main():
         trainsize = 100
         trainsteps = 100
 
-    # with exception of set 5 all sets use the ConvNet model (old LeNet)
-    model = "LeNet"
+    # with exception of set 5 all sets use the ConvNet model
+    model = "CNN"
 
     # Set 5 generation
     if experiment_set == 5:
-        model = "LeNet"       # old LeNet = ConvNet
-        # model = "NewNewLeNet"  # new LeNet = LeNet
-        # model = "ResNet"      # ResNet
-        # model = "MLP"         # FCNN
+        model = "CNN"
+        # model = "LeNet"
+        # model = "ResNet"
+        # model = "MLP"
 
         version = "dlg"
         # version ="v2"
@@ -209,10 +209,10 @@ def main():
         # dataset = "CIFAR"
         # dataset = "CELEB-A-hair"
         # dataset = "SVHN"
-        model = "LeNet"       # old LeNet = ConvNet
-        # model = "NewNewLeNet"  # new LeNet = LeNet
-        # model = "ResNet"      # ResNet
-        # model = "MLP"         # FCNN
+        model = "CNN"
+        # model = "LeNet"
+        # model = "ResNet"
+        # model = "MLP"
 
     if experiment_set == -1:
         n = 1000
