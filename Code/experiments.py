@@ -125,11 +125,14 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
         "train_steps": "global",
         "train_size": "semi",           # unmonitored global
         "local_iterations": "local",
-        "v1": "LLG",
-        "v2": "LLG+",
-        "v3": "LLG*",
+        "llg": "LLG",
+        "llg+": "LLG+",
+        "llg*-zero": "LLG*",
+        "llg*-one": "LLG*",
+        "llg*-random": "LLG*",
         "random": "RND",
         "dlg": "DLG",
+        "idlg": "iDLG",
     }
 
     iterations = {
@@ -146,7 +149,7 @@ def experiment(dataloader, list_datasets, list_bs, list_balanced, list_versions,
         elif key == "version":
             if extent != "victim_side":
                 for version in list_versions:
-                    param_str += "_" + beautify_keys[version]
+                    param_str += "_" + beautify_keys[version.lower()]
         elif key == "defenses":
             for defense in defenses:
                 if defense == "dp":

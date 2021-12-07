@@ -288,8 +288,8 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
             if (balanced is None or current_meta[2] == str(balanced)) and (
                     dataset is None or current_meta[0] == dataset) and (version is None or version == current_meta[3]):
                 label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
-                    current_meta[3] == "random" else "LLG*" if current_meta[3] in ["v3-one",  "v3-zero", "v3-random"] else "DLG" if \
-                    current_meta[3] == "dlg" else "iDLG" if current_meta[3] == "idlg" else "?"
+                    current_meta[3] == "random" else "LLG*" if "llg*" in current_meta[3] or "v3" in current_meta[3] else "DLG" if \
+                    current_meta[3] == "dlg" else "iDLG" if current_meta[3] == "idlg" else current_meta[3]
 
                 # labels need to be one of the attack parameters
                 # e.g. "model", "threshold", "noise_multiplier"
@@ -300,15 +300,15 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                     if l != "":
                         label = run[run_name]["parameter"][l]
                     if l == "version":
-                        if label == "v2":
+                        if label.lower() == "llg+":
                             label = "LLG+"
-                        elif label =="dlg":
+                        elif label.lower() =="dlg":
                             label = "DLG"
-                        elif label == "v1":
+                        elif label.lower() == "llg":
                             label = "LLG"
-                        elif "v3" in label:
+                        elif "llg*" in label.lower():
                             label = "LLG*"
-                        elif label == "random":
+                        elif label.lower() == "random":
                             label = "Random"
 
                     if l == "model":
@@ -493,7 +493,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                     version is None or version == current_meta[3]) and (
                     train_step_stop is None or train_step_stop >= int(current_meta[5])):
                 label = "LLG" if current_meta[3] == "v1" else "LLG+" if current_meta[3] == "v2" else "Random" if \
-                    current_meta[3] == "random" else "LLG*" if current_meta[3] in ["v3-one",  "v3-zero", "v3-random"] else "DLG" if \
+                    current_meta[3] == "random" else "LLG*" if "llg*" in current_meta[3] or "v3" in current_meta[3] else "DLG" if \
                     current_meta[3] == "dlg" else "iDLG" if current_meta[3] == "idlg" else "?"
 
                 # labels need to be one of the attack parameters
@@ -506,15 +506,15 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                     if l == "version":
                         if run[run_name]["parameter"]["federated"]:
                             label = "FL"
-                        elif label == "v2":
+                        elif label.lower() == "llg+":
                             label = "LLG+"
-                        elif label =="dlg":
+                        elif label.lower() =="dlg":
                             label = "DLG"
-                        elif label == "v1":
+                        elif label.lower() == "llg":
                             label = "LLG"
-                        elif "v3" in label:
+                        elif "llg*" in label.lower():
                             label = "LLG*"
-                        elif label == "random":
+                        elif label.lower() == "random":
                             label = "Random"
                     if l == "num_users":
                         label = "N = " + str(run[run_name]["parameter"]["num_users"])
@@ -612,7 +612,8 @@ def visualize_good_fidelity(run, path, fidelitysteps, bs, balanced, width=6.4):
             # Name in the graph
             label = meta["list_versions"][version]
             label = "LLG" if label == "v1" else "LLG+" if label == "v2" else "Random" if label == "random" \
-                else "iDLG" if label == "idlg" else "DLG" if label == "dlg" else "?"
+                else "iDLG" if label == "idlg" else "LLG*" if "llg*" in current_meta[3] or "v3" in current_meta[3] \
+                else "DLG" if label == "dlg" else label
             label += " "
             label += "(IID)" if balanced else "(non-IID)"
 

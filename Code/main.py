@@ -68,7 +68,7 @@ def main():
 
     # with exception of set 1, 2, 3, and 4 all sets use MNIST and LLG+
     dataset = "MNIST"
-    version = "v2"
+    version = "LLG+"
 
     # with exception of set 3 and 4 all sets use all batch sizes and don't train
     list_bs = [1, 2, 4, 8, 16, 32, 64, 128]
@@ -77,8 +77,8 @@ def main():
     local_iterations = 1
     id = "set_"+str(experiment_set)
 
-    v3 = {"MNIST": "v3-zero", "CIFAR": "v3-one", "CELEB-A-male": "v3-zero", "CELEB-A-hair": "v3-zero",
-          "SVHN": "v3-random"}
+    LLGs_variant = {"MNIST": "LLG*-zero", "CIFAR": "LLG*-one", "CELEB-A-male": "LLG*-zero", "CELEB-A-hair": "LLG*-zero",
+                    "SVHN": "LLG*-random"}
 
     # FedAvg
     fedAvg = True
@@ -95,8 +95,8 @@ def main():
         list_bs = [1,4,8]
         dataset = "MNIST"
         balanced = True
-        # version = ["v1", "v2", v3[dataset], "dlg", "random"]
-        version = ["v2", "dlg"]
+        # version = ["LLG", "LLG+", LLGs_variant[dataset], "DLG", "Random"]
+        version = ["LLG+", "DLG"]
         model = ["ResNet"]
         local_training = False
 
@@ -110,11 +110,11 @@ def main():
         # dataset = "CELEB-A-hair"
         # dataset = "SVHN"
         # versions in order of importance
-        version = "v2"
-        # version = "random"
-        # version = "v1"
-        # version = v3[dataset]
-        # version = "dlg"
+        version = "LLG+"
+        # version = "Random"
+        # version = "LLG"
+        # version = LLGs_variant[dataset]
+        # version = "DLG"
         idx = dataset+"_"+version
 
     # Set 3 and 4 generation
@@ -133,8 +133,8 @@ def main():
         # model = "ResNet"
         # model = "MLP"
 
-        version = "dlg"
-        # version ="v2"
+        version = "DLG"
+        # version ="LLG+"
         idx = model+"_"+version
 
     # Set 6 generation
@@ -200,11 +200,11 @@ def main():
         # thresholds = [0.2]
         # id = "comp"
         # idx = thresholds[0]
-        version = "v2"
-        # version = "random"
-        # version = "v1"
-        # version = v3[dataset]
-        # version = "dlg"
+        version = "LLG+"
+        # version = "Random"
+        # version = "LLG"
+        # version = LLGs_variant[dataset]
+        # version = "DLG"
         dataset = "MNIST"
         # dataset = "CIFAR"
         # dataset = "CELEB-A-hair"
@@ -216,7 +216,7 @@ def main():
 
     if experiment_set == -1:
         n = 1000
-        versions = ["v2", "random"]
+        versions = ["LLG+", "Random"]
     elif isinstance(version, list):
         versions = version
     else:
@@ -241,7 +241,7 @@ def main():
                                list_bs=list_bs,
                                list_balanced=[balanced],
                                list_versions=versions,
-                               # "v1"(LLG), "v2"(LLG+), "v3-zero", "v3-one", "v3-random", "dlg", "idlg"
+                               # "LLG"(LLG), "LLG+"(LLG+), "LLG*-zero", "LLG*-one", "LLG*-random", "DLG", "iDLG"
                                n=n,  # Amount of attacks
                                extent=extent,  # "victim_side", "predict", "reconstruct"
                                trainsize=trainsize,  # Iterations per Trainstep
@@ -366,9 +366,9 @@ def main():
         if experiment_set == -1:
             y_range = [-330, 300]
             magnitude_check(run, path, gradient_type="original_gradients", balanced="True", dataset="MNIST",
-                            version="v2", list_bs=[2, 8, 32, 128], group_by="bs", y_range=y_range)
+                            version="LLG+", list_bs=[2, 8, 32, 128], group_by="bs", y_range=y_range)
             magnitude_check(run, path, gradient_type="adjusted_gradients", balanced="True", dataset="MNIST",
-                            version="v2", list_bs=[2, 8, 32, 128], group_by="bs", y_range=y_range)
+                            version="LLG+", list_bs=[2, 8, 32, 128], group_by="bs", y_range=y_range)
             heatmap(run, path, gradient_type="original_gradients", balanced="True", dataset="MNIST",
                     list_bs=[2, 8, 32, 128], y_range=y_range)
 

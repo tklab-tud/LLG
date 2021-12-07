@@ -21,17 +21,17 @@ class Predictor:
         self.prediction = []
 
         # Run prediction strategie
-        if parameter["version"] == "random":
+        if parameter["version"].lower() == "random":
             self.random_prediction()
-        elif parameter["version"] == "idlg":
+        elif parameter["version"].lower() == "idlg":
             self.iDLG_prediction()
-        elif parameter["version"] == "v1":#LLG
+        elif parameter["version"].lower() == "llg":
             self.LLG_prediction()
-        elif parameter["version"] == "v2":#LLG+
+        elif parameter["version"].lower() == "llg+":
             self.LLGp_prediction()
-        elif parameter["version"] in ["v3-zero", "v3-one", "v3-random"]:
+        elif parameter["version"].lower() in ["llg*-zero", "llg*-one", "llg*-random"]:
             self.LLGs_prediction()
-        elif parameter["version"] == "experimental":
+        elif parameter["version"].lower() == "experimental":
             self.experimental_prediction()
         else:
             exit("Unknown prediction strategy {}".format(parameter["version"]))
