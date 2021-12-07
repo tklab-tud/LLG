@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import torch.nn.init as init
 from collections import OrderedDict
 
-#LeNet
+# LeNet
 class Net1(nn.Module):
     def __init__(self, parameter):
         super(Net1, self).__init__()
@@ -34,7 +34,7 @@ class Net1(nn.Module):
         return x
 
 ######################################################################
-#ResNet
+# ResNet
 # https://towardsdatascience.com/residual-network-implementing-resnet-a7da63c7b278
 class Conv2dAuto(nn.Conv2d):
     def __init__(self, *args, **kwargs):
@@ -234,10 +234,10 @@ class MLP(nn.Module):
         return x
 
 
-#Architecture
+# Architecture
 # LeNet-5 consists of 7 layers – alternatingly 2 convolutional and 2 average pooling layers,
-#and then 2 fully connected layers and the output layer with activation function softmax.
-#https://analyticsindiamag.com/complete-tutorial-on-lenet-5-guide-to-begin-with-cnns/
+# and then 2 fully connected layers and the output layer with activation function softmax.
+# https://analyticsindiamag.com/complete-tutorial-on-lenet-5-guide-to-begin-with-cnns/
 
 #??
 # proper LeNet
