@@ -201,7 +201,7 @@ class Setting:
         if self.parameter["model"] == "LeNet":
             model = CNN(self.parameter)
         elif self.parameter["model"] == "LeNetNew":
-            model = LeNet(self.parameter)
+            model = LeNet5(self.parameter)
         elif self.parameter["model"] == "NewNewLeNet":
             model = NewNewLeNet(self.parameter)
         elif self.parameter["model"] == "ResNet":

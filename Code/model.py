@@ -234,9 +234,9 @@ class MLP(nn.Module):
 # LeNet-5 consists of 7 layers – alternatingly 2 convolutional and 2 average pooling layers,
 # and then 2 fully connected layers and the output layer with activation function softmax.
 # https://analyticsindiamag.com/complete-tutorial-on-lenet-5-guide-to-begin-with-cnns/
-class LeNet(nn.Module):
+class LeNet5(nn.Module):
     def __init__(self, parameter):
-        super(LeNet, self).__init__()
+        super(LeNet5, self).__init__()
 
         self.body = nn.Sequential(
             nn.Conv2d(parameter["channel"], 6, kernel_size=28, padding=0, stride=1),
