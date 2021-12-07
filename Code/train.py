@@ -32,9 +32,6 @@ def test(setting):
 
     test_acc = 100. * correct / (parameter["test_size"] * parameter["batch_size"])
 
-    #print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-    #    test_loss, correct, parameter["test_size"] * parameter["batch_size"], test_acc))
-
     setting.parameter["test_loss"], setting.parameter["test_acc"] = test_loss, test_acc
 
 
@@ -108,8 +105,6 @@ def update_weights(model, setting, id, victim: bool=False):
 
         def closure():
             optimizer.zero_grad()
-            # FIXME: should we zero the gradients? where is the difference?
-            # model.zero_grad()
             output = model(data)
 
             loss = criterion(output, target)
@@ -168,9 +163,6 @@ def train_federated(setting):
     global_model.train()
 
     print("Training {} users for {} local and {} global iterations".format(num_users, local_iterations, global_iterations))
-
-    # m = min(int(len(keylist_cluster)), num_users_per_epoch)
-    # idxs_users = np.random.choice(keylist_cluster, m, replace=False)
 
     for i in range(global_iterations):
         local_weights = []
