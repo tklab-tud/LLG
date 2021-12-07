@@ -214,7 +214,6 @@ class MLP(nn.Module):
         super(MLP, self).__init__()
         self.layer_input = nn.Linear(dim_in, dim_hidden)
         self.relu = nn.ReLU()
-        # self.dropout_old = nn.Dropout()
         self.layer_hidden1 = nn.Linear(dim_hidden, dim_hidden)
         self.layer_hidden2 = nn.Linear(dim_hidden, dim_out)
         self.softmax = nn.Softmax(dim=1)
@@ -223,10 +222,8 @@ class MLP(nn.Module):
     def forward(self, x):
         x = x.view(-1, x.shape[1]*x.shape[-2]*x.shape[-1])
         x = self.layer_input(x)
-        # x = self.dropout_old(x)
         x = self.relu(x)
         x = self.layer_hidden1(x)
-        # x = self.dropout_old(x)
         x = self.relu(x)
         x = self.layer_hidden2(x)
         x = self.softmax(x)
@@ -270,7 +267,6 @@ class LeNet(nn.Module):
 # ResNet20
 def _weights_init(m):
     classname = m.__class__.__name__
-    #print(classname)
     if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
         init.kaiming_normal_(m.weight)
 
