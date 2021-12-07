@@ -59,6 +59,8 @@ def main():
     local_training = False
     federated = False
     num_users = 1
+    local_iterations = 1
+    id = "set_"+str(experiment_set)
 
     # with exception of set 1 and 3 all sets use non-IID
     balanced = False
@@ -72,10 +74,12 @@ def main():
 
     # with exception of set 3 and 4 all sets use all batch sizes and don't train
     list_bs = [1, 2, 4, 8, 16, 32, 64, 128]
-    trainsize = 0
-    trainsteps = 0
-    local_iterations = 1
-    id = "set_"+str(experiment_set)
+
+    # the total number global communication rounds consist of two factors
+    # number of communication rounds before an attack is applied
+    comm_rounds_per_attack_cycle = 0
+    # number of communication rounds at which an attack is applied
+    attack_cycles = 0
 
     LLGs_variant = {"MNIST": "LLG*-zero", "CIFAR": "LLG*-one", "CELEB-A-male": "LLG*-zero", "CELEB-A-hair": "LLG*-zero",
                     "SVHN": "LLG*-random"}
@@ -121,8 +125,8 @@ def main():
     # Set 3 and 4 trained model
     if experiment_set in [3, 4]:
         list_bs = [8]
-        trainsize = 100
-        trainsteps = 100
+        comm_rounds_per_attack_cycle = 100
+        attack_cycles = 100
 
     # with exception of set 5 all sets use the ConvNet model
     model = "CNN"
@@ -174,8 +178,8 @@ def main():
         repetitions = 1
         extent="victim_side"
         list_bs = [8]
-        trainsize = int(10/local_iterations)
-        trainsteps = 100
+        comm_rounds_per_attack_cycle = int(10/local_iterations)
+        attack_cycles = 100
         federated = True
         num_users = 100
         id = "base"
@@ -244,8 +248,8 @@ def main():
                                # "LLG"(LLG), "LLG+"(LLG+), "LLG*-zero", "LLG*-one", "LLG*-random", "DLG", "iDLG"
                                n=repetitions,  # Amount of attacks
                                extent=extent,  # "victim_side", "predict", "reconstruct"
-                               trainsize=trainsize,  # Iterations per Trainstep
-                               trainsteps=trainsteps,  # Number of Attack&Train cycles
+                               trainsize=comm_rounds_per_attack_cycle,
+                               trainsteps=attack_cycles,
                                train_lr=train_lr,
                                federated=federated,
                                num_users=num_users,
