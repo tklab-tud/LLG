@@ -72,7 +72,7 @@ class Dlg:
         self.dummy_pred = None
 
         # optimizer setup
-        if parameter["version"] == "dlg":
+        if parameter["version"].lower() == "dlg":
             optimizer = torch.optim.LBFGS([self.dummy_data, self.dummy_label], lr=parameter["dlg_lr"])
         else:
             optimizer = torch.optim.LBFGS([self.dummy_data, ], lr=parameter["dlg_lr"])
@@ -89,7 +89,7 @@ class Dlg:
             def closure():
                 optimizer.zero_grad()
                 self.dummy_pred = model(self.dummy_data)
-                if parameter["version"] == "dlg":
+                if parameter["version"].lower() == "dlg":
                     dummy_loss = - torch.mean(
                         torch.sum(torch.softmax(self.dummy_label, -1) * torch.log(torch.softmax(self.dummy_pred, -1)),
                                   dim=-1))
@@ -110,7 +110,7 @@ class Dlg:
             if iteration % parameter["log_interval"] == 0:
                 res.add_snapshot(self.dummy_data.cpu().detach().numpy())
 
-        if self.setting.parameter["version"] == "dlg":
+        if self.setting.parameter["version"].lower() == "dlg":
             self.setting.predictor.prediction = [self.dummy_label[x].argmax().item() for x in range(parameter["batch_size"]*parameter["local_iterations"])]
             self.setting.predictor.update_accuracy()
             #res.update_figures(),
