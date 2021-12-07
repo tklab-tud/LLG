@@ -100,6 +100,7 @@ def main():
         model = ["ResNet"]
         local_training = False
 
+    # Set 1 and 2 batch sizes
     if experiment_set in [1, 2, 3, 4]:
         dataset = "MNIST"
         # dataset = "EMNIST"
@@ -117,7 +118,7 @@ def main():
         # version = "DLG"
         idx = dataset+"_"+version
 
-    # Set 3 and 4 generation
+    # Set 3 and 4 trained model
     if experiment_set in [3, 4]:
         list_bs = [8]
         trainsize = 100
@@ -126,7 +127,7 @@ def main():
     # with exception of set 5 all sets use the ConvNet model
     model = "CNN"
 
-    # Set 5 generation
+    # Set 5 model architecture comparison
     if experiment_set == 5:
         model = "CNN"
         # model = "LeNet"
@@ -137,7 +138,7 @@ def main():
         # version ="LLG+"
         idx = model+"_"+version
 
-    # Set 6 generation
+    # Set 6 additive noise (untrained)
     if experiment_set == 6:
         defenses = ["dp"]
         differential_privacy = True
@@ -148,15 +149,14 @@ def main():
         noise_multipliers = [0.01, 0.1, 1]
         idx = noise_multipliers[0]
 
-    # Set 7 generation
+    # Set 7 compression (untrained)
     if experiment_set == 7:
         defenses = ["compression"]
         compression = True
         thresholds = [0.2, 0.4, 0.8]
         idx = thresholds[0]
 
-    # Set 8 generation
-    # differential privacy = clipping + noise
+    # Set 8 differential privacy (untrained)
     if experiment_set == 8:
         defenses = ["dp"]
         differential_privacy = True
@@ -171,6 +171,7 @@ def main():
         max_norms = [10]
         idx = max_norms[0]
 
+    # Set 9 federated training and trained defenses
     if experiment_set == 9:
         n=1
         extent="victim_side"
@@ -222,6 +223,7 @@ def main():
     else:
         versions = [version]
 
+    # Set 10 local iterations
     if experiment_set == 10:
         local_iterations_list = [1, 10, 100, 1000]
 
