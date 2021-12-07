@@ -51,10 +51,10 @@ def main():
     defenses = ["none"]
     differential_privacy = False
     noise_type = "normal"
-    noise_multipliers = [0.0]
-    max_norms = [None]
+    sigmas = [0.0]
+    betas = [None]
     compression = False
-    thresholds = [0.0]
+    thetas = [0.0]
     n = 100
     local_training = False
     federated = False
@@ -146,15 +146,15 @@ def main():
         # noise_type = "laplace"
         # noise_type = "exponential"
 
-        noise_multipliers = [0.01, 0.1, 1]
-        idx = noise_multipliers[0]
+        sigmas = [0.01, 0.1, 1]
+        idx = sigmas[0]
 
     # Set 7 compression (untrained)
     if experiment_set == 7:
         defenses = ["compression"]
         compression = True
-        thresholds = [0.2, 0.4, 0.8]
-        idx = thresholds[0]
+        thetas = [0.2, 0.4, 0.8]
+        idx = thetas[0]
 
     # Set 8 differential privacy (untrained)
     if experiment_set == 8:
@@ -164,12 +164,10 @@ def main():
         # noise_type = "laplace"
         # noise_type = "exponential"
 
-        # variance = 1
-        noise_multipliers = [0.1]
-        # epsilon | beta
-        # max_norms = [1, 5, 10]
-        max_norms = [10]
-        idx = max_norms[0]
+        sigmas = [0.1]
+        # betas = [1, 5, 10]
+        betas = [10]
+        idx = betas[0]
 
     # Set 9 federated training and trained defenses
     if experiment_set == 9:
@@ -186,21 +184,21 @@ def main():
         defenses = ["dp"]
         differential_privacy = True
         # noise_type = "normal"
-        # noise_multipliers = [0.01, 0.1, 1]
-        # noise_multipliers = [0.01]
+        # sigmas = [0.01, 0.1, 1]
+        # sigmas = [0.01]
         # id = "noise"
-        # idx = noise_multipliers[0]
-        # max_norms = [5, 25, 50]
-        max_norms = [10]
-        noise_multipliers = [0.1]
+        # idx = sigmas[0]
+        # betas = [1, 5, 10]
+        betas = [10]
+        sigmas = [0.1]
         id = "dp"
-        idx = max_norms[0]
+        idx = betas[0]
         # defenses = ["compression"]
         # compression = True
-        # # thresholds = [0.2, 0.4, 0.8]
-        # thresholds = [0.2]
+        # # thetas = [0.2, 0.4, 0.8]
+        # thetas = [0.2]
         # id = "comp"
-        # idx = thresholds[0]
+        # idx = thetas[0]
         version = "LLG+"
         # version = "Random"
         # version = "LLG"
@@ -231,13 +229,13 @@ def main():
 
     if job == "experiment":
         dataloader = Dataloader()
-        for noise_multiplier in noise_multipliers:
-            for max_norm in max_norms:
-                if max_norm != None and max_norm > 0:
-                    noise_multiplier = noise_multiplier / max_norm
-                for threshold in thresholds:
+        for sigma in sigmas:
+            for beta in betas:
+                if beta != None and beta > 0:
+                    noise_multiplier = sigma / beta
+                for theta in thetas:
                 # for local_iterations in local_iterations_list:
-                    # threshold = 0.0
+                    # theta = 0.0
                     experiment(dataloader=dataloader,
                                list_datasets=dataset if isinstance(dataset, list) else [dataset],
                                list_bs=list_bs,
@@ -266,9 +264,9 @@ def main():
                                differential_privacy=differential_privacy,
                                noise_type=noise_type,
                                noise_multiplier=noise_multiplier,
-                               max_norm=max_norm,
+                               max_norm=beta,
                                compression=compression,
-                               threshold=threshold,
+                               threshold=theta,
                                local_iterations=local_iterations,
                                local_training=local_training
                                )
