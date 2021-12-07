@@ -6,10 +6,10 @@ import torch.nn.functional as F
 import torch.nn.init as init
 from collections import OrderedDict
 
-# LeNet
-class Net1(nn.Module):
+
+class CNN(nn.Module):
     def __init__(self, parameter):
-        super(Net1, self).__init__()
+        super(CNN, self).__init__()
         act = nn.Sigmoid
 
         self.body = nn.Sequential(

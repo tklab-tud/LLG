@@ -199,7 +199,7 @@ class Setting:
 
     def load_model(self):
         if self.parameter["model"] == "LeNet":
-            model = Net1(self.parameter)
+            model = CNN(self.parameter)
         elif self.parameter["model"] == "LeNetNew":
             model = LeNet(self.parameter)
         elif self.parameter["model"] == "NewNewLeNet":
