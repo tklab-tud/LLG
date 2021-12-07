@@ -281,30 +281,6 @@ def main():
 
         run, path = load_jsons(args.dir, args.plot)
 
-        # magnitude_check plots a scatterplot of the gradients of a run.
-        # gradient_type: "individual_gradients", "original_gradients", "adjusted_gradients"
-        # Grads before summing up, after summing up and after adjustment
-        # magnitude_check(run, path, gradient_type="individual_gradients", group_by="class")
-
-        # negativ_value_check partitions the gradients into 4 categories: (non)present x sign
-        # gradient_type: "individual_gradients", "original_gradients", "adjusted_gradients"
-        #
-        # negativ_value_check(run, path, gradient_type = "individual_gradients")
-
-        # same_sign_check(run, path, dataset=None, balanced=None)
-        # checks the split gradient_sum_sign x individual_grad_sign
-        # same_sign_check(run, path)
-
-        # Comparing accuracies
-
-        # visualize_class_prediction_accuracy_vs_training(run, path, dataset="MNIST")
-        # visualize_class_prediction_accuracy_vs_training(run, path, dataset="CIFAR")
-        # visualize_class_prediction_accuracy_vs_training(run, path, dataset="CELEB-A-male")
-        # visualize_class_prediction_accuracy_vs_training(run, path, dataset="SVHN")
-        # for i in range(num_files):
-        #     visualize_class_prediction_accuracy_vs_training(run, path, balanced=True, model_id=i)
-        #     visualize_class_prediction_accuracy_vs_training(run, path, balanced=False, model_id=i)
-
         # Visualization Set 0
         if experiment_set == 0:
             visualize_class_prediction_accuracy_vs_batchsize(run, path, labels=["version", "model"])
