@@ -65,7 +65,6 @@ class ResidualBlock(nn.Module):
         return self.in_channels != self.out_channels
 
 
-
 class ResNetResidualBlock(ResidualBlock):
     def __init__(self, in_channels, out_channels, expansion=1, downsampling=1, conv=conv3x3, *args, **kwargs):
         super().__init__(in_channels, out_channels)
@@ -102,6 +101,7 @@ class ResNetBasicBlock(ResNetResidualBlock):
             activation(),
             conv_bn(self.out_channels, self.expanded_channels, conv=self.conv, bias=False),
         )
+
 
 class ResNetBottleNeckBlock(ResNetResidualBlock):
     expansion = 4
@@ -354,7 +354,6 @@ def resnet20(parameter):
 
 ## new new LeNet
 ## source: https://pytorch.org/tutorials/beginner/blitz/neural_networks_tutorial.html
-
 class LeNetTut(nn.Module):
 
     def __init__(self, in_channel, num_classes):
@@ -389,9 +388,8 @@ class LeNetTut(nn.Module):
 def NewNewLeNet(parameter):
     return LeNetTut(parameter["channel"], parameter["num_classes"])
 
+
 ######################################################################
-
-
 
 def weights_init(m):
     try:
