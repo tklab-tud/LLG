@@ -68,7 +68,7 @@ def main():
 
     # with exception of set 1, 2, 3, and 4 all sets use MNIST and LLG+
     dataset = "MNIST"
-    version = "LLG+"
+    attack = "LLG+"
 
     # with exception of set 3 and 4 all sets use all batch sizes and don't train
     list_bs = [1, 2, 4, 8, 16, 32, 64, 128]
@@ -95,8 +95,8 @@ def main():
         list_bs = [1,4,8]
         dataset = "MNIST"
         balanced = True
-        # version = ["LLG", "LLG+", LLGs_variant[dataset], "DLG", "Random"]
-        version = ["LLG+", "DLG"]
+        # attack = ["LLG", "LLG+", LLGs_variant[dataset], "DLG", "Random"]
+        attack = ["LLG+", "DLG"]
         model = ["ResNet"]
         local_training = False
 
@@ -110,13 +110,13 @@ def main():
         # dataset = "CELEB-A-male"
         # dataset = "CELEB-A-hair"
         # dataset = "SVHN"
-        # versions in order of importance
-        version = "LLG+"
-        # version = "Random"
-        # version = "LLG"
-        # version = LLGs_variant[dataset]
-        # version = "DLG"
-        idx = dataset+"_"+version
+        # attacks in order of importance
+        attack = "LLG+"
+        # attack = "Random"
+        # attack = "LLG"
+        # attack = LLGs_variant[dataset]
+        # attack = "DLG"
+        idx = dataset+"_"+attack
 
     # Set 3 and 4 trained model
     if experiment_set in [3, 4]:
@@ -134,9 +134,9 @@ def main():
         # model = "ResNet"
         # model = "MLP"
 
-        version = "DLG"
-        # version ="LLG+"
-        idx = model+"_"+version
+        attack = "DLG"
+        # attack ="LLG+"
+        idx = model+"_"+attack
 
     # Set 6 additive noise (untrained)
     if experiment_set == 6:
@@ -199,11 +199,11 @@ def main():
         # thetas = [0.2]
         # id = "comp"
         # idx = thetas[0]
-        version = "LLG+"
-        # version = "Random"
-        # version = "LLG"
-        # version = LLGs_variant[dataset]
-        # version = "DLG"
+        attack = "LLG+"
+        # attack = "Random"
+        # attack = "LLG"
+        # attack = LLGs_variant[dataset]
+        # attack = "DLG"
         dataset = "MNIST"
         # dataset = "CIFAR"
         # dataset = "CELEB-A-hair"
@@ -215,11 +215,11 @@ def main():
 
     if experiment_set == -1:
         n = 1000
-        versions = ["LLG+", "Random"]
-    elif isinstance(version, list):
-        versions = version
+        attacks = ["LLG+", "Random"]
+    elif isinstance(attack, list):
+        attacks = attack
     else:
-        versions = [version]
+        attacks = [attack]
 
     # Set 10 local iterations
     if experiment_set == 10:
@@ -240,7 +240,7 @@ def main():
                                list_datasets=dataset if isinstance(dataset, list) else [dataset],
                                list_bs=list_bs,
                                list_balanced=[balanced],
-                               list_versions=versions,
+                               list_versions=attacks,
                                # "LLG"(LLG), "LLG+"(LLG+), "LLG*-zero", "LLG*-one", "LLG*-random", "DLG", "iDLG"
                                n=n,  # Amount of attacks
                                extent=extent,  # "victim_side", "predict", "reconstruct"
