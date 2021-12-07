@@ -55,7 +55,7 @@ def main():
     betas = [None]
     compression = False
     thetas = [0.0]
-    n = 100
+    repetitions = 100
     local_training = False
     federated = False
     num_users = 1
@@ -91,7 +91,7 @@ def main():
 
     if experiment_set == 0:
         local_iterations = 4
-        n = 1
+        repetitions = 1
         list_bs = [1,4,8]
         dataset = "MNIST"
         balanced = True
@@ -171,7 +171,7 @@ def main():
 
     # Set 9 federated training and trained defenses
     if experiment_set == 9:
-        n=1
+        repetitions = 1
         extent="victim_side"
         list_bs = [8]
         trainsize = int(10/local_iterations)
@@ -214,7 +214,7 @@ def main():
         # model = "MLP"
 
     if experiment_set == -1:
-        n = 1000
+        repetitions = 1000
         attacks = ["LLG+", "Random"]
     elif isinstance(attack, list):
         attacks = attack
@@ -242,7 +242,7 @@ def main():
                                list_balanced=[balanced],
                                list_versions=attacks,
                                # "LLG"(LLG), "LLG+"(LLG+), "LLG*-zero", "LLG*-one", "LLG*-random", "DLG", "iDLG"
-                               n=n,  # Amount of attacks
+                               n=repetitions,  # Amount of attacks
                                extent=extent,  # "victim_side", "predict", "reconstruct"
                                trainsize=trainsize,  # Iterations per Trainstep
                                trainsteps=trainsteps,  # Number of Attack&Train cycles
