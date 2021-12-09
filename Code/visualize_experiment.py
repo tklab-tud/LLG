@@ -312,13 +312,7 @@ def visualize_class_prediction_accuracy_vs_batchsize(run, path, balanced=None, d
                             label = "Random"
 
                     if l == "model":
-                        if label == "LeNet":
-                            label = "CNN"
-                        elif label == "LeNetNew":
-                            label = "OldLeNet"
-                        elif label == "NewNewLeNet":
-                            label = "LeNet"
-                        elif label == "MLP":
+                        if label == "MLP":
                             label = "FCNN"
                     if l == "threshold":
                         if run[run_name]["parameter"]["version"] == "random":
@@ -527,13 +521,7 @@ def visualize_class_prediction_accuracy_vs_training(run, path, balanced=None, da
                         if not run[run_name]["parameter"]["federated"]:
                             label = "LLG+"
                     if l == "model":
-                        if label == "LeNet":
-                            label = "CNN"
-                        elif label == "LeNetNew":
-                            label = "OldLeNet"
-                        elif label == "NewNewLeNet":
-                            label = "LeNet"
-                        elif label == "MLP":
+                        if label == "MLP":
                             label = "FCNN"
                     if l == "noise_multiplier":
                         if run[run_name]["parameter"]["version"] == "random":
