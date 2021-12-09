@@ -231,21 +231,21 @@ class Graph:
 
             "CNN": '#4363d8',
             "LeNet": '#277831',
-            "OldLeNet": '#ff0044',
+            "LeNet5": '#ff0044',
             "FCNN": '#f032e6',
             "ResNet": "#e6194B",
 
             # version x model
             "LLG+, CNN": '#4363d8',
             "LLG+, LeNet": '#277831',
-            "LLG+, OldLeNet": '#ff0044',
+            "LLG+, LeNet5": '#ff0044',
             "LLG+, FCNN": '#f032e6',
             "LLG+, ResNet": "#e6194B",
 
 
             "DLG, CNN": '#ff80ed',
             "DLG, LeNet": '#ff6600',
-            "DLG, OldLeNet": '#ffF000',
+            "DLG, LeNet5": '#ffF000',
             "DLG, FCNN": '#f0f200',
             "DLG, ResNet": "#800000",
 
@@ -353,20 +353,20 @@ class Graph:
 
             "CNN": '-',
             "LeNet": (0, (3, 5, 1, 5, 1, 5)),
-            "OldLeNet": (0, (1, 1, 1, 3)),
+            "LeNet5": (0, (1, 1, 1, 3)),
             "FCNN": '-.',
             "ResNet": "--",
 
             # version x model
             "LLG+, CNN": '-',
             "LLG+, LeNet": (0, (3, 5, 1, 5, 1, 5)),
-            "LLG+, OldLeNet": (0, (1, 1, 1, 3)),
+            "LLG+, LeNet5": (0, (1, 1, 1, 3)),
             "LLG+, FCNN": '-.',
             "LLG+, ResNet": "--",
 
             "DLG, CNN": ':',
             "DLG, LeNet": '-.',
-            "DLG, OldLeNet": (0, (3, 10, 1, 10, 1, 10)),
+            "DLG, LeNet5": (0, (3, 10, 1, 10, 1, 10)),
             "DLG, FCNN": '-.',
             "DLG, ResNet":  (0, (3, 5, 1, 5, 1, 5)),
 
@@ -465,7 +465,7 @@ class Graph:
             "CNN": 0,
             "FCNN": 2,
             "LeNet": 4,
-            "OldLeNet": 6,
+            "LeNet5": 6,
             "ResNet": 8,
 
             # compression threshold
@@ -527,13 +527,13 @@ class Graph:
             "LLG+, CNN": 0,
             "LLG+, FCNN": 2,
             "LLG+, LeNet": 4,
-            "LLG+, OldLeNet": 6,
+            "LLG+, LeNet5": 6,
             "LLG+, ResNet": 8,
 
             "DLG, CNN": 10,
             "DLG, FCNN": 12,
             "DLG, LeNet": 14,
-            "DLG, OldLeNet": 16,
+            "DLG, LeNet5": 16,
             "DLG, ResNet": 18,
 
             "Model": 100,
