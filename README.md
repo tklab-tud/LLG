@@ -12,36 +12,40 @@ This framework implements the LLG attack.
 
 ## Execution
 
-> TODO: needs updating as well
+1. Choose an experiment from the [table below](#experiment-sets).
+2. Prepare the detailed experiment parameters in `main.py` to fit your needs.
+3. Execute the experiment:
+   `python main.py -s <experiment_set_number> -g <gpu_id_if_avail>`
+4. Visualize the dump file(s):
+   `python main.py -s <experiment_set_number> -d <path_to_dump_file(s)>`
 
-From main.py you can start an attack like this:
+### Experiment Sets
 
+| set   | description       |
+|-------|-------------------|
+| 1,2   | batch size (untrained)
+| 3,4   | trained model
+| 5     | model architecture comparison
+| 6     | additive noise (untrained)
+| 7     | compression (untrained)
+| 8     | differential privacy (untrained)
+| 9     | federated training and trained defenses
 
-    dataloader = Dataloader()
-    experiment(dataloader=dataloader,
-               list_datasets=["CIFAR", "MNIST"],
-               list_bs=[8, 32],
-               list_balanced=[True, False],
-               list_versions=["v1", "v2", "random"],
-               n=100,
-               extent="predict",
-               trainsize=100,
-               trainsteps=0,
-               path=None,
-               reconstruction_steps=100
-               )
+### Current CLI
 
-Running on a cluster you might want to comment out :
+```
+usage: main.py [-h] [-s SET] [-p PLOT] [-j JOB] [-d DIR] [-g GPU_ID]
 
-    from visualize_experiment import *
+Arguments for LLG Experiment
 
-In order to load jsons it uses a file chooser (from tk_inter) which only works in a desktop environment.
-
-After that the resulting json can be loaded with
-
-run, path = load_json()
-
-See visualize_experiment.py for some possible ways of generating graphs from it.
+optional arguments:
+  -h, --help                    show this help message and exit
+  -s SET, --set SET             experiment set (default=2)
+  -p PLOT, --plot PLOT          number of files to be ploted (default=None)
+  -j JOB, --job JOB             job to execute. either "experiment" or "visualize". (default="experiment")
+  -d DIR, --dir DIR             directory or file to plot from. (default=None)
+  -g GPU_ID, --gpu_id GPU_ID    cuda_id to use, if available (default=0)
+```
 
 ## License
 
