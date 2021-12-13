@@ -1,6 +1,9 @@
 # Label Leakage from Gradients
 
-This framework implements the LLG attack.
+This framework implements the Label Leakage from Gradients (LLG) attack, a novel attack to extract ground-truth labels from shared gradients trained with mini-batch stochastic gradient descent for multi-class classification in Federated Learning. LLG is based on a combination of mathematical proofs and heuristics derived empirically. The attack exploits two properties that the gradients of the last layer of a neural network have: (P1) The direction of these gradients indicates whether a label is part of the training batch. (P2) The gradient magnitude can hint towards the number of occurrences of a label in the batch.
+
+### References
+[1] [Aidmar Wainakh et al. (2022) User-Level Label Leakage from Gradients in Federated Learning. In PETS 2022.](https://arxiv.org/pdf/2105.09369.pdf)
 
 ## Installation
 
@@ -46,6 +49,11 @@ optional arguments:
   -d DIR, --dir DIR             directory or file to plot from. (default=None)
   -g GPU_ID, --gpu_id GPU_ID    cuda_id to use, if available (default=0)
 ```
+
+## Contributors
+- __Aidmar Wainakh__ - _LLG idea, guidance and suggestions during development_
+- __Till M??ig__ - _LLG idea, developing LLG and initial experiments as part of his Bachelor’s thesis and a seminar course_
+- __Jens Keim__ - _developing advanced experiments, refactoring, current maintainer_
 
 ## License
 
