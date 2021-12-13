@@ -7,11 +7,11 @@ This framework implements the Label Leakage from Gradients (LLG) attack, a novel
 
 ## Installation
 
-1. Setup a clean Python `3.7.9`Â¹ environment with the tool of your choice (conda, venv, etc.).
+1. Setup a clean Python `3.7.9` environment with the tool of your choice (conda, venv, etc.).
 2. Install required python libraries using: `pip install -r Code/requirements.txt`
 3. Initiate and update [aDPtorch](https://github.com/tklab-tud/aDPtorch) submodule: `git submodule init` and `git submodule update`
 
-Â¹ It is possible that the LLG code runs with newer python versions. However, don't use the most current, as `opacus` and `torchcsprng` tend to have a bit of a delay getting updated to work with newest python and/or torch versions.
+It is possible that the LLG code runs with newer python versions. However, don't use the most current, as `opacus` and `torchcsprng` tend to have a bit of a delay getting updated to work with newest python and/or torch versions.
 
 ## Execution
 
