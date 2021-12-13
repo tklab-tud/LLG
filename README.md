@@ -4,6 +4,7 @@ This framework implements the Label Leakage from Gradients (LLG) attack, a novel
 
 ### References
 [1] [Aidmar Wainakh et al. (2022) User-Level Label Leakage from Gradients in Federated Learning. In PETS 2022.](https://arxiv.org/pdf/2105.09369.pdf)
+[2] [Aidmar Wainakh et al. (2021) Label Leakage from Gradients in Distributed Machine Learning. In CCNC 2021.](https://ieeexplore.ieee.org/abstract/document/9369498)
 
 ## Installation
 
