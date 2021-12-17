@@ -665,7 +665,7 @@ def load_jsons(path_to_json, num_files=1):
             json_files.extend(fetch_jsons(path_to_json))
     else:
         json_files = fetch_jsons(path_to_json)
-    return parse_jsons(json_files, local_training)
+    return parse_jsons(json_files)
 
 def fetch_jsons(path_to_json):
     if ".json" in path_to_json:
@@ -684,7 +684,7 @@ def fetch_jsons(path_to_json):
                     json_files.append(file_path)
     return json_files
 
-def parse_jsons(json_files, local_training=None):
+def parse_jsons(json_files):
     runs = []
     path = None
     meta = None
