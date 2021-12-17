@@ -237,6 +237,8 @@ def main():
             for beta in betas:
                 if beta != None and beta > 0:
                     noise_multiplier = sigma / beta
+                else:
+                    noise_multiplier = sigma
                 for theta in thetas:
                 # for local_iterations in local_iterations_list:
                     # theta = 0.0
