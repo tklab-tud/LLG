@@ -238,7 +238,7 @@ class Setting:
             return
 
         # In case of v1, v2, v3 ... do the prediction; dlg's prediction is done at reconstruction step
-        if not self.parameter["version"] == "dlg":
+        if not self.parameter["version"].lower() == "dlg":
             self.predictor.predict()
             # If we only want prediction stop here
             if extent == "predict":
