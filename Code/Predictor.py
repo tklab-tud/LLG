@@ -289,11 +289,11 @@ class Predictor:
             tmp_gradients = []
             impact = 0
             for i in range(parameter["num_classes"]):
-                if parameter["version"] == "v3-zero":
+                if parameter["version"].lower() == "llg*-zero":
                     dataset="DUMMY-ZERO"
-                elif parameter["version"] == "v3-one":
+                elif parameter["version"].lower() == "llg*-one":
                     dataset="DUMMY-ONE"
-                elif parameter["version"] == "v3-random":
+                elif parameter["version"].lower() == "llg*-random":
                     dataset="DUMMY-RANDOM"
                 else:
                     exit("v3 called with wrong version")
